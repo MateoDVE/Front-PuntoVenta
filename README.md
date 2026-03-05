@@ -1,6 +1,23 @@
-# FrontendPuntoventa
+# Frontend Punto Venta
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.9.
+## Descripción
+
+Punto venta es un sistema que busca tecnificar y optimizar la operación de preventa y venta directa en el canal horizontal (tienda a tienda), permitiendo un control estricto sobre el flujo de productos, la ubicación geográfica de los clientes y la eficiencia comercial.
+
+## Tecnologías
+
+**Frontend:**
+- [Angular CLI](https://github.com/angular/angular-cli) version 20.3.9
+
+## Equipo
+
+- Maria Alejandra Loayza Claure
+- Jorge Alejandro Rosales Gutierrez
+- Mateo Daniel Vargas Estrada
+- Andrews Jimmy Zelada Cespedes
+- David Hassan López Olivares
+
+## Configuraciones
 
 ## Development server
 
