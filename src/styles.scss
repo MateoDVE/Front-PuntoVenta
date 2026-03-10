@@ -1,1 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+$color-fondo: #DBEAFE;
+body {
+    margin: 0;
+    padding: 0;
+    background-color: $color-fondo;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+} 
