@@ -3,6 +3,7 @@ $colorTextoSecundario: #717182;
 $color-button: #155DFC;
 $color-background: #D8E1E8;
 $color-input-bg: #F1F3F5;
+$color-error: #dc3545;
 
 section {
     display: flex;
@@ -71,6 +72,23 @@ section {
                 }
             }
 
+            .error {
+                color: $color-error;
+                font-size: 12px;
+                margin-top: -16px;
+                margin-bottom: 12px;
+            }
+
+            .error-message {
+                color: $color-error;
+                font-size: 14px;
+                margin-bottom: 16px;
+                padding: 12px;
+                background-color: rgba($color-error, 0.1);
+                border-radius: 8px;
+                text-align: center;
+            }
+
             button {
                 width: 100%;
                 padding: 14px;
@@ -84,12 +102,17 @@ section {
                 transition: background-color 0.2s;
                 margin-top: 8px;
 
-                &:hover {
+                &:hover:not(:disabled) {
                     background-color: $color-button;
                 }
 
-                &:active {
-                    background-color: $color-button;
+                &:active:not(:disabled) {
+                    background-color: $color-button, 15%;
+                }
+
+                &:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
                 }
             }
         }
