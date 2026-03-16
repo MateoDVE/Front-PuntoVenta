@@ -1,28 +1,6 @@
 <div class="dashboard-shell">
 	<div class="dashboard-layout">
-		<aside class="sidebar">
-			<header class="sidebar-brand">
-				<h2>PuntoVenta</h2>
-				<p>Panel Administrador</p>
-			</header>
-
-			<nav aria-label="Navegacion principal" class="sidebar-nav">
-				<ul>
-					<li><a href="#" aria-current="page">Dashboard</a></li>
-					<li><a href="#">Vendedores</a></li>
-					<li><a href="#">Catalogo</a></li>
-					<li><a href="#">Asignacion</a></li>
-					<li><a href="#">Monitor</a></li>
-					<li><a href="#">Reportes</a></li>
-				</ul>
-			</nav>
-
-			<footer class="sidebar-footer">
-				<p>Sesion activa</p>
-				<strong>Administrador</strong>
-				<button type="button" (click)="onSignOut()">Cerrar Sesion</button>
-			</footer>
-		</aside>
+		<app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
 
 		<main class="dashboard-main">
 			<header class="main-header">

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
+import { AdminNavbar } from '../../components/admin-navbar/admin-navbar';
 
 interface DashboardMetric {
   title: string;
@@ -26,7 +27,7 @@ interface SellerStatus {
 @Component({
   selector: 'app-dashboboard-admin',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AdminNavbar],
   templateUrl: './dashboboard-admin.html',
   styleUrl: './dashboboard-admin.scss',
 })
