@@ -7,7 +7,7 @@
   <nav aria-label="Navegacion principal" class="sidebar-nav">
     <ul>
       <li *ngFor="let item of navItems">
-        <a [href]="item.href" [attr.aria-current]="item.current ? 'page' : null">{{ item.label }}</a>
+        <a [routerLink]="item.href">{{ item.label }}</a>
       </li>
     </ul>
   </nav>

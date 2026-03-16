@@ -1,93 +1,95 @@
-<section class="page">
 
-  <header class="page-header">
-    <div>
-      <h1>Gestión de Vendedores</h1>
-      <p>Administra vendedores y sus vehículos de transporte</p>
-    </div>
+    
+    <section class="page">
 
-    <button class="btn-primary">+ Nuevo Vendedor</button>
-  </header>
+      <header class="page-header">
+        <div>
+          <h1>Gestión de Vendedores</h1>
+          <p>Administra vendedores y sus vehículos de transporte</p>
+        </div>
 
-  <section class="stats">
+        <button class="btn-primary">+ Nuevo Vendedor</button>
+      </header>
 
-    <article class="stat">
-      <span class="value">{{ totalVendedores }}</span>
-      <span class="label">Total Vendedores</span>
-    </article>
+      <section class="stats">
 
-    <article class="stat">
-      <span class="value">{{ enRuta }}</span>
-      <span class="label">En Ruta</span>
-    </article>
+        <article class="stat">
+          <span class="value">{{ totalVendedores }}</span>
+          <span class="label">Total Vendedores</span>
+        </article>
 
-    <article class="stat">
-      <span class="value">{{ ventasTotales }}</span>
-      <span class="label">Ventas Totales</span>
-    </article>
+        <article class="stat">
+          <span class="value">{{ enRuta }}</span>
+          <span class="label">En Ruta</span>
+        </article>
 
-    <article class="stat">
-      <span class="value">{{ ingresos }}</span>
-      <span class="label">Ingresos (Bs.)</span>
-    </article>
+        <article class="stat">
+          <span class="value">{{ ventasTotales }}</span>
+          <span class="label">Ventas Totales</span>
+        </article>
 
-  </section>
+        <article class="stat">
+          <span class="value">{{ ingresos }}</span>
+          <span class="label">Ingresos (Bs.)</span>
+        </article>
 
-  <section class="table-section">
+      </section>
 
-    <header>
-      <h3>Vendedores Registrados ({{ vendedores.length }})</h3>
-    </header>
+      <section class="table-section">
 
-    <table>
+        <header>
+          <h3>Vendedores Registrados ({{ vendedores.length }})</h3>
+        </header>
 
-      <thead>
-        <tr>
-          <th>Vendedor</th>
-          <th>Contacto</th>
-          <th>Transporte</th>
-          <th>Estado</th>
-          <th>Stock</th>
-          <th>Ventas Hoy</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
+        <table>
 
-      <tbody>
+          <thead>
+            <tr>
+              <th>Vendedor</th>
+              <th>Contacto</th>
+              <th>Transporte</th>
+              <th>Estado</th>
+              <th>Stock</th>
+              <th>Ventas Hoy</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
 
-        <tr *ngFor="let v of vendedores">
+          <tbody>
 
-          <td>
-            <strong>{{ v.nombre }}</strong>
-            <small>CI: {{ v.ci }}</small>
-          </td>
+            <tr *ngFor="let v of vendedores">
 
-          <td>{{ v.telefono }}</td>
+              <td>
+                <strong>{{ v.nombre }}</strong>
+                <small>CI: {{ v.ci }}</small>
+              </td>
 
-          <td>{{ v.transporte }}</td>
+              <td>{{ v.telefono }}</td>
 
-          <td>
-            <span class="estado">{{ v.estado }}</span>
-          </td>
+              <td>{{ v.transporte }}</td>
 
-          <td class="stock">{{ v.stock }} unidades</td>
+              <td>
+                <span class="estado">{{ v.estado }}</span>
+              </td>
 
-          <td>
-            {{ v.ventas }} ventas
-            <small>Bs. {{ v.ingreso }}</small>
-          </td>
+              <td class="stock">{{ v.stock }} unidades</td>
 
-          <td class="acciones">
-            <button (click)="editar(v)">✏️</button>
-            <button (click)="eliminar(v)">🗑</button>
-          </td>
+              <td>
+                {{ v.ventas }} ventas
+                <small>Bs. {{ v.ingreso }}</small>
+              </td>
 
-        </tr>
+              <td class="acciones">
+                <button (click)="editar(v)">✏️</button>
+                <button (click)="eliminar(v)">🗑</button>
+              </td>
 
-      </tbody>
+            </tr>
 
-    </table>
+          </tbody>
 
-  </section>
+        </table>
 
-</section>
+      </section>
+
+    </section>

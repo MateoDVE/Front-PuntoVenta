@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
+import {  RouterLink } from '@angular/router';
 
 interface AdminNavItem {
   label: string;
@@ -10,20 +11,20 @@ interface AdminNavItem {
 @Component({
   selector: 'app-admin-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './admin-navbar.html',
   styleUrl: './admin-navbar.scss',
 })
 export class AdminNavbar {
   @Output() signOut = new EventEmitter<void>();
 
-  navItems: AdminNavItem[] = [
-    { label: 'Dashboard', href: '#', current: true },
-    { label: 'Vendedores', href: '#' },
-    { label: 'Catalogo', href: '#' },
-    { label: 'Asignacion', href: '#' },
-    { label: 'Monitor', href: '#' },
-    { label: 'Reportes', href: '#' },
+   navItems: AdminNavItem[] = [
+    { label: 'Dashboard', href: '/admin/dashboard' },
+    { label: 'Vendedores', href: 'admin/gestion-vendedores' },
+    { label: 'Catalogo', href: '/admin/catalogo' },
+    { label: 'Asignacion', href: '/admin/asignacion' },
+    { label: 'Monitor', href: '/admin/monitor' },
+    { label: 'Reportes', href: '/admin/reportes' },
   ];
 
   onSignOut(): void {

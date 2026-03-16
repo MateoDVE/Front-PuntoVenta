@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { AdminNavbar } from '../../components/admin-navbar/admin-navbar';
 
 interface Vendedor {
   nombre: string;
@@ -16,7 +16,7 @@ interface Vendedor {
 @Component({
   selector: 'app-gestion-vendedores',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AdminNavbar],
   templateUrl: './gestion-vendedores.html',
   styleUrls: ['./gestion-vendedores.scss']
 })
