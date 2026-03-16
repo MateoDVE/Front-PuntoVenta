@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminNavbar } from '../../components/admin-navbar/admin-navbar';
+import { AuthService } from '../../services/auth.service';
 
 interface Vendedor {
   nombre: string;
@@ -50,12 +51,18 @@ export class GestionVendedoresComponent {
     }
   ];
 
+  constructor(private authService: AuthService) {}
+
   editar(vendedor: Vendedor) {
     console.log('Editar', vendedor);
   }
 
   eliminar(vendedor: Vendedor) {
     console.log('Eliminar', vendedor);
+  }
+
+  onSignOut() {
+    this.authService.signOut().subscribe();
   }
 
 }
