@@ -19,7 +19,6 @@ Aplicacion web para la gestion del punto de venta. Incluye autenticacion, panel 
 - @angular/platform-browser
 - rxjs
 - zone.js
-- @supabase/supabase-js
 
 **Base de datos (consumida via API):**
 - Supabase PostgreSQL (a traves del backend NestJS)
