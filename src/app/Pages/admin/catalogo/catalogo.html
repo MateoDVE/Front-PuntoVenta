@@ -1,1 +1,191 @@
-<p>catalogo works!</p>
+<div class="dashboard-shell">
+	<div class="dashboard-layout">
+		<app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
+
+		<main class="dashboard-main">
+			<div class="catalogo-container">
+  <div class="header">
+    <div>
+      <h1>Gestión de Catálogo</h1>
+      <p>Administra productos, precios y stock global</p>
+    </div>
+    <button class="btn-nuevo" (click)="abrirModal()">
+      <span>+ Nuevo Producto</span>
+    </button>
+  </div>
+
+  <div class="productos-section">
+    <div class="section-header">
+      <span>📦 Productos Registrados ({{ productos.length }})</span>
+    </div>
+
+    <div *ngIf="cargando" class="loading">Cargando productos...</div>
+
+    <div *ngIf="!cargando && productos.length === 0" class="empty-state">
+      <p>No hay productos registrados. Crea uno nuevo para comenzar.</p>
+    </div>
+
+    <div *ngIf="!cargando && productos.length > 0" class="productos-grid">
+      <app-producto-card
+        *ngFor="let producto of productos"
+        [producto]="producto"
+        (editar)="editarProducto($event)"
+        (eliminar)="eliminarProducto($event)"
+      ></app-producto-card>
+    </div>
+  </div>
+
+  <!-- Modal Nuevo Producto -->
+  <div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editando ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
+        <button class="btn-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <form class="modal-form">
+        <div class="form-group">
+          <label>SKU del Producto *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="nuevoProducto.sku"
+            name="sku"
+            placeholder="Ej: COCA-500ML"
+          >
+          <small>Código único para identificar el producto</small>
+        </div>
+
+        <div class="form-group">
+          <label>Nombre del Producto *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="nuevoProducto.nombre"
+            name="nombre"
+            placeholder="Ej: Coca Cola 500ml"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea 
+            [(ngModel)]="nuevoProducto.descripcion"
+            name="descripcion"
+            placeholder="Descripción del producto"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Imagen del Producto</label>
+          
+          <!-- Vista previa de imagen guardada -->
+          <div *ngIf="nuevoProducto.url_imagen && !imagenPreview" class="image-preview-container">
+            <img [src]="nuevoProducto.url_imagen" alt="Producto" class="preview-image">
+            <button type="button" class="btn-remove-image" (click)="eliminarImagenGuardada()" title="Eliminar imagen">
+              ✕
+            </button>
+          </div>
+
+          <!-- Vista previa de imagen seleccionada -->
+          <div *ngIf="imagenPreview" class="image-preview-container">
+            <img [src]="imagenPreview" alt="Preview" class="preview-image">
+            <button type="button" class="btn-remove-image" (click)="limpiarImagen()" title="Descartar">
+              ✕
+            </button>
+          </div>
+
+          <!-- Input de archivo -->
+          <div class="image-upload-section" *ngIf="!imagenPreview && !nuevoProducto.url_imagen">
+            <input 
+              #fileInput
+              type="file" 
+              accept="image/*"
+              (change)="onSeleccionarImagen($event)"
+              hidden
+            >
+            <button 
+              type="button" 
+              class="btn-select-file"
+              (click)="fileInput.click()"
+            >
+              📁 Seleccionar Imagen
+            </button>
+            <small>Formatos: JPG, PNG, WebP, GIF (Máx 5MB)</small>
+          </div>
+
+          <!-- Extensión de información si hay archivo seleccionado -->
+          <div *ngIf="imagenPreview" class="image-info">
+            <p>Archivo seleccionado: {{ archivoSeleccionado?.name }}</p>
+            <p style="font-size: 0.85rem; color: #666; margin: 0.5rem 0 0 0;">
+              ℹ️ La imagen se subirá automáticamente al guardar el producto
+            </p>
+            <button 
+              type="button" 
+              class="btn-upload-image"
+              (click)="subirImagen()"
+              [disabled]="cargandoImagen"
+            >
+              {{ cargandoImagen ? '⏳ Subiendo...' : '⬆️ Subir Imagen (Opcional)' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Precio Unitario (Bs.) *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="nuevoProducto.precio_unidad"
+            name="precio_unidad"
+            placeholder="0.00"
+            step="0.01"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Precio por Caja (Bs.) *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="nuevoProducto.precio_caja"
+            name="precio_caja"
+            placeholder="0.00"
+            step="0.01"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Unidades por Caja *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="nuevoProducto.unidades_por_caja"
+            name="unidades_por_caja"
+            placeholder="1"
+            step="1"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Stock Almacén Central</label>
+          <input 
+            type="number" 
+            [(ngModel)]="nuevoProducto.stock_almacen_central"
+            name="stock_almacen_central"
+            placeholder="0"
+            step="1"
+          >
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-cancel" (click)="cerrarModal()" [disabled]="cargando">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-save" (click)="guardarProducto()" [disabled]="cargando || cargandoImagen">
+            {{ cargandoImagen ? '⏳ Subiendo imagen...' : (cargando ? 'Guardando producto...' : (editando ? 'Actualizar' : 'Crear Producto')) }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+			</div>
+		</main>
+	</div>
+</div>

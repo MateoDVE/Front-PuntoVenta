@@ -1,0 +1,48 @@
+<div class="producto-card">
+  <div class="producto-imagen">
+    <div class="imagen-placeholder" *ngIf="!producto.url_imagen">
+      <span>📦</span>
+    </div>
+    <img *ngIf="producto.url_imagen" [src]="producto.url_imagen" alt="{{ producto.nombre }}">
+  </div>
+
+  <div class="producto-info">
+    <h3>{{ producto.nombre }}</h3>
+    <p class="sku">SKU: {{ producto.sku }}</p>
+    
+    <p class="descripcion" *ngIf="producto.descripcion">
+      {{ producto.descripcion }}
+    </p>
+
+    <div class="precios">
+      <div class="precio-unit">
+        <span class="label">Unitario</span>
+        <p class="valor">Bs. {{ producto.precio_unidad.toFixed(2) }}</p>
+      </div>
+      <div class="precio-caja">
+        <span class="label">Caja</span>
+        <p class="valor">Bs. {{ producto.precio_caja.toFixed(2) }}</p>
+      </div>
+    </div>
+
+    <div class="especificaciones">
+      <div class="spec">
+        <span class="label">Unidades/Caja:</span>
+        <span class="valor">{{ producto.unidades_por_caja }}</span>
+      </div>
+      <div class="spec">
+        <span class="label">Stock:</span>
+        <span class="valor">{{ producto.stock_almacen_central }} unid</span>
+      </div>
+    </div>
+
+    <div class="acciones">
+      <button class="btn-editar" (click)="onEditar()" title="Editar producto">
+        ✏️ Editar
+      </button>
+      <button class="btn-eliminar" (click)="onEliminar()" title="Eliminar producto">
+        🗑️ Eliminar
+      </button>
+    </div>
+  </div>
+</div>
