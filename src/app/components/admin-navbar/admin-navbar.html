@@ -1,0 +1,20 @@
+<aside class="sidebar">
+  <header class="sidebar-brand">
+    <h2>PuntoVenta</h2>
+    <p>Panel Administrador</p>
+  </header>
+
+  <nav aria-label="Navegacion principal" class="sidebar-nav">
+    <ul>
+      <li *ngFor="let item of navItems">
+        <a [href]="item.href" [attr.aria-current]="item.current ? 'page' : null">{{ item.label }}</a>
+      </li>
+    </ul>
+  </nav>
+
+  <footer class="sidebar-footer">
+    <p>Sesion activa</p>
+    <strong>Administrador</strong>
+    <button type="button" (click)="onSignOut()">Cerrar Sesion</button>
+  </footer>
+</aside>
