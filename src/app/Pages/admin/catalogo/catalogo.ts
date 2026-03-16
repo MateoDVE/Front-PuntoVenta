@@ -19,6 +19,9 @@ export class Catalogo implements OnInit {
   cargando = false;
   editando = false;
   productoEditandoId?: number;
+  cargandoImagen = false;
+  imagenPreview?: string;
+  archivoSeleccionado?: File;
   
   nuevoProducto: Producto = {
     sku: '',
@@ -33,7 +36,10 @@ export class Catalogo implements OnInit {
 
   categorias = ['Bebidas', 'Snacks', 'Lácteos'];
 
-  constructor(private apiService: ApiService, private authService: AuthService) {}
+  constructor(
+    private apiService: ApiService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.cargarProductos();
@@ -63,6 +69,7 @@ export class Catalogo implements OnInit {
   cerrarModal(): void {
     this.mostrarModal = false;
     this.resetearFormulario();
+    this.limpiarImagen();
   }
 
   resetearFormulario(): void {
@@ -76,6 +83,97 @@ export class Catalogo implements OnInit {
       unidades_por_caja: 1,
       stock_almacen_central: 0,
     };
+  }
+
+  // ==================== MANEJO DE IMÁGENES ====================
+
+  onSeleccionarImagen(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) return;
+
+    try {
+      // Validar tipo MIME
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error('Tipo de archivo no permitido. Solo se aceptan JPEG, PNG, WebP y GIF');
+      }
+
+      // Validar tamaño (5MB)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        throw new Error(`El archivo excede el tamaño máximo de 5MB (actual: ${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+      }
+
+      // Guardar archivo
+      this.archivoSeleccionado = file;
+
+      // Crear preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imagenPreview = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      alert(`Error: ${error instanceof Error ? error.message : 'Error al procesar imagen'}`);
+      input.value = '';
+    }
+  }
+
+  subirImagen(): void {
+    if (!this.archivoSeleccionado) return;
+
+    try {
+      this.cargandoImagen = true;
+
+      // Crear FormData para enviar el archivo
+      const formData = new FormData();
+      formData.append('image', this.archivoSeleccionado);
+
+      // Usar ruta con ID si estamos editando, sin ID si es nuevo producto
+      const endpoint = this.productoEditandoId 
+        ? `productos/upload/${this.productoEditandoId}` 
+        : 'productos/upload';
+
+      // Usar HttpClient para enviar
+      this.apiService.uploadProductImage(endpoint, formData).subscribe({
+        next: (response: any) => {
+          this.nuevoProducto.url_imagen = response.imageUrl;
+          this.cargandoImagen = false;
+          alert('Imagen subida correctamente');
+        },
+        error: (error) => {
+          this.cargandoImagen = false;
+          const errorMsg = error?.error?.message || 'Error desconocido';
+          alert(`Error al subir imagen: ${errorMsg}`);
+        },
+      });
+    } catch (error) {
+      this.cargandoImagen = false;
+      alert(`Error: ${error instanceof Error ? error.message : 'Error al procesar'}`);
+    }
+  }
+
+  limpiarImagen(): void {
+    this.imagenPreview = undefined;
+    this.archivoSeleccionado = undefined;
+  }
+
+  eliminarImagenGuardada(): void {
+    if (!this.nuevoProducto.url_imagen) return;
+
+    if (confirm('¿Desea eliminar esta imagen?')) {
+      this.apiService.deleteProductImage(this.nuevoProducto.url_imagen).subscribe({
+        next: () => {
+          this.nuevoProducto.url_imagen = '';
+          alert('Imagen eliminada correctamente');
+        },
+        error: (error) => {
+          alert(`Error al eliminar imagen: ${error?.error?.message || 'Error desconocido'}`);
+        },
+      });
+    }
   }
 
   guardarProducto(): void {

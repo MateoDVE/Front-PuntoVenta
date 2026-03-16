@@ -66,4 +66,24 @@ export class ApiService {
   deleteProducto(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/productos/${id}`);
   }
+
+  // ==================== IMÁGENES ====================
+  /**
+   * Sube una imagen de producto al backend
+   * @param endpoint - Ruta del endpoint (ej: 'productos/upload' o 'productos/upload/123')
+   * @param formData - FormData con el archivo bajo la clave 'image'
+   * @returns Observable con { imageUrl: string }
+   */
+  uploadProductImage(endpoint: string, formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${endpoint}`, formData);
+  }
+
+  /**
+   * Elimina una imagen de producto
+   * @param imageUrl - URL pública de la imagen a eliminar
+   * @returns Observable vacío
+   */
+  deleteProductImage(imageUrl: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/productos/delete-image`, { imageUrl });
+  }
 }

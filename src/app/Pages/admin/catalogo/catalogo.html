@@ -76,15 +76,54 @@
         </div>
 
         <div class="form-group">
-          <label>URL de la Imagen</label>
-          <div class="input-with-icon">
+          <label>Imagen del Producto</label>
+          
+          <!-- Vista previa de imagen guardada -->
+          <div *ngIf="nuevoProducto.url_imagen && !imagenPreview" class="image-preview-container">
+            <img [src]="nuevoProducto.url_imagen" alt="Producto" class="preview-image">
+            <button type="button" class="btn-remove-image" (click)="eliminarImagenGuardada()" title="Eliminar imagen">
+              ✕
+            </button>
+          </div>
+
+          <!-- Vista previa de imagen seleccionada -->
+          <div *ngIf="imagenPreview" class="image-preview-container">
+            <img [src]="imagenPreview" alt="Preview" class="preview-image">
+            <button type="button" class="btn-remove-image" (click)="limpiarImagen()" title="Descartar">
+              ✕
+            </button>
+          </div>
+
+          <!-- Input de archivo -->
+          <div class="image-upload-section" *ngIf="!imagenPreview && !nuevoProducto.url_imagen">
             <input 
-              type="text" 
-              [(ngModel)]="nuevoProducto.url_imagen"
-              name="url_imagen"
-              placeholder="https://ejemplo.com/imagen.jpg"
+              #fileInput
+              type="file" 
+              accept="image/*"
+              (change)="onSeleccionarImagen($event)"
+              hidden
             >
-            <button type="button" class="btn-upload">📤</button>
+            <button 
+              type="button" 
+              class="btn-select-file"
+              (click)="fileInput.click()"
+            >
+              📁 Seleccionar Imagen
+            </button>
+            <small>Formatos: JPG, PNG, WebP, GIF (Máx 5MB)</small>
+          </div>
+
+          <!-- Extensión de información si hay archivo seleccionado -->
+          <div *ngIf="imagenPreview" class="image-info">
+            <p>Archivo seleccionado: {{ archivoSeleccionado?.name }}</p>
+            <button 
+              type="button" 
+              class="btn-upload-image"
+              (click)="subirImagen()"
+              [disabled]="cargandoImagen"
+            >
+              {{ cargandoImagen ? '⏳ Subiendo...' : '⬆️ Subir Imagen' }}
+            </button>
           </div>
         </div>
 
