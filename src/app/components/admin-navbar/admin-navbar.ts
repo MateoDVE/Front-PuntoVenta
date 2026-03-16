@@ -21,7 +21,7 @@ export class AdminNavbar implements OnInit {
   navItems: AdminNavItem[] = [
     { label: 'Dashboard', href: '/admin/dashboard' },
     { label: 'Vendedores', href: '/admin/gestion-vendedores' },
-    { label: 'Catalogo', href: '#' },
+    { label: 'Catalogo', href: '/admin/catalogo' },
     { label: 'Asignacion', href: '#' },
     { label: 'Monitor', href: '#' },
     { label: 'Reportes', href: '#' },

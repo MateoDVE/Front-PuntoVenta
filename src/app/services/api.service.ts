@@ -13,6 +13,19 @@ export interface Usuario {
   created_at: string;
 }
 
+export interface Producto {
+  id_producto?: number;
+  sku: string;
+  id_categoria?: number;
+  nombre: string;
+  descripcion?: string;
+  url_imagen?: string;
+  precio_unidad: number;
+  precio_caja: number;
+  unidades_por_caja: number;
+  stock_almacen_central: number;
+}
+
 /**
  * Servicio para interactuar con la API del backend
  * Todos los endpoints requieren autenticación (el interceptor agrega el token automáticamente)
@@ -31,5 +44,26 @@ export class ApiService {
   // ==================== USUARIOS ====================
   getMyProfile(): Observable<Usuario> {
     return this.http.get<Usuario>(`${this.apiUrl}/auth/me`);
+  }
+
+  // ==================== PRODUCTOS ====================
+  getProductos(): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.apiUrl}/productos`);
+  }
+
+  getProductoById(id: string): Observable<Producto> {
+    return this.http.get<Producto>(`${this.apiUrl}/productos/${id}`);
+  }
+
+  createProducto(producto: Producto): Observable<Producto> {
+    return this.http.post<Producto>(`${this.apiUrl}/productos`, producto);
+  }
+
+  updateProducto(id: string, producto: Producto): Observable<Producto> {
+    return this.http.put<Producto>(`${this.apiUrl}/productos/${id}`, producto);
+  }
+
+  deleteProducto(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/productos/${id}`);
   }
 }

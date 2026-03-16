@@ -1,1 +1,149 @@
-<p>catalogo works!</p>
+<div class="dashboard-shell">
+	<div class="dashboard-layout">
+		<app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
+
+		<main class="dashboard-main">
+			<div class="catalogo-container">
+  <div class="header">
+    <div>
+      <h1>Gestión de Catálogo</h1>
+      <p>Administra productos, precios y stock global</p>
+    </div>
+    <button class="btn-nuevo" (click)="abrirModal()">
+      <span>+ Nuevo Producto</span>
+    </button>
+  </div>
+
+  <div class="productos-section">
+    <div class="section-header">
+      <span>📦 Productos Registrados ({{ productos.length }})</span>
+    </div>
+
+    <div *ngIf="cargando" class="loading">Cargando productos...</div>
+
+    <div *ngIf="!cargando && productos.length === 0" class="empty-state">
+      <p>No hay productos registrados. Crea uno nuevo para comenzar.</p>
+    </div>
+
+    <div *ngIf="!cargando && productos.length > 0" class="productos-grid">
+      <app-producto-card
+        *ngFor="let producto of productos"
+        [producto]="producto"
+        (editar)="editarProducto($event)"
+        (eliminar)="eliminarProducto($event)"
+      ></app-producto-card>
+    </div>
+  </div>
+
+  <!-- Modal Nuevo Producto -->
+  <div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editando ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
+        <button class="btn-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <form class="modal-form">
+        <div class="form-group">
+          <label>SKU del Producto *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="nuevoProducto.sku"
+            name="sku"
+            placeholder="Ej: COCA-500ML"
+          >
+          <small>Código único para identificar el producto</small>
+        </div>
+
+        <div class="form-group">
+          <label>Nombre del Producto *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="nuevoProducto.nombre"
+            name="nombre"
+            placeholder="Ej: Coca Cola 500ml"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea 
+            [(ngModel)]="nuevoProducto.descripcion"
+            name="descripcion"
+            placeholder="Descripción del producto"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>URL de la Imagen</label>
+          <div class="input-with-icon">
+            <input 
+              type="text" 
+              [(ngModel)]="nuevoProducto.url_imagen"
+              name="url_imagen"
+              placeholder="https://ejemplo.com/imagen.jpg"
+            >
+            <button type="button" class="btn-upload">📤</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Precio Unitario (Bs.) *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="nuevoProducto.precio_unidad"
+            name="precio_unidad"
+            placeholder="0.00"
+            step="0.01"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Precio por Caja (Bs.) *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="nuevoProducto.precio_caja"
+            name="precio_caja"
+            placeholder="0.00"
+            step="0.01"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Unidades por Caja *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="nuevoProducto.unidades_por_caja"
+            name="unidades_por_caja"
+            placeholder="1"
+            step="1"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Stock Almacén Central</label>
+          <input 
+            type="number" 
+            [(ngModel)]="nuevoProducto.stock_almacen_central"
+            name="stock_almacen_central"
+            placeholder="0"
+            step="1"
+          >
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-cancel" (click)="cerrarModal()">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-save" (click)="guardarProducto()" [disabled]="cargando">
+            {{ cargando ? 'Guardando...' : (editando ? 'Actualizar' : 'Crear Producto') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+			</div>
+		</main>
+	</div>
+</div>
