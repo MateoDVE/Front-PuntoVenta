@@ -121,38 +121,45 @@ export class Catalogo implements OnInit {
     }
   }
 
-  subirImagen(): void {
-    if (!this.archivoSeleccionado) return;
+  subirImagen(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.archivoSeleccionado) {
+        resolve();
+        return;
+      }
 
-    try {
-      this.cargandoImagen = true;
+      try {
+        this.cargandoImagen = true;
 
-      // Crear FormData para enviar el archivo
-      const formData = new FormData();
-      formData.append('image', this.archivoSeleccionado);
+        // Crear FormData para enviar el archivo
+        const formData = new FormData();
+        formData.append('image', this.archivoSeleccionado);
 
-      // Usar ruta con ID si estamos editando, sin ID si es nuevo producto
-      const endpoint = this.productoEditandoId 
-        ? `productos/upload/${this.productoEditandoId}` 
-        : 'productos/upload';
+        // Usar ruta con ID si estamos editando, sin ID si es nuevo producto
+        const endpoint = this.productoEditandoId 
+          ? `productos/upload/${this.productoEditandoId}` 
+          : 'productos/upload';
 
-      // Usar HttpClient para enviar
-      this.apiService.uploadProductImage(endpoint, formData).subscribe({
-        next: (response: any) => {
-          this.nuevoProducto.url_imagen = response.imageUrl;
-          this.cargandoImagen = false;
-          alert('Imagen subida correctamente');
-        },
-        error: (error) => {
-          this.cargandoImagen = false;
-          const errorMsg = error?.error?.message || 'Error desconocido';
-          alert(`Error al subir imagen: ${errorMsg}`);
-        },
-      });
-    } catch (error) {
-      this.cargandoImagen = false;
-      alert(`Error: ${error instanceof Error ? error.message : 'Error al procesar'}`);
-    }
+        // Usar HttpClient para enviar
+        this.apiService.uploadProductImage(endpoint, formData).subscribe({
+          next: (response: any) => {
+            this.nuevoProducto.url_imagen = response.imageUrl;
+            this.cargandoImagen = false;
+            this.archivoSeleccionado = undefined;
+            this.imagenPreview = undefined;
+            resolve();
+          },
+          error: (error) => {
+            this.cargandoImagen = false;
+            const errorMsg = error?.error?.message || 'Error desconocido';
+            reject(new Error(`Error al subir imagen: ${errorMsg}`));
+          },
+        });
+      } catch (error) {
+        this.cargandoImagen = false;
+        reject(error);
+      }
+    });
   }
 
   limpiarImagen(): void {
@@ -176,46 +183,62 @@ export class Catalogo implements OnInit {
     }
   }
 
-  guardarProducto(): void {
+  async guardarProducto(): Promise<void> {
     if (!this.validarFormulario()) {
       return;
     }
 
-    this.cargando = true;
+    try {
+      this.cargando = true;
 
-    if (this.editando && this.productoEditandoId) {
-      // Actualizar producto existente
-      this.apiService.updateProducto(this.productoEditandoId.toString(), this.nuevoProducto).subscribe({
-        next: (response) => {
-          const index = this.productos.findIndex(p => p.id_producto === this.productoEditandoId);
-          if (index !== -1) {
-            this.productos[index] = response;
-          }
-          this.cerrarModal();
+      // Si hay imagen seleccionada sin subir, subirla primero
+      if (this.archivoSeleccionado && this.imagenPreview) {
+        try {
+          await this.subirImagen();
+        } catch (error) {
+          alert(`Error al subir imagen: ${error instanceof Error ? error.message : 'Error desconocido'}`);
           this.cargando = false;
-          alert('Producto actualizado correctamente');
-        },
-        error: (error) => {
-          console.error('Error al actualizar producto:', error);
-          alert('Error al actualizar el producto');
-          this.cargando = false;
-        },
-      });
-    } else {
-      // Crear nuevo producto
-      this.apiService.createProducto(this.nuevoProducto).subscribe({
-        next: (response) => {
-          this.productos.push(response);
-          this.cerrarModal();
-          this.cargando = false;
-          alert('Producto creado correctamente');
-        },
-        error: (error) => {
-          console.error('Error al crear producto:', error);
-          alert('Error al crear el producto');
-          this.cargando = false;
-        },
-      });
+          return;
+        }
+      }
+
+      if (this.editando && this.productoEditandoId) {
+        // Actualizar producto existente
+        this.apiService.updateProducto(this.productoEditandoId.toString(), this.nuevoProducto).subscribe({
+          next: (response) => {
+            const index = this.productos.findIndex(p => p.id_producto === this.productoEditandoId);
+            if (index !== -1) {
+              this.productos[index] = response;
+            }
+            this.cerrarModal();
+            this.cargando = false;
+            alert('Producto actualizado correctamente');
+          },
+          error: (error) => {
+            console.error('Error al actualizar producto:', error);
+            alert('Error al actualizar el producto');
+            this.cargando = false;
+          },
+        });
+      } else {
+        // Crear nuevo producto
+        this.apiService.createProducto(this.nuevoProducto).subscribe({
+          next: (response) => {
+            this.productos.push(response);
+            this.cerrarModal();
+            this.cargando = false;
+            alert('Producto creado correctamente');
+          },
+          error: (error) => {
+            console.error('Error al crear producto:', error);
+            alert('Error al crear el producto');
+            this.cargando = false;
+          },
+        });
+      }
+    } catch (error) {
+      this.cargando = false;
+      alert(`Error inesperado: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   }
 

@@ -116,13 +116,16 @@
           <!-- Extensión de información si hay archivo seleccionado -->
           <div *ngIf="imagenPreview" class="image-info">
             <p>Archivo seleccionado: {{ archivoSeleccionado?.name }}</p>
+            <p style="font-size: 0.85rem; color: #666; margin: 0.5rem 0 0 0;">
+              ℹ️ La imagen se subirá automáticamente al guardar el producto
+            </p>
             <button 
               type="button" 
               class="btn-upload-image"
               (click)="subirImagen()"
               [disabled]="cargandoImagen"
             >
-              {{ cargandoImagen ? '⏳ Subiendo...' : '⬆️ Subir Imagen' }}
+              {{ cargandoImagen ? '⏳ Subiendo...' : '⬆️ Subir Imagen (Opcional)' }}
             </button>
           </div>
         </div>
@@ -172,11 +175,11 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-cancel" (click)="cerrarModal()">
+          <button type="button" class="btn btn-cancel" (click)="cerrarModal()" [disabled]="cargando">
             Cancelar
           </button>
-          <button type="button" class="btn btn-save" (click)="guardarProducto()" [disabled]="cargando">
-            {{ cargando ? 'Guardando...' : (editando ? 'Actualizar' : 'Crear Producto') }}
+          <button type="button" class="btn btn-save" (click)="guardarProducto()" [disabled]="cargando || cargandoImagen">
+            {{ cargandoImagen ? '⏳ Subiendo imagen...' : (cargando ? 'Guardando producto...' : (editando ? 'Actualizar' : 'Crear Producto')) }}
           </button>
         </div>
       </form>
