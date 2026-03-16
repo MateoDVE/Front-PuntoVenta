@@ -43,7 +43,7 @@ export class AuthService {
     return from(this.supabaseService.signOut()).pipe(
       tap(() => {
         localStorage.removeItem('access_token');
-        this.router.navigate(['/iniciarsesion']);
+        this.router.navigate(['/login']);
       })
     );
   }
