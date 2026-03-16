@@ -1,1 +1,93 @@
-<p>gestion-vendedores works!</p>
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <h1>Gestión de Vendedores</h1>
+      <p>Administra vendedores y sus vehículos de transporte</p>
+    </div>
+
+    <button class="btn-primary">+ Nuevo Vendedor</button>
+  </header>
+
+  <section class="stats">
+
+    <article class="stat">
+      <span class="value">{{ totalVendedores }}</span>
+      <span class="label">Total Vendedores</span>
+    </article>
+
+    <article class="stat">
+      <span class="value">{{ enRuta }}</span>
+      <span class="label">En Ruta</span>
+    </article>
+
+    <article class="stat">
+      <span class="value">{{ ventasTotales }}</span>
+      <span class="label">Ventas Totales</span>
+    </article>
+
+    <article class="stat">
+      <span class="value">{{ ingresos }}</span>
+      <span class="label">Ingresos (Bs.)</span>
+    </article>
+
+  </section>
+
+  <section class="table-section">
+
+    <header>
+      <h3>Vendedores Registrados ({{ vendedores.length }})</h3>
+    </header>
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Vendedor</th>
+          <th>Contacto</th>
+          <th>Transporte</th>
+          <th>Estado</th>
+          <th>Stock</th>
+          <th>Ventas Hoy</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let v of vendedores">
+
+          <td>
+            <strong>{{ v.nombre }}</strong>
+            <small>CI: {{ v.ci }}</small>
+          </td>
+
+          <td>{{ v.telefono }}</td>
+
+          <td>{{ v.transporte }}</td>
+
+          <td>
+            <span class="estado">{{ v.estado }}</span>
+          </td>
+
+          <td class="stock">{{ v.stock }} unidades</td>
+
+          <td>
+            {{ v.ventas }} ventas
+            <small>Bs. {{ v.ingreso }}</small>
+          </td>
+
+          <td class="acciones">
+            <button (click)="editar(v)">✏️</button>
+            <button (click)="eliminar(v)">🗑</button>
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </section>
+
+</section>
