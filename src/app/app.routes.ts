@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Iniciarsesion } from './Pages/iniciarsesion/iniciarsesion';
-import { DashboboardAdmin } from './Pages/dashboboard-admin/dashboboard-admin';
-import { GestionVendedoresComponent } from './Pages/gestion-vendedores/gestion-vendedores';
+import { DashboboardAdmin } from './Pages/admin/dashboboard-admin/dashboboard-admin';
+import { GestionVendedoresComponent } from './Pages/admin/gestion-vendedores/gestion-vendedores';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [

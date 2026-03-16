@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { AdminNavbar } from '../../components/admin-navbar/admin-navbar';
+import { AuthService } from '../../../services/auth.service';
+import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
 
 interface DashboardMetric {
   title: string;

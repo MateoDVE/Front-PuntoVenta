@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AdminNavbar } from '../../components/admin-navbar/admin-navbar';
-import { AuthService } from '../../services/auth.service';
+import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
+import { AuthService } from '../../../services/auth.service';
 
 interface Vendedor {
   nombre: string;
