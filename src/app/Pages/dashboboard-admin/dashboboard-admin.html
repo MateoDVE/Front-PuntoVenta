@@ -1,0 +1,77 @@
+<div class="dashboard-shell">
+	<div class="dashboard-layout">
+		<app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
+
+		<main class="dashboard-main">
+			<header class="main-header">
+				<h2>Dashboard Administrativo</h2>
+				<p>Resumen general del sistema de distribucion</p>
+			</header>
+
+			<section class="metrics" aria-label="Resumen de indicadores">
+				<article class="metric-card" *ngFor="let metric of metrics">
+					<h3>{{ metric.title }}</h3>
+					<p class="metric-value">{{ metric.value }}</p>
+					<small>{{ metric.detail }}</small>
+				</article>
+			</section>
+
+			<section class="panels-grid">
+				<section class="panel" aria-labelledby="stock-title">
+					<header>
+						<h3 id="stock-title">Stock Global por Producto</h3>
+					</header>
+					<ul class="stock-list">
+						<li *ngFor="let product of stocks">
+							<article>
+								<header>
+									<h4>{{ product.nombre }}</h4>
+									<p>{{ product.categoria }}</p>
+								</header>
+								<div class="stock-values">
+									<strong>{{ product.unidades }} unidades</strong>
+									<small>{{ product.precio }}</small>
+								</div>
+							</article>
+						</li>
+					</ul>
+				</section>
+
+				<aside class="panel" aria-labelledby="seller-title">
+					<header>
+						<h3 id="seller-title">Estado de Vendedores</h3>
+					</header>
+					<div class="seller-list">
+						<article class="seller-card" *ngFor="let seller of sellers">
+							<header>
+								<h4>{{ seller.nombre }}</h4>
+								<p>{{ seller.vehiculo }}</p>
+							</header>
+							<dl>
+								<div>
+									<dt>Stock</dt>
+									<dd>{{ seller.stock }} items</dd>
+								</div>
+								<div>
+									<dt>Ventas</dt>
+									<dd>{{ seller.ventas }}</dd>
+								</div>
+								<div>
+									<dt>Total</dt>
+									<dd>{{ seller.total }}</dd>
+								</div>
+							</dl>
+						</article>
+					</div>
+				</aside>
+			</section>
+
+			<section class="panel alerts" aria-labelledby="alerts-title">
+				<header>
+					<h3 id="alerts-title">Alertas de Stock Bajo</h3>
+				</header>
+				<p>No hay alertas de stock bajo</p>
+			</section>
+		</main>
+	</div>
+</div>
