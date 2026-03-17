@@ -4,94 +4,94 @@
 		<app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
 
 		<main class="dashboard-main">
-		  <header class="page-header">
-		    <div>
-		      <h1>Gestión de Vendedores</h1>
-		      <p>Administra vendedores y sus vehículos de transporte</p>
-		    </div>
+		  <section class="vendedores" aria-labelledby="vendedores-title">
+		    <header class="page-header">
+		      <div class="page-header__copy">
+		        <h1 id="vendedores-title">Gestión de Vendedores</h1>
+		        <p>Administra vendedores y sus vehículos de transporte</p>
+		      </div>
 
-		    <button class="btn-primary">+ Nuevo Vendedor</button>
-		  </header>
-
-		  <section class="stats">
-
-		    <article class="stat">
-		      <span class="value">{{ totalVendedores }}</span>
-		      <span class="label">Total Vendedores</span>
-		    </article>
-
-		    <article class="stat">
-		      <span class="value">{{ enRuta }}</span>
-		      <span class="label">En Ruta</span>
-		    </article>
-
-		    <article class="stat">
-		      <span class="value">{{ ventasTotales }}</span>
-		      <span class="label">Ventas Totales</span>
-		    </article>
-
-		    <article class="stat">
-		      <span class="value">{{ ingresos }}</span>
-		      <span class="label">Ingresos (Bs.)</span>
-		    </article>
-
-		  </section>
-
-		  <section class="table-section">
-
-		    <header>
-		      <h3>Vendedores Registrados ({{ vendedores.length }})</h3>
+		      <button type="button" class="btn btn-primary" (click)="abrirModalNuevo()">Nuevo vendedor</button>
 		    </header>
 
-		    <table>
+		    <section class="stats" aria-label="Resumen de indicadores">
+		      <article class="stat">
+		        <p class="stat__value">{{ totalVendedores }}</p>
+		        <p class="stat__label">Total vendedores</p>
+		      </article>
 
-		      <thead>
-		        <tr>
-		          <th>Vendedor</th>
-		          <th>Contacto</th>
-		          <th>Transporte</th>
-		          <th>Estado</th>
-		          <th>Stock</th>
-		          <th>Ventas Hoy</th>
-		          <th>Acciones</th>
-		        </tr>
-		      </thead>
+		      <article class="stat">
+		        <p class="stat__value">{{ enRuta }}</p>
+		        <p class="stat__label">En ruta</p>
+		      </article>
 
-		      <tbody>
+		      <article class="stat">
+		        <p class="stat__value">{{ ventasTotales }}</p>
+		        <p class="stat__label">Ventas totales</p>
+		      </article>
 
-		        <tr *ngFor="let v of vendedores">
+		      <article class="stat">
+		        <p class="stat__value">{{ ingresos }}</p>
+		        <p class="stat__label">Ingresos (Bs.)</p>
+		      </article>
+		    </section>
 
-		          <td>
-		            <strong>{{ v.nombre }}</strong>
-		            <small>CI: {{ v.ci }}</small>
-		          </td>
+		    <div *ngIf="cargando" class="loading" role="status" aria-live="polite">Cargando vendedores...</div>
 
-		          <td>{{ v.telefono }}</td>
+		    <p *ngIf="!cargando && errorMensaje" class="page-error" role="alert">{{ errorMensaje }}</p>
 
-		          <td>{{ v.transporte }}</td>
+		    <app-vendedores-registrados
+		      *ngIf="!cargando"
+		      [vendedores]="vendedores"
+		      (editar)="editar($event)"
+		      (eliminar)="eliminar($event)"
+		    ></app-vendedores-registrados>
 
-		          <td>
-		            <span class="estado">{{ v.estado }}</span>
-		          </td>
+		    <div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
+		      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-vendedor-title" (click)="$event.stopPropagation()">
+		        <header class="modal__header">
+		          <h2 id="modal-vendedor-title">{{ editando ? 'Editar vendedor' : 'Nuevo vendedor' }}</h2>
+		          <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar formulario">x</button>
+		        </header>
 
-		          <td class="stock">{{ v.stock }} unidades</td>
+		        <form class="modal__form">
+		          <fieldset class="form-card form-card--info">
+		            <legend>Información personal</legend>
 
-		          <td>
-		            {{ v.ventas }} ventas
-		            <small>Bs. {{ v.ingreso }}</small>
-		          </td>
+		            <label for="nombre">Nombre completo *</label>
+		            <input id="nombre" type="text" name="nombre" [(ngModel)]="formulario.nombre" placeholder="Ej: Juan Pérez" autocomplete="off">
+		          </fieldset>
 
-		          <td class="acciones">
-		            <button (click)="editar(v)">✏️</button>
-		            <button (click)="eliminar(v)">🗑</button>
-		          </td>
+		          <fieldset class="form-card form-card--access">
+		            <legend>Credenciales de acceso</legend>
 
-		        </tr>
+		            <label for="email">Correo electrónico *</label>
+		            <input id="email" type="email" name="email" [(ngModel)]="formulario.email" placeholder="Ej: jperez@empresa.com" autocomplete="off">
+		            <small>El vendedor usará este email para iniciar sesión</small>
 
-		      </tbody>
+		            <label for="password">{{ editando ? 'Contraseña (opcional)' : 'Contraseña *' }}</label>
+		            <input id="password" type="password" name="password" [(ngModel)]="formulario.password" [placeholder]="editando ? 'Dejar vacío para no cambiar' : 'Mínimo 4 caracteres'" autocomplete="new-password">
 
-		    </table>
+		            <ng-container *ngIf="editando">
+		              <label for="estado">Estado</label>
+		              <select id="estado" name="estado" [(ngModel)]="formulario.estado">
+		                <option value="ACTIVO">ACTIVO</option>
+		                <option value="INACTIVO">INACTIVO</option>
+		              </select>
+		            </ng-container>
+		          </fieldset>
 
+		          <p *ngIf="errorMensaje" class="form-error" role="alert">{{ errorMensaje }}</p>
+
+		          <footer class="modal__actions">
+		            <button type="button" class="btn btn-secondary" (click)="cerrarModal()" [disabled]="guardando">Cancelar</button>
+		            <button type="button" class="btn btn-primary" (click)="guardarVendedor()" [disabled]="guardando">
+		              {{ guardando ? 'Guardando...' : (editando ? 'Actualizar vendedor' : 'Crear vendedor') }}
+		            </button>
+		          </footer>
+		        </form>
+		      </section>
+		    </div>
 		  </section>
 		</main>
 	</div>

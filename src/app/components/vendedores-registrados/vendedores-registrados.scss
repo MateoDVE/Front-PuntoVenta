@@ -1,0 +1,161 @@
+:host {
+  --surface: #ffffff;
+  --surface-subtle: #f3f4f6;
+  --text-secondary: #525f72;
+  --border: #dbe3ef;
+  --border-soft: #eeeeee;
+  --accent: #2563eb;
+  --danger: #ef4444;
+  display: block;
+}
+
+.table-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+}
+
+.table-header__counter {
+  margin: 0;
+  background: #e0e7ff;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-weight: 700;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: collapse;
+}
+
+thead {
+  background: var(--surface-subtle);
+}
+
+th,
+td {
+  text-align: left;
+  padding: 12px;
+  vertical-align: top;
+}
+
+tbody tr {
+  border-top: 1px solid var(--border-soft);
+}
+
+td p,
+td small {
+  margin: 0;
+}
+
+td small {
+  display: block;
+  color: var(--text-secondary);
+}
+
+.seller-name {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.stock {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.estado::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.acciones {
+  white-space: nowrap;
+}
+
+.btn-icon {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #374151;
+  border-radius: 6px;
+  padding: 0.3rem 0.55rem;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.btn-icon--danger {
+  color: var(--danger);
+}
+
+.badge-rol {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.estado--activo {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.estado--inactivo {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.estado--ruta {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.estado--neutral {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -1,13 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, from, tap } from 'rxjs';
-import { SupabaseService } from './supabase.service';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
   session: any;
   user: any;
+}
+
+export interface UserProfile {
+  id_usuario: string;
+  nombre: string;
+  email: string;
+  rol: string;
+  estado: string;
+  created_at: string;
 }
 
 @Injectable({
@@ -17,19 +25,13 @@ export class AuthService {
   private apiUrl = environment.apiUrl;
 
   constructor(
-    private supabaseService: SupabaseService,
     private http: HttpClient,
     private router: Router
   ) {}
 
-  // Registro
-  signUp(email: string, password: string, nombre: string, rol: string = 'VENDEDOR'): Observable<any> {
-    return from(this.supabaseService.signUp(email, password, nombre, rol));
-  }
-
   // Inicio de sesión
-  signIn(email: string, password: string): Observable<any> {
-    return from(this.supabaseService.signIn(email, password)).pipe(
+  signIn(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/signin`, { email, password }).pipe(
       tap(response => {
         if (response.session) {
           localStorage.setItem('access_token', response.session.access_token);
@@ -40,7 +42,7 @@ export class AuthService {
 
   // Cerrar sesión
   signOut(): Observable<void> {
-    return from(this.supabaseService.signOut()).pipe(
+    return this.http.post<void>(`${this.apiUrl}/auth/signout`, {}).pipe(
       tap(() => {
         localStorage.removeItem('access_token');
         this.router.navigate(['/login']);
@@ -48,18 +50,15 @@ export class AuthService {
     );
   }
 
-  // Verificar si está autenticado
   isAuthenticated(): boolean {
     return !!localStorage.getItem('access_token');
   }
 
-  // Obtener token
   getToken(): string | null {
     return localStorage.getItem('access_token');
   }
 
-  // Obtener usuario actual
-  getCurrentUser(): Observable<any> {
-    return this.supabaseService.currentUser;
+  getCurrentUser(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/auth/me`);
   }
 }
