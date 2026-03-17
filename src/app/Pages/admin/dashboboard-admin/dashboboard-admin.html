@@ -8,70 +8,101 @@
 				<p>Resumen general del sistema de distribucion</p>
 			</header>
 
-			<section class="metrics" aria-label="Resumen de indicadores">
-				<article class="metric-card" *ngFor="let metric of metrics">
-					<h3>{{ metric.title }}</h3>
-					<p class="metric-value">{{ metric.value }}</p>
-					<small>{{ metric.detail }}</small>
-				</article>
-			</section>
+			<!-- Error Message -->
+			<div *ngIf="error" class="error-message" role="alert">
+				<strong>Error:</strong> {{ error }}
+			</div>
 
-			<section class="panels-grid">
-				<section class="panel" aria-labelledby="stock-title">
-					<header>
-						<h3 id="stock-title">Stock Global por Producto</h3>
-					</header>
-					<ul class="stock-list">
-						<li *ngFor="let product of stocks">
-							<article>
+			<!-- Loading State -->
+			<div *ngIf="cargando" class="loading-message" role="status">
+				<p>Cargando datos...</p>
+			</div>
+
+			<!-- Content When Loaded -->
+			<ng-container *ngIf="!cargando">
+				<section class="metrics" aria-label="Resumen de indicadores">
+					<article class="metric-card" *ngFor="let metric of metrics">
+						<h3>{{ metric.title }}</h3>
+						<p class="metric-value">{{ metric.value }}</p>
+						<small>{{ metric.detail }}</small>
+					</article>
+				</section>
+
+				<section class="panels-grid">
+					<!-- Productos Panel -->
+					<section class="panel" aria-labelledby="stock-title">
+						<header>
+							<h3 id="stock-title">Stock Global por Producto</h3>
+						</header>
+						<div *ngIf="productos.length === 0" class="empty-state">
+							<p>No hay productos en el catálogo</p>
+						</div>
+						<ul class="stock-list" *ngIf="productos.length > 0">
+							<li *ngFor="let product of productos">
+								<article>
+									<header>
+										<h4>{{ product.nombre }}</h4>
+										<p>{{ product.descripcion || 'Sin descripción' }}</p>
+									</header>
+									<div class="stock-values">
+										<strong>{{ product.stock_almacen_central }} unidades</strong>
+										<small>Bs. {{ product.precio_unidad.toFixed(2) }}</small>
+									</div>
+								</article>
+							</li>
+						</ul>
+					</section>
+
+					<!-- Vendedores Panel -->
+					<aside class="panel" aria-labelledby="seller-title">
+						<header>
+							<h3 id="seller-title">Vendedores Registrados</h3>
+						</header>
+						<div *ngIf="vendedores.length === 0" class="empty-state">
+							<p>No hay vendedores registrados</p>
+						</div>
+						<div class="seller-list" *ngIf="vendedores.length > 0">
+							<article class="seller-card" *ngFor="let vendedor of vendedores">
 								<header>
-									<h4>{{ product.nombre }}</h4>
-									<p>{{ product.categoria }}</p>
+									<h4>{{ vendedor.nombre }}</h4>
+									<p>{{ vendedor.email }}</p>
 								</header>
-								<div class="stock-values">
-									<strong>{{ product.unidades }} unidades</strong>
-									<small>{{ product.precio }}</small>
-								</div>
+								<dl>
+									<div>
+										<dt>Estado</dt>
+										<dd>
+											<span
+												class="status-badge"
+												[ngClass]="{ active: vendedor.estado === 'activo', inactive: vendedor.estado !== 'activo' }"
+											>
+												{{ vendedor.estado || 'desconocido' }}
+											</span>
+										</dd>
+									</div>
+									<div>
+										<dt>Registrado</dt>
+										<dd>{{ vendedor.created_at | date : 'short' }}</dd>
+									</div>
+								</dl>
 							</article>
+						</div>
+					</aside>
+				</section>
+
+				<section class="panel alerts" aria-labelledby="alerts-title">
+					<header>
+						<h3 id="alerts-title">Alertas de Stock Bajo</h3>
+					</header>
+					<div *ngIf="productosConStockBajo.length === 0" class="empty-state">
+						<p>✓ No hay alertas de stock bajo</p>
+					</div>
+					<ul *ngIf="productosConStockBajo.length > 0" class="alerts-list">
+						<li *ngFor="let product of productosConStockBajo">
+							<strong>{{ product.nombre }}</strong> - Stock: {{ product.stock_almacen_central }} unidades
 						</li>
 					</ul>
 				</section>
-
-				<aside class="panel" aria-labelledby="seller-title">
-					<header>
-						<h3 id="seller-title">Estado de Vendedores</h3>
-					</header>
-					<div class="seller-list">
-						<article class="seller-card" *ngFor="let seller of sellers">
-							<header>
-								<h4>{{ seller.nombre }}</h4>
-								<p>{{ seller.vehiculo }}</p>
-							</header>
-							<dl>
-								<div>
-									<dt>Stock</dt>
-									<dd>{{ seller.stock }} items</dd>
-								</div>
-								<div>
-									<dt>Ventas</dt>
-									<dd>{{ seller.ventas }}</dd>
-								</div>
-								<div>
-									<dt>Total</dt>
-									<dd>{{ seller.total }}</dd>
-								</div>
-							</dl>
-						</article>
-					</div>
-				</aside>
-			</section>
-
-			<section class="panel alerts" aria-labelledby="alerts-title">
-				<header>
-					<h3 id="alerts-title">Alertas de Stock Bajo</h3>
-				</header>
-				<p>No hay alertas de stock bajo</p>
-			</section>
+			</ng-container>
 		</main>
 	</div>
 </div>

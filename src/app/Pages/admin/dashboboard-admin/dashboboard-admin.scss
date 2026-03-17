@@ -43,6 +43,46 @@
 	}
 }
 
+// Loading and Error States
+.loading-message {
+	background: #f0f4ff;
+	border: 1px solid #8b95d4;
+	border-radius: 12px;
+	padding: 16px;
+	margin-bottom: 16px;
+	color: #3730a3;
+
+	p {
+		margin: 0;
+		font-weight: 500;
+	}
+}
+
+.error-message {
+	background: #fee2e2;
+	border: 1px solid #fca5a5;
+	border-radius: 12px;
+	padding: 16px;
+	margin-bottom: 16px;
+	color: #7f1d1d;
+
+	strong {
+		font-weight: 600;
+	}
+}
+
+// Empty State
+.empty-state {
+	text-align: center;
+	padding: 24px 16px;
+	color: #98a3b3;
+
+	p {
+		margin: 0;
+		font-size: 0.95rem;
+	}
+}
+
 .metrics {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(140px, 1fr));
@@ -60,12 +100,15 @@
 		margin: 0;
 		color: #63738a;
 		font-size: 0.9rem;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
 	}
 
 	.metric-value {
 		margin: 10px 0 4px;
-		font-size: 1.7rem;
+		font-size: 1.8rem;
 		font-weight: 700;
+		color: #1f2937;
 	}
 
 	small {
@@ -85,9 +128,14 @@
 	border-radius: 12px;
 	padding: 16px;
 
+	header {
+		margin-bottom: 14px;
+	}
+
 	h3 {
 		margin: 0;
 		font-size: 1.3rem;
+		color: #1f2937;
 	}
 }
 
@@ -111,6 +159,7 @@
 	h4 {
 		margin: 0;
 		font-size: 1.2rem;
+		color: #1f2937;
 	}
 
 	p {
@@ -125,11 +174,16 @@
 
 	strong {
 		display: block;
-		font-size: 1.2rem;
+		font-size: 1.1rem;
+		color: #065f46;
+		font-weight: 700;
 	}
 
 	small {
 		color: #77849b;
+		display: block;
+		font-size: 0.85rem;
+		margin-top: 4px;
 	}
 }
 
@@ -143,32 +197,57 @@
 	border: 1px solid #e2e8f4;
 	border-radius: 10px;
 	padding: 14px;
+	background: #fafbfc;
 
 	h4 {
 		margin: 0;
-		font-size: 1.2rem;
+		font-size: 1.1rem;
+		color: #1f2937;
 	}
 
 	p {
 		margin: 4px 0 0;
 		color: #7d8ca4;
+		font-size: 0.9rem;
 	}
 
 	dl {
 		margin: 12px 0 0;
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 12px;
 	}
 
 	dt {
 		color: #7d8ca4;
-		font-size: 0.88rem;
+		font-size: 0.85rem;
+		font-weight: 500;
 	}
 
 	dd {
 		margin: 4px 0 0;
-		font-weight: 700;
+		font-weight: 600;
+		color: #374151;
+	}
+}
+
+// Status Badge
+.status-badge {
+	display: inline-block;
+	padding: 2px 12px;
+	border-radius: 20px;
+	font-size: 0.8rem;
+	font-weight: 600;
+	text-transform: capitalize;
+
+	&.active {
+		background: #d1fae5;
+		color: #065f46;
+	}
+
+	&.inactive {
+		background: #fee2e2;
+		color: #7f1d1d;
 	}
 }
 
@@ -177,12 +256,28 @@
 
 	h3 {
 		color: #dc2626;
+		margin: 0;
 	}
 
-	p {
+	.alerts-list {
+		list-style: none;
+		padding: 0;
 		margin: 12px 0 0;
-		color: #75829a;
-		text-align: center;
+
+		li {
+			padding: 12px;
+			margin-bottom: 8px;
+			background: #fef2f2;
+			border-left: 4px solid #dc2626;
+			border-radius: 4px;
+			font-size: 0.95rem;
+			color: #7f1d1d;
+
+			strong {
+				color: #dc2626;
+				font-weight: 600;
+			}
+		}
 	}
 }
 
@@ -203,5 +298,11 @@
 
 	.metrics {
 		grid-template-columns: 1fr;
+	}
+
+	.seller-card {
+		dl {
+			grid-template-columns: 1fr;
+		}
 	}
 }
