@@ -13,6 +13,28 @@ export interface Usuario {
   created_at: string;
 }
 
+export interface VendedorBackend {
+  id_usuario: string;
+  nombre: string;
+  email: string;
+  rol: string;
+  estado: string;
+  created_at: string;
+}
+
+export interface CreateVendedorPayload {
+  nombre: string;
+  email: string;
+  password: string;
+}
+
+export interface UpdateVendedorPayload {
+  nombre?: string;
+  email?: string;
+  password?: string;
+  estado?: string;
+}
+
 export interface Producto {
   id_producto?: number;
   sku: string;
@@ -44,6 +66,23 @@ export class ApiService {
   // ==================== USUARIOS ====================
   getMyProfile(): Observable<Usuario> {
     return this.http.get<Usuario>(`${this.apiUrl}/auth/me`);
+  }
+
+  // ==================== VENDEDORES ====================
+  getVendedores(): Observable<VendedorBackend[]> {
+    return this.http.get<VendedorBackend[]>(`${this.apiUrl}/vendedores`);
+  }
+
+  createVendedor(payload: CreateVendedorPayload): Observable<VendedorBackend[]> {
+    return this.http.post<VendedorBackend[]>(`${this.apiUrl}/vendedores`, payload);
+  }
+
+  updateVendedor(id: string, payload: UpdateVendedorPayload): Observable<VendedorBackend> {
+    return this.http.put<VendedorBackend>(`${this.apiUrl}/vendedores/${id}`, payload);
+  }
+
+  deleteVendedor(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/vendedores/${id}`);
   }
 
   // ==================== PRODUCTOS ====================
