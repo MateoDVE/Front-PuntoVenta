@@ -39,7 +39,7 @@ export class Iniciarsesion {
           console.log('Inicio de sesión exitoso', response);
           this.loading = false;
           // Redirigir a la página principal o dashboard
-          this.router.navigate(['/']);
+          this.router.navigate(['/admin/dashboard']);
         },
         error: (error) => {
           console.error('Error al iniciar sesión', error);

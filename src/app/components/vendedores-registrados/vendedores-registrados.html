@@ -1,0 +1,56 @@
+<section class="table-section" aria-labelledby="tabla-vendedores-title">
+  <header class="table-header">
+    <h2 id="tabla-vendedores-title">Vendedores registrados</h2>
+    <p class="table-header__counter">{{ vendedores.length }}</p>
+  </header>
+
+  <div class="table-wrapper">
+    <table>
+      <caption class="sr-only">Listado de vendedores registrados</caption>
+      <thead>
+        <tr>
+          <th scope="col">Vendedor</th>
+          <th scope="col">Email</th>
+          <th scope="col">Rol</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Registrado</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let v of vendedores">
+          <td>
+            <p class="seller-name">{{ v.nombre }}</p>
+            <small>{{ v.email }}</small>
+          </td>
+
+          <td>{{ v.email }}</td>
+
+          <td>
+            <span class="badge-rol">{{ v.rol }}</span>
+          </td>
+
+          <td>
+            <span
+              class="estado"
+              [class.estado--activo]="v.estado.toUpperCase() === 'ACTIVO'"
+              [class.estado--inactivo]="v.estado.toUpperCase() === 'INACTIVO'"
+              [class.estado--ruta]="v.estado.toUpperCase() === 'EN_RUTA'"
+              [class.estado--neutral]="v.estado.toUpperCase() !== 'ACTIVO' && v.estado.toUpperCase() !== 'INACTIVO' && v.estado.toUpperCase() !== 'EN_RUTA'"
+            >
+              {{ v.estado }}
+            </span>
+          </td>
+
+          <td>{{ v.created_at | date: 'dd/MM/yyyy' }}</td>
+
+          <td class="acciones">
+            <button type="button" class="btn-icon" (click)="onEditar(v)" aria-label="Editar vendedor">Editar</button>
+            <button type="button" class="btn-icon btn-icon--danger" (click)="onEliminar(v)" aria-label="Eliminar vendedor">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

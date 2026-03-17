@@ -1,13 +1,28 @@
-# Frontend Punto Venta
+# Sistema de Punto de Venta - Frontend
 
-## Descripción
+## Descripcion
 
-Punto venta es un sistema que busca tecnificar y optimizar la operación de preventa y venta directa en el canal horizontal (tienda a tienda), permitiendo un control estricto sobre el flujo de productos, la ubicación geográfica de los clientes y la eficiencia comercial.
+Aplicacion web para la gestion del punto de venta. Incluye autenticacion, panel administrativo y modulo de catalogo para registrar, editar y visualizar productos con carga de imagenes.
 
-## Tecnologías
+## Tecnologias
 
 **Frontend:**
-- [Angular CLI](https://github.com/angular/angular-cli) version 20.3.9
+- Angular 20
+- TypeScript
+- SCSS
+
+**Librerias principales:**
+- @angular/common
+- @angular/core
+- @angular/forms
+- @angular/router
+- @angular/platform-browser
+- rxjs
+- zone.js
+
+**Base de datos (consumida via API):**
+- Supabase PostgreSQL (a traves del backend NestJS)
+- Supabase Storage (imagenes de productos, gestionado por backend)
 
 ## Equipo
 
@@ -15,62 +30,41 @@ Punto venta es un sistema que busca tecnificar y optimizar la operación de prev
 - Jorge Alejandro Rosales Gutierrez
 - Mateo Daniel Vargas Estrada
 - Andrews Jimmy Zelada Cespedes
-- David Hassan López Olivares
+- David Hassan Lopez Olivares
 
 ## Configuraciones
 
-## Development server
-
-To start a local development server, run:
+1. Instalar dependencias:
 
 ```bash
-ng serve
+npm install
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+2. Verificar ambiente en `src/environments/environment.ts`:
 
-## Code scaffolding
+```ts
+export const environment = {
+	production: false,
+	apiUrl: 'http://localhost:3000'
+};
+```
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+3. Levantar servidor de desarrollo:
 
 ```bash
-ng generate component component-name
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+4. Acceso local:
+
+```text
+http://localhost:4200
+```
+
+5. Scripts utiles:
 
 ```bash
-ng generate --help
+npm run build
+npm run watch
+npm run test
 ```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
