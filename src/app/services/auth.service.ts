@@ -33,8 +33,11 @@ export class AuthService {
   signIn(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/signin`, { email, password }).pipe(
       tap(response => {
-        if (response.session) {
-          localStorage.setItem('access_token', response.session.access_token);
+        const token = response?.session?.access_token || (response as any)?.access_token;
+        if (token) {
+          localStorage.setItem('access_token', token);
+        } else {
+          console.warn('No se encontró token en la respuesta de signin:', response);
         }
       })
     );

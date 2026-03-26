@@ -38,8 +38,11 @@ export class Iniciarsesion {
         next: (response) => {
           console.log('Inicio de sesión exitoso', response);
           this.loading = false;
-          // Redirigir a la página principal o dashboard
-          this.router.navigate(['/admin/dashboard']);
+          if (this.authService.isAuthenticated()) {
+            this.router.navigate(['/admin/dashboard']);
+          } else {
+            this.errorMessage = 'No se pudo obtener el token de sesión, intente nuevamente.';
+          }
         },
         error: (error) => {
           console.error('Error al iniciar sesión', error);
