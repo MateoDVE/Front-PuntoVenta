@@ -1,0 +1,86 @@
+<app-vendedor-navbar></app-vendedor-navbar>
+<section class="contenedor">
+
+  <!-- HEADER -->
+  <header class="header">
+    <h2>¡Bienvenido, Juan Pérez!</h2>
+    <p>Camión A-123</p>
+    <small>Jueves, 26 de Febrero 2026</small>
+  </header>
+
+  <!-- VALIDACIÓN -->
+  <section class="validacion">
+
+    <h3>⚠️ Validación de Carga Pendiente</h3>
+    <p class="sub">Verifica físicamente el stock asignado antes de salir</p>
+
+    <ul class="lista">
+      <li *ngFor="let p of productos">
+        <div>
+          <strong>{{ p.nombre }}</strong>
+          <small>{{ p.categoria }}</small>
+        </div>
+        <div class="cantidad">
+          {{ p.cantidad }}
+          <span>unidades</span>
+        </div>
+      </li>
+    </ul>
+
+    <p class="info">
+      ⚠️ Instrucciones: Revisa físicamente que la carga coincida con lo asignado.
+    </p>
+
+    <button class="btn" (click)="confirmarCarga()">
+      ✔ Confirmar Carga
+    </button>
+
+  </section>
+
+  <!-- RESUMEN -->
+  <section class="resumen">
+    <article>
+      <span>📦</span>
+      <h3>{{ stockActual }}</h3>
+      <p>Stock Actual</p>
+    </article>
+
+    <article>
+      <span>🛒</span>
+      <h3>{{ ventasHoy }}</h3>
+      <p>Ventas Hoy</p>
+    </article>
+
+    <article>
+      <span>💲</span>
+      <h3>{{ ingresos }}</h3>
+      <p>Ingresos (Bs.)</p>
+    </article>
+  </section>
+
+  <!-- STOCK -->
+  <section class="stock">
+    <h3>Stock de Transporte</h3>
+
+    <ul>
+      <li *ngFor="let p of productos">
+        <div>
+          <strong>{{ p.nombre }}</strong>
+          <small>Bs. {{ p.precio }}</small>
+        </div>
+
+        <div class="cantidad">
+          {{ p.cantidad }}
+          <small>Inicial: {{ p.cantidad }}</small>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- VENTAS -->
+  <section class="ventas">
+    <h3>Últimas Ventas</h3>
+    <p class="empty">No hay ventas registradas aún</p>
+  </section>
+
+</section>

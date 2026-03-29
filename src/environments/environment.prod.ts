@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://tu-dominio-produccion.com'
+  apiUrl: 'https://back-puntoventa-1.onrender.com'
 };
