@@ -4,7 +4,8 @@ import { DashboboardAdmin } from './Pages/admin/dashboboard-admin/dashboboard-ad
 import { GestionVendedoresComponent } from './Pages/admin/gestion-vendedores/gestion-vendedores';
 import { authGuard } from './guards/auth.guard';
 import { Catalogo } from './Pages/admin/catalogo/catalogo';
-import { DashboardVendedor } from './Pages/vendedor/dashboard-vendedor/dashboard-vendedor';
+import { DashboardVendedor } from './Pages/vendedor/dashboard-vendedor';
+import { Asignacion } from './Pages/admin/asignacion/asignacion';
 
 export const routes: Routes = [
 
@@ -27,6 +28,13 @@ export const routes: Routes = [
   {
     path: 'admin/catalogo',
     component: Catalogo,
+    canActivate: [authGuard],
+    data: { roles: ['admin', 'administrador'] }
+  },
+  
+  {
+    path: 'admin/asignacion',
+    component: Asignacion,
     canActivate: [authGuard],
     data: { roles: ['admin', 'administrador'] }
   },

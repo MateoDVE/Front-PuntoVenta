@@ -1,21 +1,21 @@
 <nav class="navbar">
-  <a routerLink="/dashboard-vendedor" routerLinkActive="active">
+  <a routerLink="/vendedor/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
     <span class="icon">🏠</span>
     <span>Inicio</span>
   </a>
 
-  <a routerLink="/mapa" routerLinkActive="active">
+  <span class="link-disabled" title="Próximamente">
     <span class="icon">🗺️</span>
     <span>Mapa</span>
-  </a>
+  </span>
 
-  <a routerLink="/venta" routerLinkActive="active">
+  <span class="link-disabled" title="Próximamente">
     <span class="icon">🛒</span>
     <span>Venta</span>
-  </a>
+  </span>
 
-  <a routerLink="/cierre" routerLinkActive="active">
+  <span class="link-disabled" title="Próximamente">
     <span class="icon">📋</span>
     <span>Cierre</span>
-  </a>
+  </span>
 </nav>

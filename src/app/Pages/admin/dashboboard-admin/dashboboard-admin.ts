@@ -18,8 +18,11 @@ interface DashboardMetric {
   styleUrl: './dashboboard-admin.scss',
 })
 export class DashboboardAdmin implements OnInit {
+  private readonly umbralStockBajo = 100;
+
   metrics: DashboardMetric[] = [];
   productos: Producto[] = [];
+  productosConStockBajo: Producto[] = [];
   vendedores: VendedorBackend[] = [];
   
   cargando = true;
@@ -42,6 +45,7 @@ export class DashboboardAdmin implements OnInit {
     Promise.all([
       this.cargarProductos(),
       this.cargarVendedores(),
+      this.cargarProductosStockBajo(),
     ])
       .then(() => {
         this.actualizarMetricas();
@@ -86,6 +90,22 @@ export class DashboboardAdmin implements OnInit {
     });
   }
 
+  cargarProductosStockBajo(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.apiService.getProductosStockBajo(this.umbralStockBajo).subscribe({
+        next: (datos) => {
+          this.productosConStockBajo = datos;
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error al cargar alertas de stock bajo:', err);
+          this.productosConStockBajo = [];
+          reject(err);
+        },
+      });
+    });
+  }
+
   actualizarMetricas(): void {
     const totalStockProductos = this.productos.reduce(
       (sum, p) => sum + (p.stock_almacen_central || 0),
@@ -123,9 +143,5 @@ export class DashboboardAdmin implements OnInit {
 
   onSignOut(): void {
     this.authService.signOut().subscribe();
-  }
-
-  get productosConStockBajo(): Producto[] {
-    return this.productos.filter((p) => (p.stock_almacen_central || 0) < 100);
   }
 }

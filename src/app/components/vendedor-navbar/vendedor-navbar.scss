@@ -22,6 +22,16 @@
     align-items: center;
   }
 
+  .link-disabled {
+    color: #a1a1aa;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.8;
+    cursor: not-allowed;
+  }
+
   .icon {
     font-size: 18px;
   }

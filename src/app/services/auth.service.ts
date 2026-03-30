@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, catchError, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
@@ -58,11 +58,12 @@ export class AuthService {
   // Cerrar sesión
   signOut(): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/auth/signout`, {}).pipe(
+      catchError((error) => {
+        console.warn('Falló /auth/signout, se cerrará sesión localmente:', error);
+        return of(void 0);
+      }),
       tap(() => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem(this.userStorageKey);
-        localStorage.removeItem(this.roleStorageKey);
-        this.router.navigate(['/login']);
+        this.clearLocalSession();
       })
     );
   }
@@ -190,5 +191,12 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  private clearLocalSession(): void {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem(this.userStorageKey);
+    localStorage.removeItem(this.roleStorageKey);
+    this.router.navigate(['/login']);
   }
 }

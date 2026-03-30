@@ -2,6 +2,26 @@
   padding: 16px;
   background: #f5f5f5;
   font-family: Arial, sans-serif;
+  padding-bottom: 92px;
+}
+
+.feedback {
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+  font-size: 0.88rem;
+
+  &.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  &.success {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+  }
 }
 
 /* HEADER */
@@ -27,6 +47,15 @@
   margin-bottom: 16px;
 }
 
+.bloque + .bloque {
+  margin-top: 16px;
+}
+
+.bloque h4 {
+  margin: 0 0 10px;
+  color: #374151;
+}
+
 .sub {
   font-size: 13px;
   color: #666;
@@ -41,6 +70,8 @@
   li {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 10px;
     padding: 10px;
     background: #fff;
     border-radius: 8px;
@@ -83,6 +114,21 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.btn-item {
+  border: 1px solid #22c55e;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 }
 
 /* RESUMEN */
