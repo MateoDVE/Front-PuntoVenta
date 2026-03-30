@@ -1,69 +1,83 @@
 <app-vendedor-navbar></app-vendedor-navbar>
 <section class="contenedor">
+  <div *ngIf="errorMensaje" class="feedback error">{{ errorMensaje }}</div>
+  <div *ngIf="exitoMensaje" class="feedback success">{{ exitoMensaje }}</div>
 
-  <!-- HEADER -->
   <header class="header">
-    <h2>¡Bienvenido, Juan Pérez!</h2>
-    <p>Camión A-123</p>
-    <small>Jueves, 26 de Febrero 2026</small>
+    <h2>Bienvenido, {{ perfil?.nombre || 'Vendedor' }}</h2>
+    <p>{{ perfil?.email }}</p>
+    <small>{{ fechaActual | date : 'fullDate' }}</small>
   </header>
 
-  <!-- VALIDACIÓN -->
   <section class="validacion">
+    <h3>Validación de Carga</h3>
+    <p class="sub">Tu inventario pasa por doble validación: administrador y vendedor.</p>
 
-    <h3>⚠️ Validación de Carga Pendiente</h3>
-    <p class="sub">Verifica físicamente el stock asignado antes de salir</p>
+    <div *ngIf="cargando" class="empty">Cargando cargas asignadas...</div>
 
-    <ul class="lista">
-      <li *ngFor="let p of productos">
-        <div>
-          <strong>{{ p.nombre }}</strong>
-          <small>{{ p.categoria }}</small>
-        </div>
-        <div class="cantidad">
-          {{ p.cantidad }}
-          <span>unidades</span>
-        </div>
-      </li>
-    </ul>
+    <div class="bloque" *ngIf="!cargando">
+      <h4>Pendientes de validación de administrador</h4>
+      <ul class="lista" *ngIf="pendientesAdmin.length > 0">
+        <li *ngFor="let carga of pendientesAdmin">
+          <div>
+            <strong>{{ getNombreProducto(carga.id_producto) }}</strong>
+            <small>Estado: {{ carga.estado_validacion }}</small>
+          </div>
+          <div class="cantidad">
+            {{ carga.cantidad_inicial }}
+            <span>unidades</span>
+          </div>
+        </li>
+      </ul>
+      <p class="empty" *ngIf="pendientesAdmin.length === 0">No tienes cargas pendientes por validar admin.</p>
+    </div>
 
-    <p class="info">
-      ⚠️ Instrucciones: Revisa físicamente que la carga coincida con lo asignado.
-    </p>
-
-    <button class="btn" (click)="confirmarCarga()">
-      ✔ Confirmar Carga
-    </button>
-
+    <div class="bloque" *ngIf="!cargando">
+      <h4>Listas para confirmar salida</h4>
+      <ul class="lista" *ngIf="listosParaConfirmar.length > 0">
+        <li *ngFor="let carga of listosParaConfirmar">
+          <div>
+            <strong>{{ getNombreProducto(carga.id_producto) }}</strong>
+            <small>id_carga: {{ carga.id_carga }}</small>
+          </div>
+          <div class="cantidad">
+            {{ carga.cantidad_inicial }}
+            <span>unidades</span>
+          </div>
+          <button class="btn-item" [disabled]="confirmando === carga.id_carga" (click)="confirmarCarga(carga.id_carga)">
+            {{ confirmando === carga.id_carga ? 'Confirmando...' : 'Confirmar' }}
+          </button>
+        </li>
+      </ul>
+      <p class="empty" *ngIf="listosParaConfirmar.length === 0">No tienes cargas listas para confirmar.</p>
+    </div>
   </section>
 
-  <!-- RESUMEN -->
   <section class="resumen">
     <article>
-      <span>📦</span>
+      <span>Stock</span>
       <h3>{{ stockActual }}</h3>
-      <p>Stock Actual</p>
+      <p>Stock transporte (u.)</p>
     </article>
 
     <article>
-      <span>🛒</span>
+      <span>Ventas</span>
       <h3>{{ ventasHoy }}</h3>
-      <p>Ventas Hoy</p>
+      <p>Ventas hoy</p>
     </article>
 
     <article>
-      <span>💲</span>
-      <h3>{{ ingresos }}</h3>
+      <span>Ingreso</span>
+      <h3>{{ ingresos | number : '1.0-0' }}</h3>
       <p>Ingresos (Bs.)</p>
     </article>
   </section>
 
-  <!-- STOCK -->
   <section class="stock">
     <h3>Stock de Transporte</h3>
 
-    <ul>
-      <li *ngFor="let p of productos">
+    <ul *ngIf="stockTransporte.length > 0">
+      <li *ngFor="let p of stockTransporte">
         <div>
           <strong>{{ p.nombre }}</strong>
           <small>Bs. {{ p.precio }}</small>
@@ -71,16 +85,17 @@
 
         <div class="cantidad">
           {{ p.cantidad }}
-          <small>Inicial: {{ p.cantidad }}</small>
+          <small>unidades</small>
         </div>
       </li>
     </ul>
+
+    <p class="empty" *ngIf="stockTransporte.length === 0">No hay stock en transporte todavía.</p>
   </section>
 
-  <!-- VENTAS -->
   <section class="ventas">
     <h3>Últimas Ventas</h3>
-    <p class="empty">No hay ventas registradas aún</p>
+    <p class="empty">Aún no se conectó este bloque al módulo de ventas.</p>
   </section>
 
 </section>
