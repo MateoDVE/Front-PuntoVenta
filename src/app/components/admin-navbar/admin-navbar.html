@@ -7,7 +7,17 @@
   <nav aria-label="Navegacion principal" class="sidebar-nav">
     <ul>
       <li *ngFor="let item of navItems">
-        <a [routerLink]="item.href" [attr.aria-current]="item.current ? 'page' : null">{{ item.label }}</a>      </li>
+        <a
+          *ngIf="!item.disabled; else disabledItem"
+          [routerLink]="item.href"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          >{{ item.label }}</a
+        >
+        <ng-template #disabledItem>
+          <span class="is-disabled">{{ item.label }}</span>
+        </ng-template>
+      </li>
     </ul>
   </nav>
 

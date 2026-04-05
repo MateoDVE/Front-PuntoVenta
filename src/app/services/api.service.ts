@@ -48,6 +48,27 @@ export interface Producto {
   stock_almacen_central: number;
 }
 
+export interface InventarioAsignacion {
+  id_carga: string;
+  id_vendedor: string;
+  id_producto: string;
+  cantidad_inicial: number;
+  estado_validacion: string;
+  fecha_asignacion: string;
+  mensaje?: string;
+}
+
+export interface AsignarStockPayload {
+  idVendedor: string;
+  idProducto: string;
+  cantidad: number;
+}
+
+export interface CargaInicialStockPayload {
+  idProducto: string;
+  cantidad: number;
+}
+
 /**
  * Servicio para interactuar con la API del backend
  * Todos los endpoints requieren autenticación (el interceptor agrega el token automáticamente)
@@ -90,6 +111,12 @@ export class ApiService {
     return this.http.get<Producto[]>(`${this.apiUrl}/productos`);
   }
 
+  getProductosStockBajo(umbral = 100): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.apiUrl}/productos/stock-bajo`, {
+      params: { umbral: String(umbral) }
+    });
+  }
+
   getProductoById(id: string): Observable<Producto> {
     return this.http.get<Producto>(`${this.apiUrl}/productos/${id}`);
   }
@@ -124,5 +151,29 @@ export class ApiService {
    */
   deleteProductImage(imageUrl: string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/productos/delete-image`, { imageUrl });
+  }
+
+  // ==================== INVENTARIO ====================
+  asignarStock(payload: AsignarStockPayload): Observable<InventarioAsignacion> {
+    return this.http.post<InventarioAsignacion>(`${this.apiUrl}/inventario/asignar`, payload);
+  }
+
+  getInventarioVendedor(idVendedor: string): Observable<InventarioAsignacion[]> {
+    return this.http.get<InventarioAsignacion[]>(`${this.apiUrl}/inventario/vendedor/${idVendedor}`);
+  }
+
+  validarAsignacionAdmin(idCarga: string): Observable<InventarioAsignacion> {
+    return this.http.patch<InventarioAsignacion>(`${this.apiUrl}/inventario/validar-admin/${idCarga}`, {});
+  }
+
+  confirmarSalidaVendedor(idCarga: string): Observable<InventarioAsignacion> {
+    return this.http.patch<InventarioAsignacion>(`${this.apiUrl}/inventario/confirmar-salida/${idCarga}`, {});
+  }
+
+  cargarStockInicial(payload: CargaInicialStockPayload): Observable<{ id_producto: string; stock_almacen_central: number; mensaje: string }> {
+    return this.http.post<{ id_producto: string; stock_almacen_central: number; mensaje: string }>(
+      `${this.apiUrl}/inventario/stock-inicial`,
+      payload
+    );
   }
 }
