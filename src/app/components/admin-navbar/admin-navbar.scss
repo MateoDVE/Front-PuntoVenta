@@ -16,6 +16,22 @@
 
 .sidebar-brand {
   padding: 22px 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  .brand-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #2f5cc1;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
 
   h2 {
     margin: 0;
@@ -44,10 +60,62 @@
 
   a,
   .is-disabled {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 12px 14px;
     border-radius: 10px;
     font-weight: 500;
+  }
+
+  .brand-icon {
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    margin-right: 12px;
+    border-radius: 10px;
+    background: url('/logo.png') center/cover no-repeat;
+    background-color: #fff;
+    flex-shrink: 0;
+  }
+
+  .nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.12);
+    color: transparent;
+    font-size: 0.95rem;
+    background-size: 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .nav-icon.dashboard {
+    background-image: url('/navbarAdmin-Dashboard.svg');
+  }
+
+  .nav-icon.vendedores {
+    background-image: url('/navbarAdmin-vendedor.svg');
+  }
+
+  .nav-icon.catalogo {
+    background-image: url('/navbarAdmin-catalogo.svg');
+  }
+
+  .nav-icon.asignacion {
+    background-image: url('/navbarAdmin-asignacion.svg');
+  }
+
+  .nav-icon.monitor {
+    background-image: url('/navbarAdmin-monitor.svg');
+  }
+
+  .nav-icon.reportes {
+    background-image: url('/reportes.svg');
   }
 
   a {
