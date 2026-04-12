@@ -41,6 +41,8 @@ export const routes: Routes = [
 
   { path: 'vendedor/dashboard', component: DashboardVendedor, canActivate: [authGuard],data: { roles: ['vendedor'] }},
 
+  {path: 'vendedor/mapa', component: DashboardVendedor, canActivate: [authGuard],data: { roles: ['vendedor'] }},
+
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   { path: '**', redirectTo: 'login' }
