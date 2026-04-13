@@ -1,0 +1,13 @@
+{
+  "LOGIN": {
+    "TITULO_SISTEMA": "Tukuy lliw apachiq kamachinapaq",
+    "EMAIL": "Electrónico llamay",
+    "PLACEHOLDER_EMAIL": "Churay electrónico llamayta",
+    "ERROR_EMAIL": "Mana allin electrónico",
+    "PASSWORD": "Ñawpa rimayki",
+    "PLACEHOLDER_PASSWORD": "Churay ñawpa rimaykita",
+    "ERROR_PASSWORD": "Ñawpa rimay 6 letrayuqmi kanan",
+    "BOTON_INICIAR": "Yaykuy",
+    "CARGANDO": "Cargando..."
+  }
+}

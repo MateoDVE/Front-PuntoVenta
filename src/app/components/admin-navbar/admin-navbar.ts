@@ -1,19 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 
 interface AdminNavItem {
   label: string;
   href: string;
   current?: boolean;
+  disabled?: boolean;
+  icon?: string;
 }
 
 @Component({
   selector: 'app-admin-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './admin-navbar.html',
-  styleUrl: './admin-navbar.scss',
+  styleUrls: ['./admin-navbar.scss'],
 })
 export class AdminNavbar implements OnInit {
   @Output() signOut = new EventEmitter<void>();

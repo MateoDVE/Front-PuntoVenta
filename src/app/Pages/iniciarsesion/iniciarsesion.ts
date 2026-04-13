@@ -3,28 +3,36 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-iniciarsesion',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './iniciarsesion.html',
-  styleUrl: './iniciarsesion.scss',
+  styleUrls: ['./iniciarsesion.scss'],
 })
 export class Iniciarsesion {
   loginForm: FormGroup;
   errorMessage: string = '';
   loading: boolean = false;
+  idiomaActual: string = 'es';
+  menuAbierto: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+
+    const idiomaGuardado = localStorage.getItem('idioma') || 'es';
+    this.idiomaActual = idiomaGuardado;
+    this.translate.use(idiomaGuardado);
   }
 
   onSubmit() {
@@ -48,5 +56,16 @@ export class Iniciarsesion {
         }
       });
     }
+  }
+
+  toggleMenu(): void {
+    this.menuAbierto = !this.menuAbierto;
+  }
+
+  cambiarIdioma(idioma: string): void {
+    this.idiomaActual = idioma;
+    this.translate.use(idioma);
+    localStorage.setItem('idioma', idioma);
+    this.menuAbierto = false;
   }
 }

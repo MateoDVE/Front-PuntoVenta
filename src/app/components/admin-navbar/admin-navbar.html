@@ -1,13 +1,30 @@
 <aside class="sidebar">
   <header class="sidebar-brand">
-    <h2>PuntoVenta</h2>
-    <p>Panel Administrador</p>
+    <div>
+      <h2>PuntoVenta</h2>
+      <p>Panel Administrador</p>
+    </div>
   </header>
 
   <nav aria-label="Navegacion principal" class="sidebar-nav">
     <ul>
       <li *ngFor="let item of navItems">
-        <a [routerLink]="item.href" [attr.aria-current]="item.current ? 'page' : null">{{ item.label }}</a>      </li>
+        <a
+          *ngIf="!item.disabled; else disabledItem"
+          [routerLink]="item.href"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="nav-icon {{ item.icon }}"></span>
+          {{ item.label }}
+        </a>
+        <ng-template #disabledItem>
+          <span class="is-disabled">
+            <span class="nav-icon {{ item.icon }}"></span>
+            {{ item.label }}
+          </span>
+        </ng-template>
+      </li>
     </ul>
   </nav>
 

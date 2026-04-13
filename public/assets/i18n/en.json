@@ -1,0 +1,13 @@
+{
+  "LOGIN": {
+    "TITULO_SISTEMA": "Distribution Management System",
+    "EMAIL": "Email",
+    "PLACEHOLDER_EMAIL": "Enter your email",
+    "ERROR_EMAIL": "Invalid email",
+    "PASSWORD": "Password",
+    "PLACEHOLDER_PASSWORD": "Enter your password",
+    "ERROR_PASSWORD": "Password must be at least 6 characters",
+    "BOTON_INICIAR": "Sign In",
+    "CARGANDO": "Loading..."
+  }
+}

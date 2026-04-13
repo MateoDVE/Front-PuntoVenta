@@ -1,0 +1,13 @@
+{
+  "LOGIN": {
+    "TITULO_SISTEMA": "Sistema de Gestión de Distribución",
+    "EMAIL": "Email",
+    "PLACEHOLDER_EMAIL": "Ingresa tu email",
+    "ERROR_EMAIL": "Email inválido",
+    "PASSWORD": "Contraseña",
+    "PLACEHOLDER_PASSWORD": "Ingresa tu contraseña",
+    "ERROR_PASSWORD": "La contraseña debe tener al menos 6 caracteres",
+    "BOTON_INICIAR": "Iniciar Sesión",
+    "CARGANDO": "Cargando..."
+  }
+}
