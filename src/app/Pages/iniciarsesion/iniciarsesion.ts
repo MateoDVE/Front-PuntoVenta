@@ -46,8 +46,19 @@ export class Iniciarsesion {
         next: (response) => {
           console.log('Inicio de sesión exitoso', response);
           this.loading = false;
-          // Redirigir a la página principal o dashboard
-          this.router.navigate(['/admin/dashboard']);
+          if (this.authService.isAuthenticated()) {
+            const loginRole = this.authService.extractRoleFromLoginResponse(response);
+            const targetRoute = this.authService.getDashboardRouteByRole(loginRole);
+
+            if (targetRoute === '/login') {
+              this.errorMessage = 'No se pudo determinar el rol del usuario.';
+              return;
+            }
+
+            this.router.navigate([targetRoute]);
+          } else {
+            this.errorMessage = 'No se pudo obtener el token de sesión, intente nuevamente.';
+          }
         },
         error: (error) => {
           console.error('Error al iniciar sesión', error);

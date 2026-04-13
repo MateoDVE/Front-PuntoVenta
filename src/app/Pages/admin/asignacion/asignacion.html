@@ -1,0 +1,167 @@
+<div class="asignacion-shell">
+	<div class="asignacion-layout">
+		<app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
+
+		<main class="asignacion-main">
+			<header class="main-header">
+				<h2>Asignación de Carga</h2>
+				<p>Transfiere stock del almacén a unidades de transporte</p>
+			</header>
+
+			<div *ngIf="errorMensaje" class="feedback error">{{ errorMensaje }}</div>
+			<div *ngIf="exitoMensaje" class="feedback success">{{ exitoMensaje }}</div>
+
+			<section class="panel-grid" aria-label="Gestión de asignación de carga">
+				<section class="panel panel-form" aria-labelledby="nueva-asignacion-title">
+					<header>
+						<h3 id="nueva-asignacion-title">Nueva Asignación</h3>
+					</header>
+
+					<div class="field-group">
+					<label for="vendedor-search">Buscar vendedor</label>
+					<input
+						id="vendedor-search"
+						type="search"
+						[(ngModel)]="busquedaVendedor"
+						name="vendedor_search"
+						placeholder="Escribe nombre o email"
+					/>
+				</div>
+
+				<div class="field-group">
+					<label for="vendedor">Seleccionar Vendedor</label>
+					<select id="vendedor" name="vendedor" [(ngModel)]="selectedVendedorId">
+						<option value="" disabled>Selecciona un vendedor</option>
+						<option *ngFor="let vendedor of vendedoresFiltrados" [value]="vendedor.id_usuario">
+							{{ vendedor.nombre }} - {{ vendedor.email }}
+						</option>
+						<option *ngIf="vendedoresFiltrados.length === 0" value="" disabled>No se encontraron vendedores</option>
+					</select>
+				</div>
+					<p class="info-message">
+						Esta operación reemplazará el stock actual del transporte y actualizará el stock global del almacén.
+					</p>
+
+					<div class="field-group">
+						<label>Asignar Productos</label>
+
+						<div class="product-list">
+							<article class="product-row" *ngFor="let producto of productos">
+								<header>
+									<h4>{{ producto.nombre }}</h4>
+									<span class="badge">ID {{ producto.id }}</span>
+								</header>
+								<p>Disponible: {{ producto.disponible }} unidades</p>
+								<input
+									type="number"
+									name="cantidad-{{ producto.id }}"
+									[(ngModel)]="producto.cantidadAsignar"
+									[min]="0"
+									[max]="producto.disponible"
+									placeholder="Cantidad"
+								/>
+							</article>
+						</div>
+					</div>
+
+					<button type="button" class="btn-primary" [disabled]="guardando || cargando" (click)="onAsignarStock()">
+						{{ guardando ? 'Guardando...' : 'Asignar Stock' }}
+					</button>
+				</section>
+
+				<aside class="panel panel-stock" aria-labelledby="stock-transporte-title">
+					<header>
+						<h3 id="stock-transporte-title">Stock Actual por Transporte</h3>
+					</header>
+
+					<div *ngIf="cargando" class="empty-stock">Cargando inventario de transporte...</div>
+					<div *ngIf="!cargando && stockPorTransporte.length === 0" class="empty-stock">No hay cargas registradas.</div>
+
+					<article class="transport-card" *ngFor="let transporte of stockPorTransporte">
+						<header>
+							<div>
+								<h4>{{ transporte.vendedor }}</h4>
+								<p>ID vendedor: {{ transporte.vendedorId }}</p>
+							</div>
+							<div class="total-items">
+								<strong>{{ transporte.totalItems }}</strong>
+								<small>Total Items</small>
+							</div>
+						</header>
+
+						<ul>
+							<li *ngFor="let item of transporte.items">
+								<div>
+									<span>{{ item.nombre }}</span>
+									<small class="estado" [class.pending]="item.estado === 'PENDIENTE'" [class.admin]="item.estado === 'VALIDADO_ADMIN'" [class.valid]="item.estado === 'VALIDADO'">
+										{{ item.estado }}
+									</small>
+								</div>
+								<div class="item-actions">
+									<strong>{{ item.cantidad }} u.</strong>
+									<button
+										type="button"
+										class="btn-inline"
+										*ngIf="item.estado === 'PENDIENTE'"
+										[disabled]="validandoCarga === item.idCarga"
+										(click)="validarCargaAdmin(item.idCarga)"
+									>
+										{{ validandoCarga === item.idCarga ? 'Validando...' : 'Validar Admin' }}
+									</button>
+								</div>
+							</li>
+						</ul>
+					</article>
+				</aside>
+			</section>
+
+			<section class="panel panel-global" aria-labelledby="stock-global-title">
+				<header>
+					<h3 id="stock-global-title">Stock Global del Almacén</h3>
+				</header>
+
+				<div class="stock-inicial-form">
+					<div class="field-group">
+						<label for="stock-inicial-producto">Producto</label>
+						<select id="stock-inicial-producto" name="stock-inicial-producto" [(ngModel)]="stockInicialProductoId">
+							<option value="" disabled>Selecciona un producto</option>
+							<option *ngFor="let producto of productos" [value]="producto.id">
+								{{ producto.nombre }} (Stock actual: {{ producto.disponible }})
+							</option>
+						</select>
+					</div>
+
+					<div class="field-group">
+						<label for="stock-inicial-cantidad">Cantidad a ingresar</label>
+						<input
+							id="stock-inicial-cantidad"
+							type="number"
+							name="stock-inicial-cantidad"
+							[(ngModel)]="stockInicialCantidad"
+							[min]="1"
+							placeholder="Ej: 100"
+						/>
+					</div>
+
+					<button
+						type="button"
+						class="btn-secondary"
+						[disabled]="cargandoStockInicial || cargando"
+						(click)="onCargarStockInicial()"
+					>
+						{{ cargandoStockInicial ? 'Registrando...' : 'Registrar Cantidad' }}
+					</button>
+				</div>
+
+				<div class="global-grid">
+					<article class="global-item" *ngFor="let producto of productos">
+						<h4>{{ producto.nombre }}</h4>
+						<strong>{{ producto.disponible }}</strong>
+						<small>unidades</small>
+					</article>
+				</div>
+			</section>
+		</main>
+	</div>
+</div>
+

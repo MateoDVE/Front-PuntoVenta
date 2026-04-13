@@ -96,6 +96,40 @@
 	padding: 16px;
 	border: 1px solid #dbe3ef;
 
+	.metric-card__header {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-bottom: 12px;
+	}
+
+	.metric-icon {
+		display: inline-block;
+		width: 32px;
+		height: 32px;
+		border-radius: 0;
+		background: transparent;
+		background-size: contain;
+		background-repeat: no-repeat;
+		background-position: center;
+	}
+
+	.metric-icon.icon-products {
+		background-image: url('/DashboardAdmin-Productos.png');
+	}
+
+	.metric-icon.icon-vendors {
+		background-image: url('/DashboardAdmin-Vendedores.png');
+	}
+
+	.metric-icon.icon-stock {
+		background-image: url('/DashboardAdmin-StockTotal.png');
+	}
+
+	.metric-icon.icon-sales {
+		background-image: url('/DashboardAdmin-ProvectosVenta.png');
+	}
+
 	h3 {
 		margin: 0;
 		color: #63738a;
@@ -234,20 +268,21 @@
 // Status Badge
 .status-badge {
 	display: inline-block;
-	padding: 2px 12px;
-	border-radius: 20px;
-	font-size: 0.8rem;
-	font-weight: 600;
-	text-transform: capitalize;
+	padding: 5px 14px;
+	border-radius: 999px;
+	font-size: 0.82rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
 
 	&.active {
-		background: #d1fae5;
-		color: #065f46;
+		background: #dcfce7;
+		color: #166534;
 	}
 
 	&.inactive {
 		background: #fee2e2;
-		color: #7f1d1d;
+		color: #991b1b;
 	}
 }
 

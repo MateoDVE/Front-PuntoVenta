@@ -36,6 +36,14 @@ export class Catalogo implements OnInit {
 
   categorias = ['Bebidas', 'Snacks', 'Lácteos'];
 
+  // Errores de validación en tiempo real
+  erroresValidacion = {
+    precio_unidad: '',
+    precio_caja: '',
+    unidades_por_caja: '',
+    stock_almacen_central: ''
+  };
+
   constructor(
     private apiService: ApiService,
     private authService: AuthService
@@ -83,6 +91,47 @@ export class Catalogo implements OnInit {
       unidades_por_caja: 1,
       stock_almacen_central: 0,
     };
+    // Limpiar errores de validación
+    this.erroresValidacion = {
+      precio_unidad: '',
+      precio_caja: '',
+      unidades_por_caja: '',
+      stock_almacen_central: ''
+    };
+  }
+
+  // ==================== VALIDACIONES EN TIEMPO REAL ====================
+
+  validarPrecioUnidad(): void {
+    if (this.nuevoProducto.precio_unidad < 0) {
+      this.erroresValidacion.precio_unidad = 'El precio no puede ser negativo';
+    } else {
+      this.erroresValidacion.precio_unidad = '';
+    }
+  }
+
+  validarPrecioCaja(): void {
+    if (this.nuevoProducto.precio_caja < 0) {
+      this.erroresValidacion.precio_caja = 'El precio no puede ser negativo';
+    } else {
+      this.erroresValidacion.precio_caja = '';
+    }
+  }
+
+  validarUnidadesCaja(): void {
+    if (this.nuevoProducto.unidades_por_caja < 1) {
+      this.erroresValidacion.unidades_por_caja = 'Debe ser al menos 1 unidad';
+    } else {
+      this.erroresValidacion.unidades_por_caja = '';
+    }
+  }
+
+  validarStockCentral(): void {
+    if (this.nuevoProducto.stock_almacen_central < 0) {
+      this.erroresValidacion.stock_almacen_central = 'El stock no puede ser negativo';
+    } else {
+      this.erroresValidacion.stock_almacen_central = '';
+    }
   }
 
   // ==================== MANEJO DE IMÁGENES ====================
@@ -243,10 +292,18 @@ export class Catalogo implements OnInit {
   }
 
   validarFormulario(): boolean {
+    // Verificar errores en tiempo real primero
+    if (this.erroresValidacion.precio_unidad || this.erroresValidacion.precio_caja ||
+        this.erroresValidacion.unidades_por_caja || this.erroresValidacion.stock_almacen_central) {
+      alert('Por favor corrija los errores en los campos antes de guardar.');
+      return false;
+    }
+
+    // Verificar campos requeridos
     if (!this.nuevoProducto.sku || !this.nuevoProducto.nombre ||
-        this.nuevoProducto.precio_unidad <= 0 || this.nuevoProducto.precio_caja <= 0 ||
-        this.nuevoProducto.unidades_por_caja <= 0) {
-      alert('Por favor complete todos los campos requeridos correctamente');
+        this.nuevoProducto.precio_unidad < 0 || this.nuevoProducto.precio_caja < 0 ||
+        this.nuevoProducto.unidades_por_caja <= 0 || this.nuevoProducto.stock_almacen_central < 0) {
+      alert('Por favor complete todos los campos requeridos correctamente.');
       return false;
     }
     return true;

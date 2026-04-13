@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 interface AdminNavItem {
   label: string;
-  href: string;
+  href?: string;
   current?: boolean;
   disabled?: boolean;
-  icon?: string;
+  icon: string;
 }
 
 @Component({
@@ -17,33 +17,17 @@ interface AdminNavItem {
   templateUrl: './admin-navbar.html',
   styleUrls: ['./admin-navbar.scss'],
 })
-export class AdminNavbar implements OnInit {
+export class AdminNavbar {
   @Output() signOut = new EventEmitter<void>();
 
   navItems: AdminNavItem[] = [
-    { label: 'Dashboard', href: '/admin/dashboard' },
-    { label: 'Vendedores', href: '/admin/gestion-vendedores' },
-    { label: 'Catalogo', href: '/admin/catalogo' },
-    { label: 'Asignacion', href: '#' },
-    { label: 'Monitor', href: '#' },
-    { label: 'Reportes', href: '#' },
+    { label: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard' },
+    { label: 'Vendedores', href: '/admin/gestion-vendedores', icon: 'vendedores' },
+    { label: 'Catalogo', href: '/admin/catalogo', icon: 'catalogo' },
+    { label: 'Asignacion', href: '/admin/asignacion', icon: 'asignacion' },
+    { label: 'Monitor', disabled: true, icon: 'monitor' },
+    { label: 'Reportes', disabled: true, icon: 'reportes' },
   ];
-
-  constructor(private router: Router) {}
-
-  ngOnInit(): void {
-    this.updateCurrentItem();
-    this.router.events.subscribe(() => {
-      this.updateCurrentItem();
-    });
-  }
-
-  private updateCurrentItem(): void {
-    const currentUrl = this.router.url;
-    this.navItems.forEach(item => {
-      item.current = item.href === currentUrl;
-    });
-  }
 
   onSignOut(): void {
     this.signOut.emit();

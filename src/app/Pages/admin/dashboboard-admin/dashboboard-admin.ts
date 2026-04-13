@@ -8,6 +8,7 @@ interface DashboardMetric {
   title: string;
   value: string;
   detail: string;
+  icon: string;
 }
 
 @Component({
@@ -18,8 +19,11 @@ interface DashboardMetric {
   styleUrl: './dashboboard-admin.scss',
 })
 export class DashboboardAdmin implements OnInit {
+  private readonly umbralStockBajo = 100;
+
   metrics: DashboardMetric[] = [];
   productos: Producto[] = [];
+  productosConStockBajo: Producto[] = [];
   vendedores: VendedorBackend[] = [];
   
   cargando = true;
@@ -42,6 +46,7 @@ export class DashboboardAdmin implements OnInit {
     Promise.all([
       this.cargarProductos(),
       this.cargarVendedores(),
+      this.cargarProductosStockBajo(),
     ])
       .then(() => {
         this.actualizarMetricas();
@@ -86,6 +91,22 @@ export class DashboboardAdmin implements OnInit {
     });
   }
 
+  cargarProductosStockBajo(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.apiService.getProductosStockBajo(this.umbralStockBajo).subscribe({
+        next: (datos) => {
+          this.productosConStockBajo = datos;
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error al cargar alertas de stock bajo:', err);
+          this.productosConStockBajo = [];
+          reject(err);
+        },
+      });
+    });
+  }
+
   actualizarMetricas(): void {
     const totalStockProductos = this.productos.reduce(
       (sum, p) => sum + (p.stock_almacen_central || 0),
@@ -102,30 +123,30 @@ export class DashboboardAdmin implements OnInit {
         title: 'Productos en Catálogo',
         value: this.productos.length.toString(),
         detail: `${totalStockProductos} unidades en almacén`,
+        icon: 'icon-products',
       },
       {
-        title: 'Vendedores Activos',
+        title: 'Vendedores Registrados',
         value: this.vendedores.length.toString(),
-        detail: `${this.vendedores.filter((v) => v.estado === 'activo').length} activos`,
+        detail: `${this.vendedores.filter((v) => String(v.estado).trim().toLowerCase() === 'activo').length} activos`,
+        icon: 'icon-vendors',
       },
       {
         title: 'Stock Total',
         value: totalStockProductos.toString(),
         detail: `Valor: Bs. ${totalProductosValor.toFixed(2)}`,
+        icon: 'icon-stock',
       },
       {
         title: 'Proyectos de Venta',
         value: '0',
         detail: 'Sin ventas registradas',
+        icon: 'icon-sales',
       },
     ];
   }
 
   onSignOut(): void {
     this.authService.signOut().subscribe();
-  }
-
-  get productosConStockBajo(): Producto[] {
-    return this.productos.filter((p) => (p.stock_almacen_central || 0) < 100);
   }
 }

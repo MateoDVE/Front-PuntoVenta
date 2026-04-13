@@ -39,8 +39,9 @@
 					</ul>
 				</section>
 
-				<div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
-					<section class="modal-content" role="dialog" aria-modal="true" aria-labelledby="producto-modal-title" (click)="$event.stopPropagation()">
+				<div *ngIf="mostrarModal" class="modal-overlay">
+					<div class="modal-backdrop" (click)="cerrarModal()"></div>
+					<section class="modal-content" role="dialog" aria-modal="true" aria-labelledby="producto-modal-title">
 						<header class="modal-header">
 							<h2 id="producto-modal-title">{{ editando ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
 							<button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar formulario">✕</button>
@@ -98,22 +99,26 @@
 
 								<div class="form-group">
 									<label for="precio-unidad">Precio unitario (Bs.) *</label>
-									<input id="precio-unidad" type="number" [(ngModel)]="nuevoProducto.precio_unidad" name="precio_unidad" placeholder="0.00" step="0.01">
+									<input id="precio-unidad" type="number" [(ngModel)]="nuevoProducto.precio_unidad" name="precio_unidad" placeholder="0.00" step="0.01" min="0" (input)="validarPrecioUnidad()">
+									<div *ngIf="erroresValidacion.precio_unidad" class="error-message">{{ erroresValidacion.precio_unidad }}</div>
 								</div>
 
 								<div class="form-group">
 									<label for="precio-caja">Precio por caja (Bs.) *</label>
-									<input id="precio-caja" type="number" [(ngModel)]="nuevoProducto.precio_caja" name="precio_caja" placeholder="0.00" step="0.01">
+									<input id="precio-caja" type="number" [(ngModel)]="nuevoProducto.precio_caja" name="precio_caja" placeholder="0.00" step="0.01" min="0" (input)="validarPrecioCaja()">
+									<div *ngIf="erroresValidacion.precio_caja" class="error-message">{{ erroresValidacion.precio_caja }}</div>
 								</div>
 
 								<div class="form-group">
 									<label for="unidades-caja">Unidades por caja *</label>
-									<input id="unidades-caja" type="number" [(ngModel)]="nuevoProducto.unidades_por_caja" name="unidades_por_caja" placeholder="1" step="1">
+									<input id="unidades-caja" type="number" [(ngModel)]="nuevoProducto.unidades_por_caja" name="unidades_por_caja" placeholder="1" step="1" min="1" (input)="validarUnidadesCaja()">
+									<div *ngIf="erroresValidacion.unidades_por_caja" class="error-message">{{ erroresValidacion.unidades_por_caja }}</div>
 								</div>
 
 								<div class="form-group">
 									<label for="stock-central">Stock almacén central</label>
-									<input id="stock-central" type="number" [(ngModel)]="nuevoProducto.stock_almacen_central" name="stock_almacen_central" placeholder="0" step="1">
+									<input id="stock-central" type="number" [(ngModel)]="nuevoProducto.stock_almacen_central" name="stock_almacen_central" placeholder="0" step="1" min="0" (input)="validarStockCentral()">
+									<div *ngIf="erroresValidacion.stock_almacen_central" class="error-message">{{ erroresValidacion.stock_almacen_central }}</div>
 								</div>
 							</fieldset>
 
