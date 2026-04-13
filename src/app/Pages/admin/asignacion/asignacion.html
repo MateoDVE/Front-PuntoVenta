@@ -18,15 +18,26 @@
 					</header>
 
 					<div class="field-group">
-						<label for="vendedor">Seleccionar Vendedor</label>
-						<select id="vendedor" name="vendedor" [(ngModel)]="selectedVendedorId">
-							<option value="" disabled>Selecciona un vendedor</option>
-							<option *ngFor="let vendedor of vendedores" [value]="vendedor.id_usuario">
-								{{ vendedor.nombre }} - {{ vendedor.email }}
-							</option>
-						</select>
-					</div>
+					<label for="vendedor-search">Buscar vendedor</label>
+					<input
+						id="vendedor-search"
+						type="search"
+						[(ngModel)]="busquedaVendedor"
+						name="vendedor_search"
+						placeholder="Escribe nombre o email"
+					/>
+				</div>
 
+				<div class="field-group">
+					<label for="vendedor">Seleccionar Vendedor</label>
+					<select id="vendedor" name="vendedor" [(ngModel)]="selectedVendedorId">
+						<option value="" disabled>Selecciona un vendedor</option>
+						<option *ngFor="let vendedor of vendedoresFiltrados" [value]="vendedor.id_usuario">
+							{{ vendedor.nombre }} - {{ vendedor.email }}
+						</option>
+						<option *ngIf="vendedoresFiltrados.length === 0" value="" disabled>No se encontraron vendedores</option>
+					</select>
+				</div>
 					<p class="info-message">
 						Esta operación reemplazará el stock actual del transporte y actualizará el stock global del almacén.
 					</p>

@@ -8,6 +8,7 @@ interface DashboardMetric {
   title: string;
   value: string;
   detail: string;
+  icon: string;
 }
 
 @Component({
@@ -122,21 +123,25 @@ export class DashboboardAdmin implements OnInit {
         title: 'Productos en Catálogo',
         value: this.productos.length.toString(),
         detail: `${totalStockProductos} unidades en almacén`,
+        icon: 'icon-products',
       },
       {
-        title: 'Vendedores Activos',
+        title: 'Vendedores Registrados',
         value: this.vendedores.length.toString(),
-        detail: `${this.vendedores.filter((v) => v.estado === 'activo').length} activos`,
+        detail: `${this.vendedores.filter((v) => String(v.estado).trim().toLowerCase() === 'activo').length} activos`,
+        icon: 'icon-vendors',
       },
       {
         title: 'Stock Total',
         value: totalStockProductos.toString(),
         detail: `Valor: Bs. ${totalProductosValor.toFixed(2)}`,
+        icon: 'icon-stock',
       },
       {
         title: 'Proyectos de Venta',
         value: '0',
         detail: 'Sin ventas registradas',
+        icon: 'icon-sales',
       },
     ];
   }

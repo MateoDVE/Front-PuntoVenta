@@ -16,38 +16,42 @@
 
 		    <section class="stats" aria-label="Resumen de indicadores">
 		      <article class="stat">
-		        <p class="stat__value">{{ totalVendedores }}</p>
-		        <p class="stat__label">Total vendedores</p>
-		      </article>
+					<span class="stat-icon icon-users" aria-hidden="true"></span>
+					<p class="stat__value">{{ totalVendedores }}</p>
+					<p class="stat__label">Total vendedores</p>
+				</article>
 
-		      <article class="stat">
-		        <p class="stat__value">{{ enRuta }}</p>
-		        <p class="stat__label">En ruta</p>
-		      </article>
+				<article class="stat">
+					<span class="stat-icon icon-truck" aria-hidden="true"></span>
+					<p class="stat__value">{{ enRuta }}</p>
+					<p class="stat__label">En ruta</p>
+				</article>
 
-		      <article class="stat">
-		        <p class="stat__value">{{ ventasTotales }}</p>
-		        <p class="stat__label">Ventas totales</p>
-		      </article>
+				<article class="stat">
+					<span class="stat-icon icon-box" aria-hidden="true"></span>
+					<p class="stat__value">{{ ventasTotales }}</p>
+					<p class="stat__label">Ventas totales</p>
+				</article>
 
-		      <article class="stat">
-		        <p class="stat__value">{{ ingresos }}</p>
-		        <p class="stat__label">Ingresos (Bs.)</p>
-		      </article>
-		    </section>
+				<article class="stat">
+					<span class="stat-icon icon-income" aria-hidden="true"></span>
+					<p class="stat__value">{{ ingresos }}</p>
+					<p class="stat__label">Ingresos (Bs.)</p>
+				</article>
+			</section>
 
-		    <div *ngIf="cargando" class="loading" role="status" aria-live="polite">Cargando vendedores...</div>
+			<div *ngIf="cargando" class="loading" role="status" aria-live="polite">Cargando vendedores...</div>
 
-		    <p *ngIf="!cargando && errorMensaje" class="page-error" role="alert">{{ errorMensaje }}</p>
+			<p *ngIf="!cargando && errorMensaje" class="page-error" role="alert">{{ errorMensaje }}</p>
 
-		    <app-vendedores-registrados
-		      *ngIf="!cargando"
-		      [vendedores]="vendedores"
-		      (editar)="editar($event)"
-		      (eliminar)="eliminar($event)"
-		    ></app-vendedores-registrados>
+			<app-vendedores-registrados
+				*ngIf="!cargando"
+				[vendedores]="vendedores"
+				(editar)="editar($event)"
+				(eliminar)="eliminar($event)"
+			></app-vendedores-registrados>
 
-		    <div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
+			<div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
 		      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-vendedor-title" (click)="$event.stopPropagation()">
 		        <header class="modal__header">
 		          <h2 id="modal-vendedor-title">{{ editando ? 'Editar vendedor' : 'Nuevo vendedor' }}</h2>

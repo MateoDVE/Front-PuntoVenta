@@ -42,6 +42,7 @@ interface TransporteStock {
 export class Asignacion implements OnInit {
   vendedores: VendedorBackend[] = [];
   selectedVendedorId = '';
+  busquedaVendedor = '';
 
   productos: ProductoAsignacion[] = [];
   stockPorTransporte: TransporteStock[] = [];
@@ -78,6 +79,7 @@ export class Asignacion implements OnInit {
       next: ({ vendedores, productos }) => {
         this.vendedores = vendedores;
         this.productosCatalogo = productos;
+        this.busquedaVendedor = '';
 
         this.productos = productos.map((producto) => ({
           id: String(producto.id_producto ?? ''),
@@ -126,6 +128,18 @@ export class Asignacion implements OnInit {
         this.cargando = false;
       },
     });
+  }
+
+  get vendedoresFiltrados(): VendedorBackend[] {
+    const termino = this.busquedaVendedor.trim().toLowerCase();
+    if (!termino) {
+      return this.vendedores;
+    }
+
+    return this.vendedores.filter((vendedor) =>
+      vendedor.nombre.toLowerCase().includes(termino) ||
+      vendedor.email.toLowerCase().includes(termino)
+    );
   }
 
   onAsignarStock(): void {

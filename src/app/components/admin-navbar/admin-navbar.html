@@ -1,7 +1,9 @@
 <aside class="sidebar">
   <header class="sidebar-brand">
-    <h2>PuntoVenta</h2>
-    <p>Panel Administrador</p>
+    <div>
+      <h2>PuntoVenta</h2>
+      <p>Panel Administrador</p>
+    </div>
   </header>
 
   <nav aria-label="Navegacion principal" class="sidebar-nav">
@@ -12,10 +14,15 @@
           [routerLink]="item.href"
           routerLinkActive="is-active"
           [routerLinkActiveOptions]="{ exact: true }"
-          >{{ item.label }}</a
         >
+          <span class="nav-icon {{ item.icon }}"></span>
+          {{ item.label }}
+        </a>
         <ng-template #disabledItem>
-          <span class="is-disabled">{{ item.label }}</span>
+          <span class="is-disabled">
+            <span class="nav-icon {{ item.icon }}"></span>
+            {{ item.label }}
+          </span>
         </ng-template>
       </li>
     </ul>
