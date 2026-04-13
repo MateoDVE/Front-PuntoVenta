@@ -1,8 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+
+export interface ClienteBackend {
+  id?: string;
+  idVendedorCreador?: string;
+  nombreNegocio: string;
+  ciNit?: string;
+  celular?: string;
+  latitud?: number;
+  longitud?: number;
+  urlFotoFachada?: string;
+  frecuenciaVisita?: string;
+  estado?: string;
+  createdAt?: string;
+}
 
 export interface Usuario {
   id_usuario: string;
@@ -46,6 +60,31 @@ export interface Producto {
   precio_caja: number;
   unidades_por_caja: number;
   stock_almacen_central: number;
+}
+
+export interface Cliente {
+  id_cliente?: string;
+  id_vendedor_creador?: string;
+  nombre_negocio: string;
+  ci_nit: string;
+  celular?: string;
+  latitud?: number;
+  longitud?: number;
+  url_foto_fachada?: string;
+  frecuencia_visita: string;
+  estado?: string;
+  created_at?: string;
+}
+
+export interface CreateClientePayload {
+  idVendedorCreador: string;
+  nombreNegocio: string;
+  ciNit: string;
+  celular?: string;
+  latitud?: number;
+  longitud?: number;
+  urlFotoFachada?: string;
+  frecuenciaVisita: string;
 }
 
 export interface InventarioAsignacion {
@@ -131,6 +170,35 @@ export class ApiService {
 
   deleteProducto(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/productos/${id}`);
+  }
+
+  // ==================== CLIENTES ====================
+  getClientes(vendedorId: string): Observable<Cliente[]> {
+    return this.http.get<ClienteBackend[]>(`${this.apiUrl}/clientes`, {
+      params: { vendedorId }
+    }).pipe(
+      map((clientes) => clientes.map(c => ({
+        id_cliente: c.id,
+        id_vendedor_creador: c.idVendedorCreador,
+        nombre_negocio: c.nombreNegocio,
+        ci_nit: c.ciNit || '',
+        celular: c.celular,
+        latitud: c.latitud,
+        longitud: c.longitud,
+        url_foto_fachada: c.urlFotoFachada,
+        frecuencia_visita: c.frecuenciaVisita || '',
+        estado: c.estado,
+        created_at: c.createdAt
+      })))
+    );
+  }
+
+  createCliente(payload: CreateClientePayload): Observable<Cliente> {
+    return this.http.post<Cliente>(`${this.apiUrl}/clientes`, payload);
+  }
+
+  uploadClienteImage(formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/clientes/upload-photo`, formData);
   }
 
   // ==================== IMÁGENES ====================

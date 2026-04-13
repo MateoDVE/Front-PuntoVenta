@@ -1,1 +1,157 @@
-<p>mapa works!</p>
+<div class="mapa-shell">
+  <app-vendedor-navbar></app-vendedor-navbar>
+
+  <main class="mapa-main">
+    <header class="mapa-header">
+      <div>
+        <h2>Mapa de Clientes</h2>
+        <p>Gestiona tus clientes con geolocalización</p>
+      </div>
+      <button class="btn-primary" type="button" (click)="openNuevoClienteModal()">Nuevo Cliente</button>
+    </header>
+
+    <section class="mapa-grid">
+      <div class="map-container" #mapContainer></div>
+
+      <aside class="map-sidebar">
+        <div class="sidebar-card">
+          <h3>Clientes registrados</h3>
+          <p>Ubicaciones de los clientes activos cerca de tu zona.</p>
+          <ul class="cliente-list">
+            <li *ngFor="let cliente of ubicaciones">
+              <div class="cliente-item">
+                <div class="cliente-img" *ngIf="cliente.url_foto_fachada">
+                  <img [src]="cliente.url_foto_fachada" [alt]="cliente.nombre_negocio" />
+                </div>
+                <div class="cliente-img placeholder" *ngIf="!cliente.url_foto_fachada">
+                  <span>{{ cliente.nombre_negocio.charAt(0) }}</span>
+                </div>
+                <div class="cliente-info">
+                  <strong>{{ cliente.nombre_negocio }}</strong>
+                  <p>CI/NIT: {{ cliente.ci_nit }}</p>
+                  <p>Teléfono: {{ cliente.celular || 'No especificado' }}</p>
+                  <p>Frecuencia: {{ cliente.frecuencia_visita }}</p>
+                  <span class="status">{{ cliente.estado || 'ACTIVO' }}</span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-card" *ngIf="error">
+          <strong>Error:</strong>
+          <p>{{ error }}</p>
+        </div>
+
+        <div class="sidebar-card" *ngIf="loading">
+          <strong>Cargando clientes...</strong>
+          <p>Espera un momento mientras traemos los datos desde el servidor.</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" *ngIf="showNewClienteModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3>Registrar Nuevo Cliente</h3>
+          <p>Haz clic en el mapa para seleccionar la ubicación exacta.</p>
+        </div>
+        <button class="btn-close" type="button" (click)="closeNuevoClienteModal()">×</button>
+      </div>
+
+      <form class="cliente-form" (ngSubmit)="saveCliente()" #clienteForm="ngForm">
+        <label>
+          Nombre del Cliente / Tienda *
+          <input
+            name="nombreNegocio"
+            [(ngModel)]="newCliente.nombreNegocio"
+            placeholder="Ej: Tienda Don Pedro"
+            required
+          />
+        </label>
+
+        <label>
+          CI / NIT *
+          <input
+            name="ciNit"
+            [(ngModel)]="newCliente.ciNit"
+            placeholder="Ej: 1234567"
+            required
+          />
+        </label>
+
+        <label>
+          Teléfono / Celular
+          <input
+            name="celular"
+            [(ngModel)]="newCliente.celular"
+            placeholder="Ej: 77123456"
+          />
+        </label>
+
+        <label class="file-upload-label">Foto de la Fachada</label>
+        <div class="file-upload-box" (click)="openFileInput()">
+          <input
+            #fotoFachadaInput
+            type="file"
+            accept="image/*"
+            capture="environment"
+            (change)="onSeleccionarFoto($event)"
+            hidden
+          />
+          <button type="button" class="btn-primary file-upload-button">Seleccionar imagen</button>
+          <p class="file-upload-note">Formatos: JPG, PNG, WebP, GIF (máx. 5MB)</p>
+          <p class="file-upload-selected" *ngIf="archivoFotoCliente">Archivo: {{ archivoFotoCliente.name }}</p>
+        </div>
+
+        <div class="photo-preview" *ngIf="fotoPreview">
+          <img [src]="fotoPreview" alt="Preview de foto" />
+        </div>
+
+        <label>
+          Frecuencia de Visita *
+          <select name="frecuenciaVisita" [(ngModel)]="newCliente.frecuenciaVisita" required>
+            <option value="Diaria">Diaria</option>
+            <option value="Semanal">Semanal</option>
+            <option value="Quincenal">Quincenal</option>
+            <option value="Mensual">Mensual</option>
+          </select>
+        </label>
+
+        <div class="form-map-container" #formMapContainer></div>
+
+        <div class="location-box">
+          <span>Ubicación GPS</span>
+          <div class="location-values">
+            <strong>Lat:</strong>
+            <span>{{ newCliente.latitud ?? '---' }}</span>
+            <strong>Lng:</strong>
+            <span>{{ newCliente.longitud ?? '---' }}</span>
+          </div>
+          <div class="location-actions">
+            <button
+              type="button"
+              class="btn-secondary"
+              (click)="useCurrentLocation()"
+              [disabled]="detectingLocation"
+            >
+              {{ detectingLocation ? 'Obteniendo ubicación...' : 'Usar mi ubicación actual' }}
+            </button>
+          </div>
+          <p class="location-hint">Haz clic en el mapa o usa tu ubicación actual para fijar la dirección del cliente.</p>
+        </div>
+
+        <div class="form-footer">
+          <button type="button" class="btn-secondary" (click)="closeNuevoClienteModal()">Cancelar</button>
+          <button type="submit" class="btn-primary">Registrar Cliente</button>
+        </div>
+
+        <div class="form-error" *ngIf="clienteFormError">
+          {{ clienteFormError }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
