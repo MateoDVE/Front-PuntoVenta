@@ -1,21 +1,26 @@
 <nav class="navbar">
   <a routerLink="/vendedor/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-    <span class="icon">🏠</span>
+    <img class="icon" src="/NavbarVendedor-inicio.png" alt="Inicio" />
     <span>Inicio</span>
   </a>
 
-  <span class="link-disabled" title="Próximamente">
-    <span class="icon">🗺️</span>
+  <a routerLink="/vendedor/mapa" routerLinkActive="active">
+    <img class="icon" src="/NavbarVendedor-mapa.png" alt="Mapa" />
     <span>Mapa</span>
-  </span>
+  </a>
 
   <span class="link-disabled" title="Próximamente">
-    <span class="icon">🛒</span>
+    <img class="icon" src="/NavbarVendedor-venta.png" alt="Venta" />
     <span>Venta</span>
   </span>
 
   <span class="link-disabled" title="Próximamente">
-    <span class="icon">📋</span>
+    <img class="icon" src="/NavbarVendedor-cierre.png" alt="Cierre" />
     <span>Cierre</span>
   </span>
+
+  <a class="cerrar-sesion" (click)="cerrarSesion()" href="#">
+    <img class="icon" src="/NavbarVendedor-cerrar-sesion.png" alt="Cerrar sesión" />
+    <span>Cerrar</span>
+  </a>
 </nav>

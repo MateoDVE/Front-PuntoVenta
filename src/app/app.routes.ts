@@ -5,6 +5,7 @@ import { GestionVendedoresComponent } from './Pages/admin/gestion-vendedores/ges
 import { authGuard } from './guards/auth.guard';
 import { Catalogo } from './Pages/admin/catalogo/catalogo';
 import { DashboardVendedor } from './Pages/vendedor/dashboard-vendedor';
+import { Mapa } from './Pages/vendedor/mapa/mapa';
 import { Asignacion } from './Pages/admin/asignacion/asignacion';
 
 export const routes: Routes = [
@@ -39,9 +40,9 @@ export const routes: Routes = [
     data: { roles: ['admin', 'administrador'] }
   },
 
-  { path: 'vendedor/dashboard', component: DashboardVendedor, canActivate: [authGuard],data: { roles: ['vendedor'] }},
+  { path: 'vendedor/dashboard', component: DashboardVendedor, canActivate: [authGuard], data: { roles: ['vendedor'] } },
 
-  {path: 'vendedor/mapa', component: DashboardVendedor, canActivate: [authGuard],data: { roles: ['vendedor'] }},
+  { path: 'vendedor/mapa', component: Mapa, canActivate: [authGuard], data: { roles: ['vendedor'] } },
 
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
