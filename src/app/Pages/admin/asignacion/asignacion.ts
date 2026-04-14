@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
   ApiService,
   InventarioAsignacion,
@@ -35,7 +36,7 @@ interface TransporteStock {
 @Component({
   selector: 'app-asignacion',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminNavbar],
+  imports: [CommonModule, FormsModule, AdminNavbar, TranslateModule],
   templateUrl: './asignacion.html',
   styleUrl: './asignacion.scss',
 })
@@ -61,7 +62,8 @@ export class Asignacion implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -99,7 +101,7 @@ export class Asignacion implements OnInit {
         this.cargarStockPorTransporte();
       },
       error: (error) => {
-        this.errorMensaje = error?.error?.message ?? 'No se pudo cargar la información de asignación.';
+        this.errorMensaje = error?.error?.message ?? this.translate.instant('ADMIN.ASIGNACION.ERROR.LOAD_ASSIGNMENT_INFO');
         this.cargando = false;
       },
     });
@@ -147,7 +149,7 @@ export class Asignacion implements OnInit {
     this.errorMensaje = '';
 
     if (!this.selectedVendedorId) {
-      this.errorMensaje = 'Selecciona un vendedor para asignar stock.';
+      this.errorMensaje = this.translate.instant('ADMIN.ASIGNACION.ERROR.SELECT_SELLER');
       return;
     }
 
@@ -160,7 +162,7 @@ export class Asignacion implements OnInit {
       }));
 
     if (asignaciones.length === 0) {
-      this.errorMensaje = 'Ingresa al menos una cantidad mayor a cero.';
+      this.errorMensaje = this.translate.instant('ADMIN.ASIGNACION.ERROR.ENTER_QUANTITY');
       return;
     }
 
@@ -168,13 +170,13 @@ export class Asignacion implements OnInit {
 
     forkJoin(asignaciones.map((payload) => this.apiService.asignarStock(payload))).subscribe({
       next: () => {
-        this.exitoMensaje = 'Asignación registrada correctamente.';
+        this.exitoMensaje = this.translate.instant('ADMIN.ASIGNACION.SUCCESS.ASSIGNMENT_REGISTERED');
         this.productos = this.productos.map((producto) => ({ ...producto, cantidadAsignar: 0 }));
         this.cargarDatos();
         this.guardando = false;
       },
       error: (error) => {
-        this.errorMensaje = error?.error?.message ?? 'No se pudo registrar la asignación.';
+        this.errorMensaje = error?.error?.message ?? this.translate.instant('ADMIN.ASIGNACION.ERROR.REGISTER_ASSIGNMENT');
         this.guardando = false;
       },
     });
@@ -187,12 +189,12 @@ export class Asignacion implements OnInit {
 
     this.apiService.validarAsignacionAdmin(idCarga).subscribe({
       next: () => {
-        this.exitoMensaje = `Carga ${idCarga} validada por administrador.`;
+        this.exitoMensaje = this.translate.instant('ADMIN.ASIGNACION.SUCCESS.LOAD_VALIDATED', { idCarga });
         this.cargarStockPorTransporte();
         this.validandoCarga = '';
       },
       error: (error) => {
-        this.errorMensaje = error?.error?.message ?? 'No se pudo validar la carga seleccionada.';
+        this.errorMensaje = error?.error?.message ?? this.translate.instant('ADMIN.ASIGNACION.ERROR.VALIDATE_LOAD');
         this.validandoCarga = '';
       },
     });
@@ -207,12 +209,12 @@ export class Asignacion implements OnInit {
     this.exitoMensaje = '';
 
     if (!this.stockInicialProductoId) {
-      this.errorMensaje = 'Selecciona un producto para la carga inicial.';
+      this.errorMensaje = this.translate.instant('ADMIN.ASIGNACION.ERROR.SELECT_PRODUCT_INITIAL_STOCK');
       return;
     }
 
     if (!this.stockInicialCantidad || this.stockInicialCantidad <= 0) {
-      this.errorMensaje = 'La cantidad de stock inicial debe ser mayor a cero.';
+      this.errorMensaje = this.translate.instant('ADMIN.ASIGNACION.ERROR.INVALID_INITIAL_QUANTITY');
       return;
     }
 
@@ -225,13 +227,13 @@ export class Asignacion implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.exitoMensaje = 'Carga inicial registrada correctamente.';
+          this.exitoMensaje = this.translate.instant('ADMIN.ASIGNACION.SUCCESS.INITIAL_STOCK_REGISTERED');
           this.stockInicialCantidad = 0;
           this.cargarDatos();
           this.cargandoStockInicial = false;
         },
         error: (error) => {
-          this.errorMensaje = error?.error?.message ?? 'No se pudo registrar la carga inicial.';
+          this.errorMensaje = error?.error?.message ?? this.translate.instant('ADMIN.ASIGNACION.ERROR.REGISTER_INITIAL_STOCK');
           this.cargandoStockInicial = false;
         },
       });

@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { ApiService, Cliente as ApiCliente, CreateClientePayload } from '../../../services/api.service';
 import { AuthService, UserProfile } from '../../../services/auth.service';
@@ -9,7 +10,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-mapa',
   standalone: true,
-  imports: [CommonModule, FormsModule, VendedorNavbar],
+  imports: [CommonModule, FormsModule, VendedorNavbar, TranslateModule],
   templateUrl: './mapa.html',
   styleUrls: ['./mapa.scss'],
 })
@@ -46,7 +47,8 @@ export class Mapa implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private authService: AuthService
+    private authService: AuthService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -73,7 +75,7 @@ export class Mapa implements OnInit {
       },
       error: (err) => {
         console.error('Error al obtener usuario actual:', err);
-        this.error = 'No se pudo obtener la información del usuario. Vuelve a iniciar sesión.';
+        this.error = this.translate.instant('VENDEDOR.MAP.USER_INFO_ERROR');
       }
     });
   }
@@ -94,7 +96,7 @@ export class Mapa implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar clientes:', err);
-        this.error = 'No se pudieron cargar los clientes. Intenta de nuevo.';
+        this.error = this.translate.instant('VENDEDOR.MAP.CLIENT_LOAD_ERROR');
         this.loading = false;
       }
     });
@@ -171,7 +173,7 @@ export class Mapa implements OnInit {
     this.formPickerMarker = new googleMaps.maps.Marker({
       position: { lat, lng },
       map: this.formMap,
-      title: 'Ubicación del cliente',
+      title: this.translate.instant('VENDEDOR.MAP.CLIENT_LOCATION_TITLE'),
       icon: {
         path: googleMaps.maps.SymbolPath.CIRCLE,
         scale: 8,
@@ -187,7 +189,7 @@ export class Mapa implements OnInit {
 
   useCurrentLocation(): void {
     if (!navigator.geolocation) {
-      this.clienteFormError = 'Tu navegador no soporta la geolocalización.';
+      this.clienteFormError = this.translate.instant('VENDEDOR.MAP.GEOLOCATION_NOT_SUPPORTED');
       return;
     }
 
@@ -203,16 +205,16 @@ export class Mapa implements OnInit {
         this.detectingLocation = false;
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            this.clienteFormError = 'Permite el acceso a tu ubicación para usar esta opción.';
+            this.clienteFormError = this.translate.instant('VENDEDOR.MAP.GEOLOCATION_PERMISSION_DENIED');
             break;
           case error.POSITION_UNAVAILABLE:
-            this.clienteFormError = 'No se pudo obtener tu ubicación. Inténtalo de nuevo.';
+            this.clienteFormError = this.translate.instant('VENDEDOR.MAP.GEOLOCATION_UNAVAILABLE');
             break;
           case error.TIMEOUT:
-            this.clienteFormError = 'La solicitud de ubicación tardó demasiado. Vuelve a intentarlo.';
+            this.clienteFormError = this.translate.instant('VENDEDOR.MAP.GEOLOCATION_TIMEOUT');
             break;
           default:
-            this.clienteFormError = 'Error al obtener tu ubicación. Comprueba los permisos del navegador.';
+            this.clienteFormError = this.translate.instant('VENDEDOR.MAP.GEOLOCATION_ERROR');
         }
       },
       {
@@ -235,14 +237,14 @@ export class Mapa implements OnInit {
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      this.clienteFormError = 'Solo se aceptan imágenes JPEG, PNG o WebP.';
+      this.clienteFormError = this.translate.instant('VENDEDOR.MAP.UPLOAD_IMAGE_INVALID_TYPE');
       input.value = '';
       return;
     }
 
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      this.clienteFormError = 'La imagen no puede superar 5MB.';
+      this.clienteFormError = this.translate.instant('VENDEDOR.MAP.UPLOAD_IMAGE_TOO_LARGE');
       input.value = '';
       return;
     }
@@ -274,7 +276,7 @@ export class Mapa implements OnInit {
         },
         error: (err) => {
           console.error('Error al subir foto del cliente:', err);
-          reject(new Error('Error al subir la foto del cliente.'));
+          reject(new Error(this.translate.instant('VENDEDOR.MAP.UPLOAD_IMAGE_ERROR')));
         }
       });
     });
@@ -282,12 +284,12 @@ export class Mapa implements OnInit {
 
   saveCliente(): void {
     if (!this.newCliente.nombreNegocio?.trim() || !this.newCliente.ciNit?.trim()) {
-      this.clienteFormError = 'El nombre del cliente y el CI/NIT son campos obligatorios.';
+      this.clienteFormError = this.translate.instant('VENDEDOR.MAP.CLIENT_FORM_REQUIRED_FIELDS');
       return;
     }
 
     if (this.newCliente.latitud == null || this.newCliente.longitud == null) {
-      this.clienteFormError = 'Selecciona la ubicación del cliente en el mapa o usa tu ubicación actual.';
+      this.clienteFormError = this.translate.instant('VENDEDOR.MAP.CLIENT_FORM_LOCATION_REQUIRED');
       return;
     }
 
@@ -302,11 +304,11 @@ export class Mapa implements OnInit {
         },
         error: (err) => {
           console.error('Error al crear cliente:', err);
-          this.clienteFormError = 'No se pudo registrar el cliente. Verifica los datos e intenta de nuevo.';
+          this.clienteFormError = this.translate.instant('VENDEDOR.MAP.CLIENT_REGISTER_ERROR');
         }
       });
     }).catch((error) => {
-      this.clienteFormError = error instanceof Error ? error.message : 'No se pudo subir la foto.';
+      this.clienteFormError = error instanceof Error ? error.message : this.translate.instant('VENDEDOR.MAP.CLIENT_UPLOAD_ERROR');
     });
   }
 
@@ -316,7 +318,7 @@ export class Mapa implements OnInit {
       this.initMap();
     } catch (err) {
       console.error('Error cargando Google Maps:', err);
-      this.error = 'No se pudo cargar el mapa. Verifica la conexión y la clave de API.';
+      this.error = this.translate.instant('VENDEDOR.MAP.MAP_LOAD_ERROR');
     }
   }
 
@@ -385,7 +387,7 @@ export class Mapa implements OnInit {
         : '';
 
       const infoWindow = new googleMaps.maps.InfoWindow({
-        content: `${imgHtml}<strong>${ubicacion.nombre_negocio}</strong><br>CI/NIT: ${ubicacion.ci_nit}<br>Tel: ${ubicacion.celular || 'No especificado'}<br>Frecuencia: ${ubicacion.frecuencia_visita}`,
+        content: `${imgHtml}<strong>${ubicacion.nombre_negocio}</strong><br>${this.translate.instant('VENDEDOR.MAP.INFO_CI_NIT')}: ${ubicacion.ci_nit}<br>${this.translate.instant('VENDEDOR.MAP.INFO_PHONE')}: ${ubicacion.celular || this.translate.instant('VENDEDOR.MAP.INFO_NOT_SPECIFIED')}<br>${this.translate.instant('VENDEDOR.MAP.INFO_FREQUENCY')}: ${ubicacion.frecuencia_visita}`,
       });
 
       marker.addListener('click', () => infoWindow.open(this.map, marker));

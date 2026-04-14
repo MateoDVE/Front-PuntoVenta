@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface VendedorListado {
   id_usuario: string;
@@ -13,7 +14,7 @@ export interface VendedorListado {
 @Component({
   selector: 'app-vendedores-registrados',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './vendedores-registrados.html',
   styleUrl: './vendedores-registrados.scss',
 })

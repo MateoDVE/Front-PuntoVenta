@@ -1,8 +1,8 @@
 <aside class="sidebar">
   <header class="sidebar-brand">
     <div>
-      <h2>PuntoVenta</h2>
-      <p>Panel Administrador</p>
+      <h2>{{ 'ADMIN.NAVBAR.BRAND' | translate }}</h2>
+      <p>{{ 'ADMIN.NAVBAR.PANEL' | translate }}</p>
     </div>
   </header>
 
@@ -16,21 +16,37 @@
           [routerLinkActiveOptions]="{ exact: true }"
         >
           <span class="nav-icon {{ item.icon }}"></span>
-          {{ item.label }}
+          {{ item.labelKey | translate }}
         </a>
         <ng-template #disabledItem>
           <span class="is-disabled">
             <span class="nav-icon {{ item.icon }}"></span>
-            {{ item.label }}
+            {{ item.labelKey | translate }}
           </span>
         </ng-template>
       </li>
     </ul>
   </nav>
 
+  <div class="sidebar-language">
+    <button type="button" class="lang-toggle" (click)="toggleMenu()">
+      🌐 {{ idiomaLabel }}
+    </button>
+    <div class="lang-menu" [class.open]="menuAbierto">
+      <button
+        *ngFor="let idioma of idiomas"
+        type="button"
+        (click)="cambiarIdioma(idioma.value)"
+        [class.active]="idiomaActual === idioma.value"
+      >
+        {{ idioma.label }}
+      </button>
+    </div>
+  </div>
+
   <footer class="sidebar-footer">
-    <p>Sesion activa</p>
-    <strong>Administrador</strong>
-    <button type="button" (click)="onSignOut()">Cerrar Sesion</button>
+    <p>{{ 'ADMIN.NAVBAR.SESSION_ACTIVE' | translate }}</p>
+    <strong>{{ 'ADMIN.NAVBAR.ADMINISTRATOR' | translate }}</strong>
+    <button type="button" (click)="onSignOut()">{{ 'ADMIN.NAVBAR.LOGOUT' | translate }}</button>
   </footer>
 </aside>

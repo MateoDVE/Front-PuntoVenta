@@ -4,10 +4,10 @@
   <main class="mapa-main">
     <header class="mapa-header">
       <div>
-        <h2>Mapa de Clientes</h2>
-        <p>Gestiona tus clientes con geolocalización</p>
+        <h2>{{ 'VENDEDOR.MAP.TITLE' | translate }}</h2>
+        <p>{{ 'VENDEDOR.MAP.SUBTITLE' | translate }}</p>
       </div>
-      <button class="btn-primary" type="button" (click)="openNuevoClienteModal()">Nuevo Cliente</button>
+      <button class="btn-primary" type="button" (click)="openNuevoClienteModal()">{{ 'VENDEDOR.MAP.NEW_CLIENT_BUTTON' | translate }}</button>
     </header>
 
     <section class="mapa-grid">
@@ -15,8 +15,8 @@
 
       <aside class="map-sidebar">
         <div class="sidebar-card">
-          <h3>Clientes registrados</h3>
-          <p>Ubicaciones de los clientes activos cerca de tu zona.</p>
+          <h3>{{ 'VENDEDOR.MAP.REGISTERED_CLIENTS_TITLE' | translate }}</h3>
+          <p>{{ 'VENDEDOR.MAP.REGISTERED_CLIENTS_SUBTITLE' | translate }}</p>
           <ul class="cliente-list">
             <li *ngFor="let cliente of ubicaciones">
               <div class="cliente-item">
@@ -28,10 +28,10 @@
                 </div>
                 <div class="cliente-info">
                   <strong>{{ cliente.nombre_negocio }}</strong>
-                  <p>CI/NIT: {{ cliente.ci_nit }}</p>
-                  <p>Teléfono: {{ cliente.celular || 'No especificado' }}</p>
-                  <p>Frecuencia: {{ cliente.frecuencia_visita }}</p>
-                  <span class="status">{{ cliente.estado || 'ACTIVO' }}</span>
+                  <p>{{ 'VENDEDOR.MAP.CI_NIT_LABEL' | translate }}: {{ cliente.ci_nit }}</p>
+                  <p>{{ 'VENDEDOR.MAP.PHONE_LABEL' | translate }}: {{ cliente.celular || ('VENDEDOR.MAP.NOT_SPECIFIED' | translate) }}</p>
+                  <p>{{ 'VENDEDOR.MAP.FREQUENCY_LABEL' | translate }}: {{ cliente.frecuencia_visita }}</p>
+                  <span class="status">{{ ('VENDEDOR.MAP.STATUS.' + (cliente.estado || 'ACTIVO')) | translate }}</span>
                 </div>
               </div>
             </li>
@@ -39,13 +39,13 @@
         </div>
 
         <div class="sidebar-card" *ngIf="error">
-          <strong>Error:</strong>
+          <strong>{{ 'VENDEDOR.MAP.ERROR_TITLE' | translate }}</strong>
           <p>{{ error }}</p>
         </div>
 
         <div class="sidebar-card" *ngIf="loading">
-          <strong>Cargando clientes...</strong>
-          <p>Espera un momento mientras traemos los datos desde el servidor.</p>
+          <strong>{{ 'VENDEDOR.MAP.LOADING_CLIENTS_TITLE' | translate }}</strong>
+          <p>{{ 'VENDEDOR.MAP.LOADING_CLIENTS_SUBTITLE' | translate }}</p>
         </div>
       </aside>
     </section>
@@ -55,43 +55,43 @@
     <div class="modal-card">
       <div class="modal-header">
         <div>
-          <h3>Registrar Nuevo Cliente</h3>
-          <p>Haz clic en el mapa para seleccionar la ubicación exacta.</p>
+          <h3>{{ 'VENDEDOR.MAP.NEW_CLIENT_MODAL_TITLE' | translate }}</h3>
+          <p>{{ 'VENDEDOR.MAP.NEW_CLIENT_MODAL_SUBTITLE' | translate }}</p>
         </div>
         <button class="btn-close" type="button" (click)="closeNuevoClienteModal()">×</button>
       </div>
 
       <form class="cliente-form" (ngSubmit)="saveCliente()" #clienteForm="ngForm">
         <label>
-          Nombre del Cliente / Tienda *
+          {{ 'VENDEDOR.MAP.CLIENT_NAME_LABEL' | translate }} *
           <input
             name="nombreNegocio"
             [(ngModel)]="newCliente.nombreNegocio"
-            placeholder="Ej: Tienda Don Pedro"
+            placeholder="{{ 'VENDEDOR.MAP.CLIENT_NAME_PLACEHOLDER' | translate }}"
             required
           />
         </label>
 
         <label>
-          CI / NIT *
+          {{ 'VENDEDOR.MAP.CI_NIT_LABEL' | translate }} *
           <input
             name="ciNit"
             [(ngModel)]="newCliente.ciNit"
-            placeholder="Ej: 1234567"
+            placeholder="{{ 'VENDEDOR.MAP.CI_NIT_PLACEHOLDER' | translate }}"
             required
           />
         </label>
 
         <label>
-          Teléfono / Celular
+          {{ 'VENDEDOR.MAP.PHONE_LABEL' | translate }}
           <input
             name="celular"
             [(ngModel)]="newCliente.celular"
-            placeholder="Ej: 77123456"
+            placeholder="{{ 'VENDEDOR.MAP.PHONE_PLACEHOLDER' | translate }}"
           />
         </label>
 
-        <label class="file-upload-label">Foto de la Fachada</label>
+        <label class="file-upload-label">{{ 'VENDEDOR.MAP.FACADE_PHOTO_LABEL' | translate }}</label>
         <div class="file-upload-box" (click)="openFileInput()">
           <input
             #fotoFachadaInput
@@ -101,9 +101,9 @@
             (change)="onSeleccionarFoto($event)"
             hidden
           />
-          <button type="button" class="btn-primary file-upload-button">Seleccionar imagen</button>
-          <p class="file-upload-note">Formatos: JPG, PNG, WebP, GIF (máx. 5MB)</p>
-          <p class="file-upload-selected" *ngIf="archivoFotoCliente">Archivo: {{ archivoFotoCliente.name }}</p>
+          <button type="button" class="btn-primary file-upload-button">{{ 'VENDEDOR.MAP.SELECT_IMAGE_BUTTON' | translate }}</button>
+          <p class="file-upload-note">{{ 'VENDEDOR.MAP.IMAGE_FORMATS_NOTE' | translate }}</p>
+          <p class="file-upload-selected" *ngIf="archivoFotoCliente">{{ 'VENDEDOR.MAP.FILE_SELECTED_LABEL' | translate }}: {{ archivoFotoCliente.name }}</p>
         </div>
 
         <div class="photo-preview" *ngIf="fotoPreview">
@@ -111,23 +111,23 @@
         </div>
 
         <label>
-          Frecuencia de Visita *
+          {{ 'VENDEDOR.MAP.FREQUENCY_LABEL' | translate }} *
           <select name="frecuenciaVisita" [(ngModel)]="newCliente.frecuenciaVisita" required>
-            <option value="Diaria">Diaria</option>
-            <option value="Semanal">Semanal</option>
-            <option value="Quincenal">Quincenal</option>
-            <option value="Mensual">Mensual</option>
+            <option value="Diaria">{{ 'VENDEDOR.MAP.FREQUENCY_DAILY' | translate }}</option>
+            <option value="Semanal">{{ 'VENDEDOR.MAP.FREQUENCY_WEEKLY' | translate }}</option>
+            <option value="Quincenal">{{ 'VENDEDOR.MAP.FREQUENCY_BIWEEKLY' | translate }}</option>
+            <option value="Mensual">{{ 'VENDEDOR.MAP.FREQUENCY_MONTHLY' | translate }}</option>
           </select>
         </label>
 
         <div class="form-map-container" #formMapContainer></div>
 
         <div class="location-box">
-          <span>Ubicación GPS</span>
+          <span>{{ 'VENDEDOR.MAP.GPS_LOCATION_LABEL' | translate }}</span>
           <div class="location-values">
-            <strong>Lat:</strong>
+            <strong>{{ 'VENDEDOR.MAP.LAT_LABEL' | translate }}</strong>
             <span>{{ newCliente.latitud ?? '---' }}</span>
-            <strong>Lng:</strong>
+            <strong>{{ 'VENDEDOR.MAP.LNG_LABEL' | translate }}</strong>
             <span>{{ newCliente.longitud ?? '---' }}</span>
           </div>
           <div class="location-actions">
@@ -137,15 +137,15 @@
               (click)="useCurrentLocation()"
               [disabled]="detectingLocation"
             >
-              {{ detectingLocation ? 'Obteniendo ubicación...' : 'Usar mi ubicación actual' }}
+              {{ detectingLocation ? ('VENDEDOR.MAP.LOCATION_DETECTING' | translate) : ('VENDEDOR.MAP.USE_CURRENT_LOCATION' | translate) }}
             </button>
           </div>
-          <p class="location-hint">Haz clic en el mapa o usa tu ubicación actual para fijar la dirección del cliente.</p>
+          <p class="location-hint">{{ 'VENDEDOR.MAP.LOCATION_HINT' | translate }}</p>
         </div>
 
         <div class="form-footer">
-          <button type="button" class="btn-secondary" (click)="closeNuevoClienteModal()">Cancelar</button>
-          <button type="submit" class="btn-primary">Registrar Cliente</button>
+          <button type="button" class="btn-secondary" (click)="closeNuevoClienteModal()">{{ 'VENDEDOR.MAP.CANCEL_BUTTON' | translate }}</button>
+          <button type="submit" class="btn-primary">{{ 'VENDEDOR.MAP.REGISTER_CLIENT_BUTTON' | translate }}</button>
         </div>
 
         <div class="form-error" *ngIf="clienteFormError">

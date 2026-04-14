@@ -14,6 +14,8 @@ export class App {
 
   constructor(private translate: TranslateService) {
     translate.addLangs(['es', 'en', 'qu']);
+    translate.setDefaultLang('es');
+    translate.setDefaultLang('es');
     const idiomaGuardado = localStorage.getItem('idioma') || 'es';
     translate.use(idiomaGuardado);
   }

@@ -1,26 +1,39 @@
-<nav class="navbar">
-  <a routerLink="/vendedor/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-    <img class="icon" src="/NavbarVendedor-inicio.png" alt="Inicio" />
-    <span>Inicio</span>
-  </a>
+<div class="navbar-container">
+  <nav class="navbar">
+    <a routerLink="/vendedor/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <img class="icon" src="/NavbarVendedor-inicio.png" alt="{{ 'VENDEDOR.NAVBAR.HOME' | translate }}" />
+      <span>{{ 'VENDEDOR.NAVBAR.HOME' | translate }}</span>
+    </a>
 
-  <a routerLink="/vendedor/mapa" routerLinkActive="active">
-    <img class="icon" src="/NavbarVendedor-mapa.png" alt="Mapa" />
-    <span>Mapa</span>
-  </a>
+    <a routerLink="/vendedor/mapa" routerLinkActive="active">
+      <img class="icon" src="/NavbarVendedor-mapa.png" alt="{{ 'VENDEDOR.NAVBAR.MAP' | translate }}" />
+      <span>{{ 'VENDEDOR.NAVBAR.MAP' | translate }}</span>
+    </a>
 
-  <span class="link-disabled" title="Próximamente">
-    <img class="icon" src="/NavbarVendedor-venta.png" alt="Venta" />
-    <span>Venta</span>
-  </span>
+    <span class="link-disabled" title="{{ 'VENDEDOR.NAVBAR.COMING_SOON' | translate }}">
+      <img class="icon" src="/NavbarVendedor-venta.png" alt="{{ 'VENDEDOR.NAVBAR.SALES' | translate }}" />
+      <span>{{ 'VENDEDOR.NAVBAR.SALES' | translate }}</span>
+    </span>
 
-  <span class="link-disabled" title="Próximamente">
-    <img class="icon" src="/NavbarVendedor-cierre.png" alt="Cierre" />
-    <span>Cierre</span>
-  </span>
+    <span class="link-disabled" title="{{ 'VENDEDOR.NAVBAR.COMING_SOON' | translate }}">
+      <img class="icon" src="/NavbarVendedor-cierre.png" alt="{{ 'VENDEDOR.NAVBAR.CLOSURE' | translate }}" />
+      <span>{{ 'VENDEDOR.NAVBAR.CLOSURE' | translate }}</span>
+    </span>
 
-  <a class="cerrar-sesion" (click)="cerrarSesion()" href="#">
-    <img class="icon" src="/NavbarVendedor-cerrar-sesion.png" alt="Cerrar sesión" />
-    <span>Cerrar</span>
-  </a>
-</nav>
+    <a class="cerrar-sesion" (click)="cerrarSesion()" href="#">
+      <img class="icon" src="/NavbarVendedor-cerrar-sesion.png" alt="{{ 'VENDEDOR.NAVBAR.LOGOUT' | translate }}" />
+      <span>{{ 'VENDEDOR.NAVBAR.LOGOUT_SHORT' | translate }}</span>
+    </a>
+  </nav>
+
+  <div class="language-control">
+    <button class="language-switch" type="button" (click)="toggleMenu()" aria-label="{{ 'VENDEDOR.NAVBAR.LANGUAGE' | translate }}">
+      {{ idiomaLabel }}
+    </button>
+    <ul class="language-options" *ngIf="menuAbierto">
+      <li *ngFor="let item of idiomas" (click)="cambiarIdioma(item.value)">
+        {{ item.label }}
+      </li>
+    </ul>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { ApiService, InventarioAsignacion, Producto, Usuario } from '../../../services/api.service';
 import { forkJoin } from 'rxjs';
@@ -14,7 +15,7 @@ interface ProductoTransporte {
 @Component({
   selector: 'app-dashboard-vendedor',
   standalone: true,
-  imports: [CommonModule, VendedorNavbar],
+  imports: [CommonModule, VendedorNavbar, TranslateModule],
   templateUrl: './dashboard-vendedor.html',
   styleUrls: ['./dashboard-vendedor.scss']
 })
@@ -28,7 +29,11 @@ export class DashboardVendedor implements OnInit {
   errorMensaje = '';
   exitoMensaje = '';
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private translate: TranslateService) {
+    const idioma = localStorage.getItem('idioma') || 'es';
+  this.translate.setDefaultLang('es');
+  this.translate.use(idioma);
+  }
 
   ngOnInit(): void {
     this.cargarDashboard();
@@ -52,13 +57,13 @@ export class DashboardVendedor implements OnInit {
             this.cargando = false;
           },
           error: (error) => {
-            this.errorMensaje = error?.error?.message ?? 'No se pudo cargar el inventario del transporte.';
+            this.errorMensaje = error?.error?.message ?? this.translate.instant('VENDEDOR.DASHBOARD.CANNOT_LOAD_DASHBOARD');
             this.cargando = false;
           },
         });
       },
       error: (error) => {
-        this.errorMensaje = error?.error?.message ?? 'No se pudo cargar tu perfil.';
+        this.errorMensaje = error?.error?.message ?? this.translate.instant('VENDEDOR.DASHBOARD.CANNOT_LOAD_PROFILE');
         this.cargando = false;
       },
     });
@@ -71,12 +76,12 @@ export class DashboardVendedor implements OnInit {
 
     this.apiService.confirmarSalidaVendedor(idCarga).subscribe({
       next: () => {
-        this.exitoMensaje = `Carga ${idCarga} confirmada correctamente.`;
+        this.exitoMensaje = this.translate.instant('VENDEDOR.DASHBOARD.LOAD_CONFIRMED', { idCarga });
         this.confirmando = '';
         this.cargarDashboard();
       },
       error: (error) => {
-        this.errorMensaje = error?.error?.message ?? 'No se pudo confirmar la carga.';
+        this.errorMensaje = error?.error?.message ?? this.translate.instant('VENDEDOR.DASHBOARD.CANNOT_CONFIRM_LOAD');
         this.confirmando = '';
       },
     });
@@ -138,6 +143,12 @@ export class DashboardVendedor implements OnInit {
   getNombreProducto(idProducto: string): string {
     const producto = this.productosCatalogo.find((item) => String(item.id_producto) === String(idProducto));
     return producto?.nombre ?? `Producto ${idProducto}`;
+  }
+
+  translateEstado(estado: string | null | undefined): string {
+    const key = `VENDEDOR.STATUS.${this.normalizarEstado(estado)}`;
+    const translation = this.translate.instant(key);
+    return translation !== key ? translation : estado ?? '';
   }
 
   private normalizarEstado(estado: string | null | undefined): string {
