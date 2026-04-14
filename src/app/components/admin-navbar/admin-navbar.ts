@@ -1,32 +1,64 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 interface AdminNavItem {
-  label: string;
+  labelKey: string;
   href?: string;
-  icon: string;
+  current?: boolean;
   disabled?: boolean;
+  icon: string;
 }
 
 @Component({
   selector: 'app-admin-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule],
   templateUrl: './admin-navbar.html',
-  styleUrl: './admin-navbar.scss',
+  styleUrls: ['./admin-navbar.scss'],
 })
 export class AdminNavbar {
   @Output() signOut = new EventEmitter<void>();
 
   navItems: AdminNavItem[] = [
-    { label: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard' },
-    { label: 'Vendedores', href: '/admin/gestion-vendedores', icon: 'vendedores' },
-    { label: 'Catalogo', href: '/admin/catalogo', icon: 'catalogo' },
-    { label: 'Asignacion', href: '/admin/asignacion', icon: 'asignacion' },
-    { label: 'Monitor', disabled: true, icon: 'monitor' },
-    { label: 'Reportes', disabled: true, icon: 'reportes' },
+    { labelKey: 'ADMIN.NAVBAR.DASHBOARD', href: '/admin/dashboard', icon: 'dashboard' },
+    { labelKey: 'ADMIN.NAVBAR.VENDEDORES', href: '/admin/gestion-vendedores', icon: 'vendedores' },
+    { labelKey: 'ADMIN.NAVBAR.CATALOGO', href: '/admin/catalogo', icon: 'catalogo' },
+    { labelKey: 'ADMIN.NAVBAR.ASIGNACION', href: '/admin/asignacion', icon: 'asignacion' },
+    { labelKey: 'ADMIN.NAVBAR.MONITOR', disabled: true, icon: 'monitor' },
+    { labelKey: 'ADMIN.NAVBAR.REPORTES', disabled: true, icon: 'reportes' },
   ];
+
+  idiomaActual: string = 'es';
+  menuAbierto: boolean = false;
+  idiomas = [
+    { value: 'es', label: '🇧🇴 Español' },
+    { value: 'en', label: '🇺🇸 English' },
+    { value: 'qu', label: '🌿 Quechua' }
+  ];
+
+  constructor(private translate: TranslateService) {
+    const idiomaGuardado = localStorage.getItem('idioma') || 'es';
+    this.idiomaActual = idiomaGuardado;
+    this.translate.use(idiomaGuardado);
+  }
+
+  get idiomaLabel(): string {
+    const idioma = this.idiomas.find((item) => item.value === this.idiomaActual);
+    return idioma ? idioma.label : '🌐 Idioma';
+  }
+
+  toggleMenu(): void {
+    this.menuAbierto = !this.menuAbierto;
+  }
+
+  cambiarIdioma(idioma: string): void {
+    this.idiomaActual = idioma;
+    this.translate.use(idioma);
+    localStorage.setItem('idioma', idioma);
+    this.menuAbierto = false;
+  }
 
   onSignOut(): void {
     this.signOut.emit();

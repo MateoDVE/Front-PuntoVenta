@@ -4,88 +4,89 @@
 
 		<main class="asignacion-main">
 			<header class="main-header">
-				<h2>Asignación de Carga</h2>
-				<p>Transfiere stock del almacén a unidades de transporte</p>
+				<h2>{{ 'ADMIN.ASIGNACION.TITLE' | translate }}</h2>
+				<p>{{ 'ADMIN.ASIGNACION.SUBTITLE' | translate }}</p>
 			</header>
 
 			<div *ngIf="errorMensaje" class="feedback error">{{ errorMensaje }}</div>
 			<div *ngIf="exitoMensaje" class="feedback success">{{ exitoMensaje }}</div>
 
-			<section class="panel-grid" aria-label="Gestión de asignación de carga">
+			<section class="panel-grid" aria-label="{{ 'ADMIN.ASIGNACION.ARIA_ASSIGNMENT_LABEL' | translate }}">
 				<section class="panel panel-form" aria-labelledby="nueva-asignacion-title">
 					<header>
-						<h3 id="nueva-asignacion-title">Nueva Asignación</h3>
+						<h3 id="nueva-asignacion-title">{{ 'ADMIN.ASIGNACION.NEW_ASSIGNMENT_TITLE' | translate }}</h3>
 					</header>
 
 					<div class="field-group">
-					<label for="vendedor-search">Buscar vendedor</label>
-					<input
-						id="vendedor-search"
-						type="search"
-						[(ngModel)]="busquedaVendedor"
-						name="vendedor_search"
-						placeholder="Escribe nombre o email"
-					/>
-				</div>
+						<label for="vendedor-search">{{ 'ADMIN.ASIGNACION.SELLER_SEARCH_LABEL' | translate }}</label>
+						<input
+							id="vendedor-search"
+							type="search"
+							[(ngModel)]="busquedaVendedor"
+							name="vendedor_search"
+							placeholder="{{ 'ADMIN.ASIGNACION.SELLER_SEARCH_PLACEHOLDER' | translate }}"
+						/>
+					</div>
 
-				<div class="field-group">
-					<label for="vendedor">Seleccionar Vendedor</label>
-					<select id="vendedor" name="vendedor" [(ngModel)]="selectedVendedorId">
-						<option value="" disabled>Selecciona un vendedor</option>
-						<option *ngFor="let vendedor of vendedoresFiltrados" [value]="vendedor.id_usuario">
-							{{ vendedor.nombre }} - {{ vendedor.email }}
-						</option>
-						<option *ngIf="vendedoresFiltrados.length === 0" value="" disabled>No se encontraron vendedores</option>
-					</select>
-				</div>
+					<div class="field-group">
+						<label for="vendedor">{{ 'ADMIN.ASIGNACION.SELECT_SELLER_LABEL' | translate }}</label>
+						<select id="vendedor" name="vendedor" [(ngModel)]="selectedVendedorId">
+							<option value="" disabled>{{ 'ADMIN.ASIGNACION.SELECT_SELLER_PLACEHOLDER' | translate }}</option>
+							<option *ngFor="let vendedor of vendedoresFiltrados" [value]="vendedor.id_usuario">
+								{{ vendedor.nombre }} - {{ vendedor.email }}
+							</option>
+							<option *ngIf="vendedoresFiltrados.length === 0" value="" disabled>{{ 'ADMIN.ASIGNACION.NO_SELLERS_FOUND' | translate }}</option>
+						</select>
+					</div>
+
 					<p class="info-message">
-						Esta operación reemplazará el stock actual del transporte y actualizará el stock global del almacén.
+						{{ 'ADMIN.ASIGNACION.INFO_MESSAGE' | translate }}
 					</p>
 
 					<div class="field-group">
-						<label>Asignar Productos</label>
+						<label>{{ 'ADMIN.ASIGNACION.ASSIGN_PRODUCTS_LABEL' | translate }}</label>
 
 						<div class="product-list">
 							<article class="product-row" *ngFor="let producto of productos">
 								<header>
 									<h4>{{ producto.nombre }}</h4>
-									<span class="badge">ID {{ producto.id }}</span>
+									<span class="badge">{{ 'ADMIN.ASIGNACION.PRODUCT_ID' | translate }} {{ producto.id }}</span>
 								</header>
-								<p>Disponible: {{ producto.disponible }} unidades</p>
+								<p>{{ 'ADMIN.ASIGNACION.AVAILABLE' | translate }}: {{ producto.disponible }} {{ 'ADMIN.ASIGNACION.UNITS' | translate }}</p>
 								<input
 									type="number"
 									name="cantidad-{{ producto.id }}"
 									[(ngModel)]="producto.cantidadAsignar"
 									[min]="0"
 									[max]="producto.disponible"
-									placeholder="Cantidad"
+									placeholder="{{ 'ADMIN.ASIGNACION.QUANTITY_PLACEHOLDER' | translate }}"
 								/>
 							</article>
 						</div>
 					</div>
 
 					<button type="button" class="btn-primary" [disabled]="guardando || cargando" (click)="onAsignarStock()">
-						{{ guardando ? 'Guardando...' : 'Asignar Stock' }}
+						{{ guardando ? ('ADMIN.ASIGNACION.SAVING' | translate) : ('ADMIN.ASIGNACION.ASSIGN_STOCK' | translate) }}
 					</button>
 				</section>
 
 				<aside class="panel panel-stock" aria-labelledby="stock-transporte-title">
 					<header>
-						<h3 id="stock-transporte-title">Stock Actual por Transporte</h3>
+						<h3 id="stock-transporte-title">{{ 'ADMIN.ASIGNACION.CURRENT_STOCK_TITLE' | translate }}</h3>
 					</header>
 
-					<div *ngIf="cargando" class="empty-stock">Cargando inventario de transporte...</div>
-					<div *ngIf="!cargando && stockPorTransporte.length === 0" class="empty-stock">No hay cargas registradas.</div>
+					<div *ngIf="cargando" class="empty-stock">{{ 'ADMIN.ASIGNACION.LOADING_TRANSPORT_INVENTORY' | translate }}</div>
+					<div *ngIf="!cargando && stockPorTransporte.length === 0" class="empty-stock">{{ 'ADMIN.ASIGNACION.NO_LOADS_MESSAGE' | translate }}</div>
 
 					<article class="transport-card" *ngFor="let transporte of stockPorTransporte">
 						<header>
 							<div>
 								<h4>{{ transporte.vendedor }}</h4>
-								<p>ID vendedor: {{ transporte.vendedorId }}</p>
+								<p>{{ 'ADMIN.ASIGNACION.SELLER_ID' | translate }}: {{ transporte.vendedorId }}</p>
 							</div>
 							<div class="total-items">
 								<strong>{{ transporte.totalItems }}</strong>
-								<small>Total Items</small>
+								<small>{{ 'ADMIN.ASIGNACION.TOTAL_ITEMS' | translate }}</small>
 							</div>
 						</header>
 
@@ -94,11 +95,11 @@
 								<div>
 									<span>{{ item.nombre }}</span>
 									<small class="estado" [class.pending]="item.estado === 'PENDIENTE'" [class.admin]="item.estado === 'VALIDADO_ADMIN'" [class.valid]="item.estado === 'VALIDADO'">
-										{{ item.estado }}
+										{{ ('ADMIN.ASIGNACION.STATUS.' + item.estado.toUpperCase()) | translate }}
 									</small>
 								</div>
 								<div class="item-actions">
-									<strong>{{ item.cantidad }} u.</strong>
+									<strong>{{ item.cantidad }} {{ 'ADMIN.ASIGNACION.UNITS_SHORT' | translate }}</strong>
 									<button
 										type="button"
 										class="btn-inline"
@@ -106,62 +107,56 @@
 										[disabled]="validandoCarga === item.idCarga"
 										(click)="validarCargaAdmin(item.idCarga)"
 									>
-										{{ validandoCarga === item.idCarga ? 'Validando...' : 'Validar Admin' }}
+										{{ validandoCarga === item.idCarga ? ('ADMIN.ASIGNACION.VALIDATING' | translate) : ('ADMIN.ASIGNACION.VALIDATE_ADMIN' | translate) }}
 									</button>
 								</div>
 							</li>
 						</ul>
 					</article>
 				</aside>
-			</section>
+		</section>
 
-			<section class="panel panel-global" aria-labelledby="stock-global-title">
-				<header>
-					<h3 id="stock-global-title">Stock Global del Almacén</h3>
-				</header>
+		<section class="panel panel-global" aria-labelledby="stock-global-title">
+			<header>
+				<h3 id="stock-global-title">{{ 'ADMIN.ASIGNACION.GLOBAL_STOCK_TITLE' | translate }}</h3>
+			</header>
 
-				<div class="stock-inicial-form">
-					<div class="field-group">
-						<label for="stock-inicial-producto">Producto</label>
-						<select id="stock-inicial-producto" name="stock-inicial-producto" [(ngModel)]="stockInicialProductoId">
-							<option value="" disabled>Selecciona un producto</option>
-							<option *ngFor="let producto of productos" [value]="producto.id">
-								{{ producto.nombre }} (Stock actual: {{ producto.disponible }})
-							</option>
-						</select>
-					</div>
-
-					<div class="field-group">
-						<label for="stock-inicial-cantidad">Cantidad a ingresar</label>
-						<input
-							id="stock-inicial-cantidad"
-							type="number"
-							name="stock-inicial-cantidad"
-							[(ngModel)]="stockInicialCantidad"
-							[min]="1"
-							placeholder="Ej: 100"
-						/>
-					</div>
-
-					<button
-						type="button"
-						class="btn-secondary"
-						[disabled]="cargandoStockInicial || cargando"
-						(click)="onCargarStockInicial()"
-					>
-						{{ cargandoStockInicial ? 'Registrando...' : 'Registrar Cantidad' }}
-					</button>
+			<div class="stock-inicial-form">
+				<div class="field-group">
+					<label for="stock-inicial-producto">{{ 'ADMIN.ASIGNACION.INITIAL_STOCK_PRODUCT_LABEL' | translate }}</label>
+					<select id="stock-inicial-producto" name="stock-inicial-producto" [(ngModel)]="stockInicialProductoId">
+						<option value="" disabled>{{ 'ADMIN.ASIGNACION.SELECT_PRODUCT_PLACEHOLDER' | translate }}</option>
+						<option *ngFor="let producto of productos" [value]="producto.id">
+							{{ producto.nombre }} ({{ 'ADMIN.ASIGNACION.CURRENT_STOCK_LABEL' | translate }}: {{ producto.disponible }})
+						</option>
+					</select>
 				</div>
 
-				<div class="global-grid">
-					<article class="global-item" *ngFor="let producto of productos">
-						<h4>{{ producto.nombre }}</h4>
-						<strong>{{ producto.disponible }}</strong>
-						<small>unidades</small>
-					</article>
+				<div class="field-group">
+					<label for="stock-inicial-cantidad">{{ 'ADMIN.ASIGNACION.INITIAL_STOCK_QUANTITY_LABEL' | translate }}</label>
+					<input
+						id="stock-inicial-cantidad"
+						type="number"
+						name="stock-inicial-cantidad"
+						[(ngModel)]="stockInicialCantidad"
+						[min]="1"
+						placeholder="{{ 'ADMIN.ASIGNACION.INITIAL_STOCK_QUANTITY_PLACEHOLDER' | translate }}"
+					/>
 				</div>
-			</section>
-		</main>
-	</div>
-</div>
+
+				<button
+					type="button"
+					class="btn-secondary"
+					[disabled]="cargandoStockInicial || cargando"
+					(click)="onCargarStockInicial()"
+				>
+					{{ cargandoStockInicial ? ('ADMIN.ASIGNACION.REGISTERING' | translate) : ('ADMIN.ASIGNACION.REGISTER_QUANTITY' | translate) }}
+				</button>
+			</div>
+
+			<div class="global-grid">
+				<article class="global-item" *ngFor="let producto of productos">
+					<h4>{{ producto.nombre }}</h4>
+					<strong>{{ producto.disponible }}</strong>
+					<small>{{ 'ADMIN.ASIGNACION.UNITS' | translate }}</small>
 

@@ -7,40 +7,40 @@
 		  <section class="vendedores" aria-labelledby="vendedores-title">
 		    <header class="page-header">
 		      <div class="page-header__copy">
-		        <h1 id="vendedores-title">Gestión de Vendedores</h1>
-		        <p>Administra vendedores y sus vehículos de transporte</p>
+		        <h1 id="vendedores-title">{{ 'ADMIN.GESTION.TITLE' | translate }}</h1>
+		        <p>{{ 'ADMIN.GESTION.SUBTITLE' | translate }}</p>
 		      </div>
 
-		      <button type="button" class="btn btn-primary" (click)="abrirModalNuevo()">Nuevo vendedor</button>
+		      <button type="button" class="btn btn-primary" (click)="abrirModalNuevo()">{{ 'ADMIN.GESTION.NEW_VENDOR_BUTTON' | translate }}</button>
 		    </header>
 
 		    <section class="stats" aria-label="Resumen de indicadores">
 		      <article class="stat">
 					<span class="stat-icon icon-users" aria-hidden="true"></span>
 					<p class="stat__value">{{ totalVendedores }}</p>
-					<p class="stat__label">Total vendedores</p>
+					<p class="stat__label">{{ 'ADMIN.GESTION.STATS.TOTAL_VENDORS' | translate }}</p>
 				</article>
 
 				<article class="stat">
 					<span class="stat-icon icon-truck" aria-hidden="true"></span>
 					<p class="stat__value">{{ enRuta }}</p>
-					<p class="stat__label">En ruta</p>
+					<p class="stat__label">{{ 'ADMIN.GESTION.STATS.IN_ROUTE' | translate }}</p>
 				</article>
 
 				<article class="stat">
 					<span class="stat-icon icon-box" aria-hidden="true"></span>
 					<p class="stat__value">{{ ventasTotales }}</p>
-					<p class="stat__label">Ventas totales</p>
+					<p class="stat__label">{{ 'ADMIN.GESTION.STATS.TOTAL_SALES' | translate }}</p>
 				</article>
 
 				<article class="stat">
 					<span class="stat-icon icon-income" aria-hidden="true"></span>
 					<p class="stat__value">{{ ingresos }}</p>
-					<p class="stat__label">Ingresos (Bs.)</p>
+					<p class="stat__label">{{ 'ADMIN.GESTION.STATS.REVENUE_BS' | translate }}</p>
 				</article>
 			</section>
 
-			<div *ngIf="cargando" class="loading" role="status" aria-live="polite">Cargando vendedores...</div>
+<div *ngIf="cargando" class="loading" role="status" aria-live="polite">{{ 'ADMIN.GESTION.LOADING_VENDORS' | translate }}</div>
 
 			<p *ngIf="!cargando && errorMensaje" class="page-error" role="alert">{{ errorMensaje }}</p>
 
@@ -54,33 +54,32 @@
 			<div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
 		      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-vendedor-title" (click)="$event.stopPropagation()">
 		        <header class="modal__header">
-		          <h2 id="modal-vendedor-title">{{ editando ? 'Editar vendedor' : 'Nuevo vendedor' }}</h2>
-		          <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar formulario">x</button>
+		          <h2 id="modal-vendedor-title">{{ editando ? ('ADMIN.GESTION.VENDOR.EDIT_TITLE' | translate) : ('ADMIN.GESTION.VENDOR.NEW_TITLE' | translate) }}</h2>
+		          <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="{{ 'ADMIN.GESTION.VENDOR.CLOSE_FORM' | translate }}">x</button>
 		        </header>
 
 		        <form class="modal__form">
 		          <fieldset class="form-card form-card--info">
-		            <legend>Información personal</legend>
+            <legend>{{ 'ADMIN.GESTION.VENDOR.PERSONAL_INFO' | translate }}</legend>
 
-		            <label for="nombre">Nombre completo *</label>
-		            <input id="nombre" type="text" name="nombre" [(ngModel)]="formulario.nombre" placeholder="Ej: Juan Pérez" autocomplete="off">
-		          </fieldset>
+            <label for="nombre">{{ 'ADMIN.GESTION.VENDOR.NAME_LABEL' | translate }} *</label>
+            <input id="nombre" type="text" name="nombre" [(ngModel)]="formulario.nombre" placeholder="{{ 'ADMIN.GESTION.VENDOR.NAME_PLACEHOLDER' | translate }}" autocomplete="off">
+          </fieldset>
 
-		          <fieldset class="form-card form-card--access">
-		            <legend>Credenciales de acceso</legend>
+          <fieldset class="form-card form-card--access">
+            <legend>{{ 'ADMIN.GESTION.VENDOR.ACCESS_CREDENTIALS' | translate }}</legend>
 
-		            <label for="email">Correo electrónico *</label>
-		            <input id="email" type="email" name="email" [(ngModel)]="formulario.email" placeholder="Ej: jperez@empresa.com" autocomplete="off">
-		            <small>El vendedor usará este email para iniciar sesión</small>
+            <label for="email">{{ 'ADMIN.GESTION.VENDOR.EMAIL_LABEL' | translate }} *</label>
+            <input id="email" type="email" name="email" [(ngModel)]="formulario.email" placeholder="{{ 'ADMIN.GESTION.VENDOR.EMAIL_PLACEHOLDER' | translate }}" autocomplete="off">
+            <small>{{ 'ADMIN.GESTION.VENDOR.EMAIL_HELP' | translate }}</small>
 
-		            <label for="password">{{ editando ? 'Contraseña (opcional)' : 'Contraseña *' }}</label>
-		            <input id="password" type="password" name="password" [(ngModel)]="formulario.password" [placeholder]="editando ? 'Dejar vacío para no cambiar' : 'Mínimo 4 caracteres'" autocomplete="new-password">
-
+            <label for="password">{{ editando ? ('ADMIN.GESTION.VENDOR.PASSWORD_OPTIONAL' | translate) : ('ADMIN.GESTION.VENDOR.PASSWORD_REQUIRED' | translate) }}</label>
+            <input id="password" type="password" name="password" [(ngModel)]="formulario.password" [placeholder]="editando ? ('ADMIN.GESTION.VENDOR.PASSWORD_OPTIONAL_PLACEHOLDER' | translate) : ('ADMIN.GESTION.VENDOR.PASSWORD_PLACEHOLDER' | translate)" autocomplete="new-password">
 		            <ng-container *ngIf="editando">
-		              <label for="estado">Estado</label>
-		              <select id="estado" name="estado" [(ngModel)]="formulario.estado">
-		                <option value="ACTIVO">ACTIVO</option>
-		                <option value="INACTIVO">INACTIVO</option>
+              <label for="estado">{{ 'ADMIN.GESTION.VENDOR.STATUS_LABEL' | translate }}</label>
+              <select id="estado" name="estado" [(ngModel)]="formulario.estado">
+                <option value="ACTIVO">{{ 'ADMIN.GESTION.VENDOR.STATUS.ACTIVO' | translate }}</option>
+                <option value="INACTIVO">{{ 'ADMIN.GESTION.VENDOR.STATUS.INACTIVO' | translate }}</option>
 		              </select>
 		            </ng-container>
 		          </fieldset>
@@ -88,9 +87,9 @@
 		          <p *ngIf="errorMensaje" class="form-error" role="alert">{{ errorMensaje }}</p>
 
 		          <footer class="modal__actions">
-		            <button type="button" class="btn btn-secondary" (click)="cerrarModal()" [disabled]="guardando">Cancelar</button>
-		            <button type="button" class="btn btn-primary" (click)="guardarVendedor()" [disabled]="guardando">
-		              {{ guardando ? 'Guardando...' : (editando ? 'Actualizar vendedor' : 'Crear vendedor') }}
+            <button type="button" class="btn btn-secondary" (click)="cerrarModal()" [disabled]="guardando">{{ 'ADMIN.GESTION.VENDOR.CANCEL' | translate }}</button>
+            <button type="button" class="btn btn-primary" (click)="guardarVendedor()" [disabled]="guardando">
+              {{ guardando ? ('ADMIN.GESTION.VENDOR.SAVING' | translate) : (editando ? ('ADMIN.GESTION.VENDOR.UPDATE_BUTTON' | translate) : ('ADMIN.GESTION.VENDOR.CREATE_BUTTON' | translate)) }}
 		            </button>
 		          </footer>
 		        </form>

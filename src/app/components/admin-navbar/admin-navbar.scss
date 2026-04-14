@@ -137,6 +137,50 @@
   }
 }
 
+.sidebar-language {
+  padding: 0 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .lang-toggle {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #e9f1ff;
+    padding: 10px 14px;
+    text-align: left;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .lang-menu {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .lang-menu.open {
+    display: flex;
+  }
+
+  .lang-menu button {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e9f1ff;
+    padding: 10px 14px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .lang-menu button.active {
+    background: #2147bc;
+  }
+}
+
 .sidebar-footer {
   padding: 16px 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.13);

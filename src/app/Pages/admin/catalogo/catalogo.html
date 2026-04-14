@@ -6,26 +6,26 @@
 			<section class="catalogo" aria-labelledby="catalogo-title">
 				<header class="catalogo-header">
 					<div class="catalogo-header__text">
-						<h1 id="catalogo-title">Gestión de Catálogo</h1>
-						<p>Administra productos, precios y stock global</p>
+						<h1 id="catalogo-title">{{ 'ADMIN.CATALOG.TITLE' | translate }}</h1>
+						<p>{{ 'ADMIN.CATALOG.SUBTITLE' | translate }}</p>
 					</div>
 					<button type="button" class="btn-nuevo" (click)="abrirModal()">
-						<span>Nuevo producto</span>
+						<span>{{ 'ADMIN.CATALOG.NEW_PRODUCT_BUTTON' | translate }}</span>
 					</button>
 				</header>
 
 				<section class="productos-section" aria-labelledby="productos-title">
 					<header class="section-header">
-						<h2 id="productos-title">Productos registrados</h2>
+						<h2 id="productos-title">{{ 'ADMIN.CATALOG.PRODUCTS_REGISTERED' | translate }}</h2>
 						<p class="section-counter">{{ productos.length }}</p>
 					</header>
 
 					<div *ngIf="cargando" class="loading" role="status" aria-live="polite">
-						Cargando productos...
+						{{ 'ADMIN.CATALOG.LOADING_PRODUCTS' | translate }}
 					</div>
 
 					<div *ngIf="!cargando && productos.length === 0" class="empty-state" role="status">
-						<p>No hay productos registrados. Crea uno nuevo para comenzar.</p>
+						<p>{{ 'ADMIN.CATALOG.NO_PRODUCTS_MESSAGE' | translate }}</p>
 					</div>
 
 					<ul *ngIf="!cargando && productos.length > 0" class="productos-grid" role="list">
@@ -43,91 +43,91 @@
 					<div class="modal-backdrop" (click)="cerrarModal()"></div>
 					<section class="modal-content" role="dialog" aria-modal="true" aria-labelledby="producto-modal-title">
 						<header class="modal-header">
-							<h2 id="producto-modal-title">{{ editando ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
-							<button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar formulario">✕</button>
+							<h2 id="producto-modal-title">{{ editando ? ('ADMIN.CATALOG.EDIT_PRODUCT_TITLE' | translate) : ('ADMIN.CATALOG.NEW_PRODUCT_TITLE' | translate) }}</h2>
+							<button type="button" class="btn-close" (click)="cerrarModal()" aria-label="{{ 'ADMIN.CATALOG.CLOSE_FORM' | translate }}">✕</button>
 						</header>
 
 						<form class="modal-form">
 							<fieldset class="modal-form__fieldset">
-								<legend class="sr-only">Datos del producto</legend>
+								<legend class="sr-only">{{ 'ADMIN.CATALOG.PRODUCT_FORM_LEGEND' | translate }}</legend>
 
 								<div class="form-group">
-									<label for="producto-sku">SKU del producto *</label>
-									<input id="producto-sku" type="text" [(ngModel)]="nuevoProducto.sku" name="sku" placeholder="Ej: COCA-500ML">
-									<small>Código único para identificar el producto</small>
+									<label for="producto-sku">{{ 'ADMIN.CATALOG.PRODUCT_SKU_LABEL' | translate }} *</label>
+									<input id="producto-sku" type="text" [(ngModel)]="nuevoProducto.sku" name="sku" placeholder="{{ 'ADMIN.CATALOG.PRODUCT_SKU_PLACEHOLDER' | translate }}">
+									<small>{{ 'ADMIN.CATALOG.PRODUCT_SKU_HELP' | translate }}</small>
 								</div>
 
 								<div class="form-group">
-									<label for="producto-nombre">Nombre del producto *</label>
-									<input id="producto-nombre" type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre" placeholder="Ej: Coca Cola 500ml">
+									<label for="producto-nombre">{{ 'ADMIN.CATALOG.PRODUCT_NAME_LABEL' | translate }} *</label>
+									<input id="producto-nombre" type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre" placeholder="{{ 'ADMIN.CATALOG.PRODUCT_NAME_PLACEHOLDER' | translate }}">
 								</div>
 
 								<div class="form-group">
-									<label for="producto-descripcion">Descripción</label>
-									<textarea id="producto-descripcion" [(ngModel)]="nuevoProducto.descripcion" name="descripcion" placeholder="Descripción del producto" rows="3"></textarea>
+									<label for="producto-descripcion">{{ 'ADMIN.CATALOG.PRODUCT_DESCRIPTION_LABEL' | translate }}</label>
+									<textarea id="producto-descripcion" [(ngModel)]="nuevoProducto.descripcion" name="descripcion" placeholder="{{ 'ADMIN.CATALOG.PRODUCT_DESCRIPTION_PLACEHOLDER' | translate }}" rows="3"></textarea>
 								</div>
 
 								<div class="form-group">
-									<label>Imagen del producto</label>
+									<label>{{ 'ADMIN.CATALOG.PRODUCT_IMAGE_LABEL' | translate }}</label>
 
 									<div *ngIf="nuevoProducto.url_imagen && !imagenPreview" class="image-preview-container">
-										<img [src]="nuevoProducto.url_imagen" alt="Imagen guardada del producto" class="preview-image">
-										<button type="button" class="btn-remove-image" (click)="eliminarImagenGuardada()" title="Eliminar imagen" aria-label="Eliminar imagen guardada">✕</button>
+										<img [src]="nuevoProducto.url_imagen" alt="{{ 'ADMIN.CATALOG.SAVED_IMAGE_ALT' | translate }}" class="preview-image">
+										<button type="button" class="btn-remove-image" (click)="eliminarImagenGuardada()" title="{{ 'ADMIN.CATALOG.REMOVE_IMAGE_BUTTON' | translate }}" aria-label="{{ 'ADMIN.CATALOG.REMOVE_IMAGE_BUTTON' | translate }}">✕</button>
 									</div>
 
 									<div *ngIf="imagenPreview" class="image-preview-container">
-										<img [src]="imagenPreview" alt="Vista previa de imagen seleccionada" class="preview-image">
-										<button type="button" class="btn-remove-image" (click)="limpiarImagen()" title="Descartar" aria-label="Descartar imagen seleccionada">✕</button>
+										<img [src]="imagenPreview" alt="{{ 'ADMIN.CATALOG.PREVIEW_IMAGE_ALT' | translate }}" class="preview-image">
+										<button type="button" class="btn-remove-image" (click)="limpiarImagen()" title="{{ 'ADMIN.CATALOG.DISCARD_IMAGE_BUTTON' | translate }}" aria-label="{{ 'ADMIN.CATALOG.DISCARD_IMAGE_BUTTON' | translate }}">✕</button>
 									</div>
 
 									<div class="image-upload-section" *ngIf="!imagenPreview && !nuevoProducto.url_imagen">
 										<input #fileInput id="producto-imagen" type="file" accept="image/*" (change)="onSeleccionarImagen($event)" hidden>
 										<button type="button" class="btn-select-file" (click)="fileInput.click()">
-											Seleccionar imagen
+											{{ 'ADMIN.CATALOG.SELECT_IMAGE_BUTTON' | translate }}
 										</button>
-										<small>Formatos: JPG, PNG, WebP, GIF (máx. 5MB)</small>
+										<small>{{ 'ADMIN.CATALOG.IMAGE_FORMATS_NOTE' | translate }}</small>
 									</div>
 
 									<div *ngIf="imagenPreview" class="image-info">
-										<p>Archivo seleccionado: {{ archivoSeleccionado?.name }}</p>
-										<p class="image-info__note">La imagen se subirá automáticamente al guardar el producto.</p>
+										<p>{{ 'ADMIN.CATALOG.FILE_SELECTED' | translate }}: {{ archivoSeleccionado?.name }}</p>
+										<p class="image-info__note">{{ 'ADMIN.CATALOG.IMAGE_UPLOAD_NOTE' | translate }}</p>
 										<button type="button" class="btn-upload-image" (click)="subirImagen()" [disabled]="cargandoImagen">
-											{{ cargandoImagen ? 'Subiendo...' : 'Subir imagen (opcional)' }}
+											{{ cargandoImagen ? ('ADMIN.CATALOG.UPLOADING_IMAGE' | translate) : ('ADMIN.CATALOG.UPLOAD_IMAGE_OPTIONAL' | translate) }}
 										</button>
 									</div>
 								</div>
 
 								<div class="form-group">
-									<label for="precio-unidad">Precio unitario (Bs.) *</label>
-									<input id="precio-unidad" type="number" [(ngModel)]="nuevoProducto.precio_unidad" name="precio_unidad" placeholder="0.00" step="0.01" min="0" (input)="validarPrecioUnidad()">
+									<label for="precio-unidad">{{ 'ADMIN.CATALOG.PRICE_UNIT_LABEL' | translate }} *</label>
+									<input id="precio-unidad" type="number" [(ngModel)]="nuevoProducto.precio_unidad" name="precio_unidad" placeholder="{{ 'ADMIN.CATALOG.PRICE_PLACEHOLDER' | translate }}" step="0.01" min="0" (input)="validarPrecioUnidad()">
 									<div *ngIf="erroresValidacion.precio_unidad" class="error-message">{{ erroresValidacion.precio_unidad }}</div>
 								</div>
 
 								<div class="form-group">
-									<label for="precio-caja">Precio por caja (Bs.) *</label>
-									<input id="precio-caja" type="number" [(ngModel)]="nuevoProducto.precio_caja" name="precio_caja" placeholder="0.00" step="0.01" min="0" (input)="validarPrecioCaja()">
+									<label for="precio-caja">{{ 'ADMIN.CATALOG.PRICE_BOX_LABEL' | translate }} *</label>
+									<input id="precio-caja" type="number" [(ngModel)]="nuevoProducto.precio_caja" name="precio_caja" placeholder="{{ 'ADMIN.CATALOG.PRICE_PLACEHOLDER' | translate }}" step="0.01" min="0" (input)="validarPrecioCaja()">
 									<div *ngIf="erroresValidacion.precio_caja" class="error-message">{{ erroresValidacion.precio_caja }}</div>
 								</div>
 
 								<div class="form-group">
-									<label for="unidades-caja">Unidades por caja *</label>
-									<input id="unidades-caja" type="number" [(ngModel)]="nuevoProducto.unidades_por_caja" name="unidades_por_caja" placeholder="1" step="1" min="1" (input)="validarUnidadesCaja()">
+									<label for="unidades-caja">{{ 'ADMIN.CATALOG.UNITS_PER_BOX_LABEL' | translate }} *</label>
+									<input id="unidades-caja" type="number" [(ngModel)]="nuevoProducto.unidades_por_caja" name="unidades_por_caja" placeholder="{{ 'ADMIN.CATALOG.UNITS_PLACEHOLDER' | translate }}" step="1" min="1" (input)="validarUnidadesCaja()">
 									<div *ngIf="erroresValidacion.unidades_por_caja" class="error-message">{{ erroresValidacion.unidades_por_caja }}</div>
 								</div>
 
 								<div class="form-group">
-									<label for="stock-central">Stock almacén central</label>
-									<input id="stock-central" type="number" [(ngModel)]="nuevoProducto.stock_almacen_central" name="stock_almacen_central" placeholder="0" step="1" min="0" (input)="validarStockCentral()">
+									<label for="stock-central">{{ 'ADMIN.CATALOG.CENTRAL_STOCK_LABEL' | translate }}</label>
+									<input id="stock-central" type="number" [(ngModel)]="nuevoProducto.stock_almacen_central" name="stock_almacen_central" placeholder="{{ 'ADMIN.CATALOG.STOCK_PLACEHOLDER' | translate }}" step="1" min="0" (input)="validarStockCentral()">
 									<div *ngIf="erroresValidacion.stock_almacen_central" class="error-message">{{ erroresValidacion.stock_almacen_central }}</div>
 								</div>
 							</fieldset>
 
 							<footer class="modal-footer">
 								<button type="button" class="btn btn-cancel" (click)="cerrarModal()" [disabled]="cargando">
-									Cancelar
+									{{ 'ADMIN.CATALOG.CANCEL' | translate }}
 								</button>
 								<button type="button" class="btn btn-save" (click)="guardarProducto()" [disabled]="cargando || cargandoImagen">
-									{{ cargandoImagen ? 'Subiendo imagen...' : (cargando ? 'Guardando producto...' : (editando ? 'Actualizar' : 'Crear producto')) }}
+									{{ cargandoImagen ? ('ADMIN.CATALOG.UPLOADING_IMAGE' | translate) : (cargando ? ('ADMIN.CATALOG.SAVING_PRODUCT' | translate) : (editando ? ('ADMIN.CATALOG.UPDATE_PRODUCT' | translate) : ('ADMIN.CATALOG.CREATE_PRODUCT' | translate))) }}
 								</button>
 							</footer>
 						</form>
