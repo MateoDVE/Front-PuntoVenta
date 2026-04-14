@@ -130,7 +130,14 @@ export class ApiService {
 
   // ==================== VENDEDORES ====================
   getVendedores(): Observable<VendedorBackend[]> {
-    return this.http.get<VendedorBackend[]>(`${this.apiUrl}/vendedores`);
+    return this.http.get<VendedorBackend[]>(`${this.apiUrl}/vendedores`).pipe(
+      map((vendedores) =>
+        vendedores.map((v) => ({
+          ...v,
+          rol: v.rol || 'VENDEDOR',
+        }))
+      )
+    );
   }
 
   createVendedor(payload: CreateVendedorPayload): Observable<VendedorBackend[]> {

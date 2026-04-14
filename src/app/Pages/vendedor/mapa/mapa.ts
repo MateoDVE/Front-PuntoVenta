@@ -27,6 +27,7 @@ export class Mapa implements OnInit {
   detectingLocation = false;
   fotoPreview?: string;
   archivoFotoCliente?: File;
+  celularError = '';
 
   ubicaciones: ApiCliente[] = [];
   markers: any[] = [];
@@ -106,8 +107,24 @@ export class Mapa implements OnInit {
     this.fotoFachadaInput?.nativeElement.click();
   }
 
+  onCelularInput(): void {
+    const celular = this.newCliente.celular;
+    if (!celular || celular.length === 0) {
+      this.celularError = '';
+      return;
+    }
+    if (!/^[67]/.test(celular)) {
+      this.celularError = this.translate.instant('VENDEDOR.MAP.CELULAR_INVALID_START');
+    } else if (!/^\d{8}$/.test(celular)) {
+      this.celularError = this.translate.instant('VENDEDOR.MAP.CELULAR_INVALID_LENGTH');
+    } else {
+      this.celularError = '';
+    }
+  }
+
   openNuevoClienteModal(): void {
     this.clienteFormError = '';
+    this.celularError = '';
     this.newCliente = {
       idVendedorCreador: this.currentUserId,
       nombreNegocio: '',
@@ -304,7 +321,8 @@ export class Mapa implements OnInit {
         },
         error: (err) => {
           console.error('Error al crear cliente:', err);
-          this.clienteFormError = this.translate.instant('VENDEDOR.MAP.CLIENT_REGISTER_ERROR');
+          const errorMsg = err.error?.message || err.error?.error || this.translate.instant('VENDEDOR.MAP.CLIENT_REGISTER_ERROR');
+          this.clienteFormError = errorMsg;
         }
       });
     }).catch((error) => {

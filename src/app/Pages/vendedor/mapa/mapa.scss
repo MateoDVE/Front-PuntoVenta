@@ -132,6 +132,14 @@
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
+input.has-error {
+  border-color: #dc2626 !important;
+}
+
+input.has-error:focus {
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12) !important;
+}
+
 .location-box {
   background: #f8fafc;
   border-radius: 14px;
@@ -382,10 +390,16 @@
 
 .error-message {
   color: #b91c1c;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.form-error {
+  color: #b91c1c;
   background: #fef2f2;
   border: 1px solid #fecaca;
-  padding: 14px;
   border-radius: 14px;
+  padding: 14px;
 }
 
 @media (max-width: 1024px) {

@@ -86,9 +86,14 @@
           {{ 'VENDEDOR.MAP.PHONE_LABEL' | translate }}
           <input
             name="celular"
+            type="tel"
+            maxlength="8"
+            [class.has-error]="celularError"
             [(ngModel)]="newCliente.celular"
             placeholder="{{ 'VENDEDOR.MAP.PHONE_PLACEHOLDER' | translate }}"
+            (input)="onCelularInput()"
           />
+          <span class="error-message" *ngIf="celularError">{{ celularError }}</span>
         </label>
 
         <label class="file-upload-label">{{ 'VENDEDOR.MAP.FACADE_PHOTO_LABEL' | translate }}</label>
