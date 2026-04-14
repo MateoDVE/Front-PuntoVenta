@@ -5,8 +5,15 @@ import { Observable, catchError, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
-  session: any;
-  user: any;
+  access_token?: string;
+  token_type?: string;
+  refresh_token?: string;
+  expires_in?: number;
+  user?: any;
+  session?: {
+    access_token?: string;
+    [key: string]: any;
+  };
 }
 
 export interface UserProfile {
@@ -35,7 +42,7 @@ export class AuthService {
   signIn(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/signin`, { email, password }).pipe(
       tap(response => {
-        const token = response?.session?.access_token || (response as any)?.access_token;
+        const token = response?.session?.access_token || response?.access_token;
         if (token) {
           localStorage.setItem('access_token', token);
         } else {

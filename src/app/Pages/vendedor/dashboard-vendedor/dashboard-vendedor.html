@@ -4,77 +4,77 @@
   <div *ngIf="exitoMensaje" class="feedback success">{{ exitoMensaje }}</div>
 
   <header class="header">
-    <h2>Bienvenido, {{ perfil?.nombre || 'Vendedor' }}</h2>
+    <h2>{{ 'VENDEDOR.DASHBOARD.WELCOME' | translate:{ name: perfil?.nombre || ('VENDEDOR.DASHBOARD.NO_PROFILE_NAME' | translate) } }}</h2>
     <p>{{ perfil?.email }}</p>
     <small>{{ fechaActual | date : 'fullDate' }}</small>
   </header>
 
   <section class="validacion">
-    <h3>Validación de Carga</h3>
-    <p class="sub">Tu inventario pasa por doble validación: administrador y vendedor.</p>
+    <h3>{{ 'VENDEDOR.DASHBOARD.VALIDATION_TITLE' | translate }}</h3>
+    <p class="sub">{{ 'VENDEDOR.DASHBOARD.VALIDATION_SUBTITLE' | translate }}</p>
 
-    <div *ngIf="cargando" class="empty">Cargando cargas asignadas...</div>
+    <div *ngIf="cargando" class="empty">{{ 'VENDEDOR.DASHBOARD.LOADING_CARGAS' | translate }}</div>
 
     <div class="bloque" *ngIf="!cargando">
-      <h4>Pendientes de validación de administrador</h4>
+      <h4>{{ 'VENDEDOR.DASHBOARD.PENDING_ADMIN_TITLE' | translate }}</h4>
       <ul class="lista" *ngIf="pendientesAdmin.length > 0">
         <li *ngFor="let carga of pendientesAdmin">
           <div>
             <strong>{{ getNombreProducto(carga.id_producto) }}</strong>
-            <small>Estado: {{ carga.estado_validacion }}</small>
+            <small>{{ 'VENDEDOR.DASHBOARD.STATUS_LABEL' | translate }}: {{ translateEstado(carga.estado_validacion) }}</small>
           </div>
           <div class="cantidad">
             {{ carga.cantidad_inicial }}
-            <span>unidades</span>
+            <span>{{ 'VENDEDOR.DASHBOARD.UNITS' | translate }}</span>
           </div>
         </li>
       </ul>
-      <p class="empty" *ngIf="pendientesAdmin.length === 0">No tienes cargas pendientes por validar admin.</p>
+      <p class="empty" *ngIf="pendientesAdmin.length === 0">{{ 'VENDEDOR.DASHBOARD.NO_PENDING_ADMIN' | translate }}</p>
     </div>
 
     <div class="bloque" *ngIf="!cargando">
-      <h4>Listas para confirmar salida</h4>
+      <h4>{{ 'VENDEDOR.DASHBOARD.READY_TO_CONFIRM_TITLE' | translate }}</h4>
       <ul class="lista" *ngIf="listosParaConfirmar.length > 0">
         <li *ngFor="let carga of listosParaConfirmar">
           <div>
             <strong>{{ getNombreProducto(carga.id_producto) }}</strong>
-            <small>id_carga: {{ carga.id_carga }}</small>
+            <small>{{ 'VENDEDOR.DASHBOARD.LOAD_ID_LABEL' | translate }} {{ carga.id_carga }}</small>
           </div>
           <div class="cantidad">
             {{ carga.cantidad_inicial }}
-            <span>unidades</span>
+            <span>{{ 'VENDEDOR.DASHBOARD.UNITS' | translate }}</span>
           </div>
           <button class="btn-item" [disabled]="confirmando === carga.id_carga" (click)="confirmarCarga(carga.id_carga)">
-            {{ confirmando === carga.id_carga ? 'Confirmando...' : 'Confirmar' }}
+            {{ confirmando === carga.id_carga ? ('VENDEDOR.DASHBOARD.CONFIRMING_BUTTON' | translate) : ('VENDEDOR.DASHBOARD.CONFIRM_BUTTON' | translate) }}
           </button>
         </li>
       </ul>
-      <p class="empty" *ngIf="listosParaConfirmar.length === 0">No tienes cargas listas para confirmar.</p>
+      <p class="empty" *ngIf="listosParaConfirmar.length === 0">{{ 'VENDEDOR.DASHBOARD.NO_READY_TO_CONFIRM' | translate }}</p>
     </div>
   </section>
 
   <section class="resumen">
     <article>
-      <span>Stock</span>
+      <span>{{ 'VENDEDOR.DASHBOARD.SUMMARY_STOCK' | translate }}</span>
       <h3>{{ stockActual }}</h3>
-      <p>Stock transporte (u.)</p>
+      <p>{{ 'VENDEDOR.DASHBOARD.SUMMARY_STOCK_DETAIL' | translate }}</p>
     </article>
 
     <article>
-      <span>Ventas</span>
+      <span>{{ 'VENDEDOR.DASHBOARD.SUMMARY_SALES' | translate }}</span>
       <h3>{{ ventasHoy }}</h3>
-      <p>Ventas hoy</p>
+      <p>{{ 'VENDEDOR.DASHBOARD.SUMMARY_SALES_DETAIL' | translate }}</p>
     </article>
 
     <article>
-      <span>Ingreso</span>
+      <span>{{ 'VENDEDOR.DASHBOARD.SUMMARY_INCOME' | translate }}</span>
       <h3>{{ ingresos | number : '1.0-0' }}</h3>
-      <p>Ingresos (Bs.)</p>
+      <p>{{ 'VENDEDOR.DASHBOARD.SUMMARY_INCOME_DETAIL' | translate }}</p>
     </article>
   </section>
 
   <section class="stock">
-    <h3>Stock de Transporte</h3>
+    <h3>{{ 'VENDEDOR.DASHBOARD.TRANSPORT_STOCK_TITLE' | translate }}</h3>
 
     <ul *ngIf="stockTransporte.length > 0">
       <li *ngFor="let p of stockTransporte">
@@ -85,17 +85,17 @@
 
         <div class="cantidad">
           {{ p.cantidad }}
-          <small>unidades</small>
+          <small>{{ 'VENDEDOR.DASHBOARD.UNITS' | translate }}</small>
         </div>
       </li>
     </ul>
 
-    <p class="empty" *ngIf="stockTransporte.length === 0">No hay stock en transporte todavía.</p>
+    <p class="empty" *ngIf="stockTransporte.length === 0">{{ 'VENDEDOR.DASHBOARD.NO_TRANSPORT_STOCK' | translate }}</p>
   </section>
 
   <section class="ventas">
-    <h3>Últimas Ventas</h3>
-    <p class="empty">Aún no se conectó este bloque al módulo de ventas.</p>
+    <h3>{{ 'VENDEDOR.DASHBOARD.LAST_SALES_TITLE' | translate }}</h3>
+    <p class="empty">{{ 'VENDEDOR.DASHBOARD.LAST_SALES_EMPTY' | translate }}</p>
   </section>
 
 </section>
