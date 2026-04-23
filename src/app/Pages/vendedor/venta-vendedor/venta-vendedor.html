@@ -1,1 +1,110 @@
-<p>venta-vendedor works!</p>
+<app-vendedor-navbar></app-vendedor-navbar>
+
+<div class="venta-container">
+
+  <!-- HEADER -->
+  <div class="venta-header">
+    <div class="header-icon">
+      <ion-icon name="cart-outline"></ion-icon>
+    </div>
+    <div class="header-text">
+      <h1>Proceso de Venta</h1>
+      <p>Registra ventas con validación de stock</p>
+    </div>
+  </div>
+
+  <!-- CLIENTE SELECTOR -->
+  <div class="cliente-section">
+    <label class="campo-label">Cliente</label>
+    <div class="cliente-selector">
+      <select class="cliente-select">
+        <option value="">Tienda Don Pedro - 12345</option>
+        <option value="1">Cliente A - 00001</option>
+        <option value="2">Cliente B - 00002</option>
+      </select>
+      <button class="historial-btn">
+        <ion-icon name="time-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- BUSCADOR -->
+  <div class="buscador-section">
+    <div class="buscador-input">
+      <ion-icon name="search-outline"></ion-icon>
+      <input type="text" placeholder="Buscar productos..." />
+    </div>
+  </div>
+
+  <!-- LISTA DE PRODUCTOS -->
+  <div class="productos-list">
+
+    <!-- Producto 1 -->
+    <div class="producto-card">
+      <div class="producto-info">
+        <div class="producto-top">
+          <h3 class="producto-nombre">Coca Cola 2L</h3>
+          <span class="producto-stock">50 disponibles</span>
+        </div>
+        <p class="producto-categoria">Bebidas</p>
+        <p class="producto-precio">Bs. 15.50</p>
+      </div>
+      <div class="producto-cantidad">
+        <button class="btn-cantidad btn-minus">
+          <ion-icon name="remove-outline"></ion-icon>
+        </button>
+        <span class="cantidad-valor">0</span>
+        <button class="btn-cantidad btn-plus">
+          <ion-icon name="add-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Producto 2 -->
+    <div class="producto-card">
+      <div class="producto-info">
+        <div class="producto-top">
+          <h3 class="producto-nombre">Agua Vital 2L</h3>
+          <span class="producto-stock">80 disponibles</span>
+        </div>
+        <p class="producto-categoria">Bebidas</p>
+        <p class="producto-precio">Bs. 6.00</p>
+      </div>
+      <div class="producto-cantidad">
+        <button class="btn-cantidad btn-minus">
+          <ion-icon name="remove-outline"></ion-icon>
+        </button>
+        <span class="cantidad-valor">0</span>
+        <button class="btn-cantidad btn-plus">
+          <ion-icon name="add-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Producto 3 -->
+    <div class="producto-card">
+      <div class="producto-info">
+        <div class="producto-top">
+          <h3 class="producto-nombre">Papas Lays 150g</h3>
+          <span class="producto-stock">30 disponibles</span>
+        </div>
+        <p class="producto-categoria">Snacks</p>
+        <p class="producto-precio">Bs. 8.50</p>
+      </div>
+      <div class="producto-cantidad">
+        <button class="btn-cantidad btn-minus">
+          <ion-icon name="remove-outline"></ion-icon>
+        </button>
+        <span class="cantidad-valor">0</span>
+        <button class="btn-cantidad btn-plus">
+          <ion-icon name="add-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ESPACIO PARA EL NAVBAR -->
+  <div class="navbar-spacer"></div>
+
+</div>
