@@ -120,6 +120,7 @@ npm run test
 3. Se usan pipes `{{ 'KEY' | translate }}` en plantillas HTML.
 4. Para textos dinámicos y mensajes de error se usa `this.translate.instant('KEY')` en TypeScript.
 5. El selector de idioma actualiza `localStorage` y cierra el menú de opciones.
+6. Esta estructura permite que la app sea escalable, facilitando la adición de idiomas como el Aymara en el futuro sin tocar el código fuente
 
 #### Estructura de las claves de traducción
 

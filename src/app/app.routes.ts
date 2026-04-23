@@ -7,6 +7,8 @@ import { Catalogo } from './Pages/admin/catalogo/catalogo';
 import { DashboardVendedor } from './Pages/vendedor/dashboard-vendedor';
 import { Mapa } from './Pages/vendedor/mapa/mapa';
 import { Asignacion } from './Pages/admin/asignacion/asignacion';
+import { VentaVendedorComponent } from './Pages/vendedor/venta-vendedor/venta-vendedor';
+import { CierreVendedor } from './Pages/vendedor/cierre-vendedor/cierre-vendedor';
 
 export const routes: Routes = [
 
@@ -43,6 +45,10 @@ export const routes: Routes = [
   { path: 'vendedor/dashboard', component: DashboardVendedor, canActivate: [authGuard], data: { roles: ['vendedor'] } },
 
   { path: 'vendedor/mapa', component: Mapa, canActivate: [authGuard], data: { roles: ['vendedor'] } },
+
+  { path: 'vendedor/venta', component: VentaVendedorComponent, canActivate: [authGuard], data: { roles: ['vendedor'] } },
+
+  { path: 'vendedor/cierre', component: CierreVendedor, canActivate: [authGuard], data: { roles: ['vendedor'] } },
 
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
