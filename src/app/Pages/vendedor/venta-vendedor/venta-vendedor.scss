@@ -421,6 +421,66 @@ $blanco: #ffffff;
   }
 }
 
+// ===== JORNADA CERRADA =====
+.jornada-cerrada {
+  margin: 24px 16px;
+  background: $blanco;
+  border-radius: 20px;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  box-shadow: 0 12px 30px rgba(46, 125, 50, 0.10);
+  border: 1.5px solid rgba(76, 175, 80, 0.22);
+
+  .jornada-icono {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: rgba(46, 125, 50, 0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 38px;
+      color: $verde-primary;
+    }
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1b5e20;
+    margin: 0;
+  }
+
+  p {
+    font-size: 15px;
+    color: $gris-texto;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .jornada-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(46, 125, 50, 0.10);
+    color: $verde-primary;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 18px;
+    border-radius: 20px;
+
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}
+
 // ===== ANIMACIÓN SPIN =====
 .spin {
   animation: girar 1s linear infinite;

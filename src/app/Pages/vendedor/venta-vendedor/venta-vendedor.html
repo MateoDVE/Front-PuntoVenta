@@ -8,14 +8,31 @@
       <ion-icon name="cart-outline"></ion-icon>
     </div>
     <div class="header-text">
-      <h1>Proceso de Venta</h1>
-      <p>Registra ventas con validación de stock</p>
+      <h1>{{ 'VENDEDOR.VENTA.TITLE' | translate }}</h1>
+      <p>{{ 'VENDEDOR.VENTA.SUBTITLE' | translate }}</p>
     </div>
   </div>
 
+  <!-- JORNADA CERRADA -->
+  @if (jornadaCerrada) {
+    <div class="jornada-cerrada">
+      <div class="jornada-icono">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+      </div>
+      <h2>{{ 'VENDEDOR.VENTA.JORNADA_CERRADA_TITLE' | translate }}</h2>
+      <p>{{ 'VENDEDOR.VENTA.JORNADA_CERRADA_MSG' | translate }}</p>
+      <div class="jornada-badge">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        {{ 'VENDEDOR.VENTA.JORNADA_COMPLETADA' | translate }}
+      </div>
+    </div>
+  }
+
+  @if (!jornadaCerrada) {
+
   <!-- CLIENTE SELECTOR CON BÚSQUEDA -->
   <div class="cliente-section">
-    <label class="campo-label">Cliente</label>
+    <label class="campo-label">{{ 'VENDEDOR.VENTA.CLIENT_LABEL' | translate }}</label>
 
     @if (clienteSeleccionado) {
       <!-- Cliente ya seleccionado -->
@@ -38,7 +55,7 @@
           <ion-icon name="person-outline"></ion-icon>
           <input
             type="text"
-            placeholder="Escribe el nombre o NIT del cliente..."
+            [placeholder]="'VENDEDOR.VENTA.CLIENT_PLACEHOLDER' | translate"
             [(ngModel)]="busquedaCliente"
             (input)="filtrarClientes()"
             (blur)="cerrarDropdownClientes()"
@@ -75,7 +92,7 @@
       <ion-icon name="search-outline"></ion-icon>
       <input
         type="text"
-        placeholder="Buscar productos..."
+        [placeholder]="'VENDEDOR.VENTA.SEARCH_PRODUCTS' | translate"
         [(ngModel)]="busqueda"
         (input)="buscarProductos()" />
     </div>
@@ -85,7 +102,7 @@
   @if (cargando) {
     <div class="estado-vacio">
       <ion-icon name="reload-outline" class="spin"></ion-icon>
-      <p>Cargando productos...</p>
+      <p>{{ 'VENDEDOR.VENTA.LOADING_PRODUCTS' | translate }}</p>
     </div>
   }
 
@@ -96,7 +113,7 @@
       @if (productosFiltrados.length === 0) {
         <div class="estado-vacio">
           <ion-icon name="cube-outline"></ion-icon>
-          <p>No se encontraron productos</p>
+          <p>{{ 'VENDEDOR.VENTA.NO_PRODUCTS_FOUND' | translate }}</p>
         </div>
       }
 
@@ -106,9 +123,9 @@
           <div class="producto-info">
             <div class="producto-top">
               <h3 class="producto-nombre">{{ producto.nombre }}</h3>
-              <span class="producto-stock">{{ producto.stock_almacen_central }} disponibles</span>
+              <span class="producto-stock">{{ producto.stock_almacen_central }} {{ 'VENDEDOR.VENTA.AVAILABLE' | translate }}</span>
             </div>
-            <p class="producto-categoria">{{ producto.descripcion || 'Producto' }}</p>
+            <p class="producto-categoria">{{ producto.descripcion || ('VENDEDOR.VENTA.PRODUCT' | translate) }}</p>
             <p class="producto-precio">Bs. {{ producto.precio_unidad | number:'1.2-2' }}</p>
           </div>
 
@@ -133,6 +150,8 @@
     </div>
   }
 
+  } <!-- cierre @if (!jornadaCerrada) -->
+
   <div class="navbar-spacer"></div>
 
 </div>
@@ -141,13 +160,13 @@
 @if (carrito.length > 0) {
   <div class="carrito-bar" (click)="abrirModalCarrito()">
     <div class="carrito-info">
-      <span class="carrito-label">Total del Carrito</span>
+      <span class="carrito-label">{{ 'VENDEDOR.VENTA.CART_TOTAL' | translate }}</span>
       <span class="carrito-total">Bs. {{ totalFinal | number:'1.2-2' }}</span>
-      <span class="carrito-items">{{ totalItems }} {{ totalItems === 1 ? 'item' : 'items' }}</span>
+      <span class="carrito-items">{{ totalItems }} {{ totalItems === 1 ? ('VENDEDOR.VENTA.ITEM' | translate) : ('VENDEDOR.VENTA.ITEMS' | translate) }}</span>
     </div>
     <button class="btn-confirmar">
       <ion-icon name="checkmark-circle-outline"></ion-icon>
-      Confirmar Venta
+      {{ 'VENDEDOR.VENTA.CONFIRM_SALE' | translate }}
     </button>
   </div>
 }
@@ -163,7 +182,7 @@
       <div class="modal-header">
         <h2>
           <ion-icon name="cart-outline"></ion-icon>
-          Carrito de Venta
+          {{ 'VENDEDOR.VENTA.CART_TITLE' | translate }}
         </h2>
         <button class="btn-cerrar" (click)="cerrarModalCarrito()">
           <ion-icon name="close-outline"></ion-icon>
@@ -179,7 +198,7 @@
               <div class="item-info">
                 <span class="item-nombre">{{ item.producto.nombre }}</span>
                 <span class="item-cantidad">
-                  x {{ item.cantidad }} — Bs. {{ item.producto.precio_unidad | number:'1.2-2' }} c/u
+                  {{ item.cantidad }} x Bs. {{ item.producto.precio_unidad | number:'1.2-2' }}
                 </span>
               </div>
               <div class="item-right">
@@ -194,30 +213,30 @@
 
         <!-- Descuento -->
         <div class="descuento-section">
-          <label>Descuento (Bs.)</label>
+          <label>{{ 'VENDEDOR.VENTA.DISCOUNT_LABEL' | translate }}</label>
           <input
             type="number"
             [(ngModel)]="descuento"
             min="0"
             [max]="subtotalCarrito"
             class="descuento-input"
-            placeholder="0.00" />
+            [placeholder]="'VENDEDOR.VENTA.DISCOUNT_PLACEHOLDER' | translate" />
         </div>
 
         <!-- Totales -->
         <div class="totales-section">
           <div class="total-row">
-            <span>Subtotal</span>
+            <span>{{ 'VENDEDOR.VENTA.SUBTOTAL' | translate }}</span>
             <span>Bs. {{ subtotalCarrito | number:'1.2-2' }}</span>
           </div>
           @if (descuento > 0) {
             <div class="total-row">
-              <span>Descuento</span>
+              <span>{{ 'VENDEDOR.VENTA.DISCOUNT' | translate }}</span>
               <span class="descuento-valor">- Bs. {{ descuento | number:'1.2-2' }}</span>
             </div>
           }
           <div class="total-row total-final">
-            <span>Total</span>
+            <span>{{ 'VENDEDOR.VENTA.TOTAL' | translate }}</span>
             <span>Bs. {{ totalFinal | number:'1.2-2' }}</span>
           </div>
         </div>
@@ -243,7 +262,7 @@
           @if (enviandoVenta) {
             <ion-icon name="reload-outline" class="spin"></ion-icon>
           }
-          {{ enviandoVenta ? 'Procesando...' : 'Procesar Venta' }}
+          {{ enviandoVenta ? ('VENDEDOR.VENTA.PROCESSING_SALE' | translate) : ('VENDEDOR.VENTA.PROCESS_SALE' | translate) }}
         </button>
       </div>
 
@@ -263,19 +282,19 @@
         <ion-icon name="checkmark-circle"></ion-icon>
       </div>
 
-      <h2>¡Venta Completada!</h2>
+      <h2>{{ 'VENDEDOR.VENTA.SALE_COMPLETED_TITLE' | translate }}</h2>
 
       @if (ventaConfirmada) {
-        <p class="exito-id">ID: {{ ventaConfirmada.idVenta | slice:0:8 }}...</p>
+        <p class="exito-id">{{ 'VENDEDOR.VENTA.SALE_ID' | translate }} {{ ventaConfirmada.idVenta | slice:0:8 }}...</p>
         <p class="exito-total">Bs. {{ ventaConfirmada.totalEfectivo | number:'1.2-2' }}</p>
         <div class="exito-detalles">
-          <span>{{ ventaConfirmada.detalles.length }} producto(s) vendido(s)</span>
+          <span>{{ ventaConfirmada.detalles.length }} {{ 'VENDEDOR.VENTA.PRODUCTS_SOLD' | translate }}</span>
         </div>
       }
 
       <button class="btn-nueva-venta" (click)="nuevaVenta()">
         <ion-icon name="add-circle-outline"></ion-icon>
-        Nueva Venta
+        {{ 'VENDEDOR.VENTA.NEW_SALE' | translate }}
       </button>
 
     </div>
