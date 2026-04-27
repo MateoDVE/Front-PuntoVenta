@@ -1,63 +1,176 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { AuthService } from '../../../services/auth.service';
-
-interface ProductoDetalle {
-  nombre: string;
-  descripcion: string;
-  stock: number;
-}
+import {
+  ApiService,
+  CierreJornadaResponse,
+  CierreGuardado,
+  ConfirmarCierreResponse,
+  RegistrarCierrePayload
+} from '../../../services/api.service';
 
 @Component({
   selector: 'app-cierre-vendedor',
   standalone: true,
-  imports: [CommonModule, VendedorNavbar],
+  imports: [CommonModule, FormsModule, VendedorNavbar],
   templateUrl: './cierre-vendedor.html',
   styleUrl: './cierre-vendedor.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class CierreVendedor implements OnInit {
-  ventasRealizadas: number = 0;
-  totalEfectivo: number = 0.00;
-  stockInicial: number = 225;
-  stockFinal: number = 225;
 
-  productosDetalle: ProductoDetalle[] = [
-    { nombre: 'Coca Cola 2L', descripcion: 'Inicial: 50 | Vendido: 0 | Esperado: 50', stock: 50 },
-    { nombre: 'Agua Vital 2L', descripcion: 'Inicial: 80 | Vendido: 0 | Esperado: 80', stock: 80 },
-    { nombre: 'Papas Lays 150g', descripcion: 'Inicial: 30 | Vendido: 0 | Esperado: 30', stock: 30 },
-    { nombre: 'Galletas Oreo', descripcion: 'Inicial: 25 | Vendido: 0 | Esperado: 25', stock: 25 },
-    { nombre: 'Leche Pil 1L', descripcion: 'Inicial: 40 | Vendido: 0 | Esperado: 40', stock: 40 }
-  ];
+  // Datos del cierre
+  cierre: CierreJornadaResponse | null = null;
+  resultadoCierre: ConfirmarCierreResponse | null = null;
+  cierreGuardado: CierreGuardado | null = null;
+  errorGuardado: string = '';
 
-  constructor(private authService: AuthService) {}
+  // Fecha de hoy en formato yyyy-MM-dd
+  readonly fechaHoy: string = this.getFechaHoy();
+
+  // Vendedor
+  idVendedor: string = '';
+
+  // Estados de UI
+  cargando: boolean = false;
+  enviando: boolean = false;
+  error: string = '';
+
+  // Modal confirmar cierre
+  mostrarModalConfirmar: boolean = false;
+  dineroContado: number | null = null;
+
+  // Modal resultado
+  mostrarModalResultado: boolean = false;
+
+  constructor(
+    private authService: AuthService,
+    private apiService: ApiService
+  ) {}
 
   ngOnInit(): void {
-    // Inicializar datos desde el servicio si es necesario
-    this.calcularTotales();
+    const user = this.authService.getStoredUser();
+    if (user) {
+      this.idVendedor = user.id_usuario || '';
+    }
+    this.cargarCierre();
   }
 
-  calcularTotales(): void {
-    // Calcular totales basados en vendidos
-    this.stockFinal = this.stockInicial - this.ventasRealizadas;
+  private getFechaHoy(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
-  confirmarCierre(): void {
-    // Lógica para confirmar el cierre de jornada
-    console.log('Cierre de jornada confirmado');
-    // Aquí iría la lógica para enviar al backend
+  cargarCierre(): void {
+    if (!this.idVendedor) return;
+    this.cargando = true;
+    this.error = '';
+
+    this.apiService.getCierreJornada(this.idVendedor, this.fechaHoy).subscribe({
+      next: (data) => {
+        this.cierre = data;
+        this.cargando = false;
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Error al cargar el cierre de jornada';
+        this.cargando = false;
+      }
+    });
+  }
+
+  abrirModalConfirmar(): void {
+    this.dineroContado = null;
+    this.error = '';
+    this.mostrarModalConfirmar = true;
+  }
+
+  cerrarModalConfirmar(): void {
+    this.mostrarModalConfirmar = false;
+    this.error = '';
+  }
+
+  procesarCierre(): void {
+    if (this.dineroContado === null || this.dineroContado < 0) {
+      this.error = 'Ingresa el monto de dinero contado';
+      return;
+    }
+    this.error = '';
+    this.enviando = true;
+
+    this.apiService.confirmarCierreJornada(
+      this.idVendedor,
+      this.fechaHoy,
+      this.dineroContado
+    ).subscribe({
+      next: (resultado) => {
+        this.resultadoCierre = resultado;
+        this.mostrarModalConfirmar = false;
+        this.guardarCierre(resultado);
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Error al confirmar el cierre';
+        this.enviando = false;
+      }
+    });
+  }
+
+  private guardarCierre(resultado: ConfirmarCierreResponse): void {
+    if (!this.cierre) {
+      this.mostrarModalResultado = true;
+      this.enviando = false;
+      return;
+    }
+
+    const payload: RegistrarCierrePayload = {
+      idVendedor: this.idVendedor,
+      fecha: this.fechaHoy,
+      ventasRealizadas: this.cierre.resumenFinanciero.ventasRealizadas,
+      totalEfectivo: this.cierre.resumenFinanciero.totalEfectivo,
+      totalDescuentos: this.cierre.resumenFinanciero.totalDescuentos,
+      stockInicialTotal: this.cierre.conciliacionInventario.stockInicialTotal,
+      vendidosTotal: this.cierre.conciliacionInventario.vendidosTotal,
+      stockFinalTotal: this.cierre.conciliacionInventario.stockFinalTotal,
+      estadoInventario: this.cierre.conciliacionInventario.estadoConciliacion,
+      dineroEsperado: resultado.dineroEsperado,
+      dineroContado: resultado.dineroContado,
+      diferencia: resultado.diferencia,
+      estadoEfectivo: resultado.estadoConciliacion
+    };
+
+    this.apiService.registrarCierre(payload).subscribe({
+      next: (guardado) => {
+        this.cierreGuardado = guardado;
+        this.errorGuardado = '';
+        this.mostrarModalResultado = true;
+        this.enviando = false;
+      },
+      error: (err) => {
+        this.errorGuardado = err?.error?.message || 'El cierre fue calculado pero no se pudo guardar';
+        this.mostrarModalResultado = true;
+        this.enviando = false;
+      }
+    });
+  }
+
+  cerrarModalResultado(): void {
+    this.mostrarModalResultado = false;
+    this.resultadoCierre = null;
+    this.cierreGuardado = null;
+    this.errorGuardado = '';
+  }
+
+  get estadoConciliacionInventario(): string {
+    return this.cierre?.conciliacionInventario?.estadoConciliacion ?? '';
+  }
+
+  get esConciliacionCorrecta(): boolean {
+    return this.estadoConciliacionInventario === 'CORRECTO';
   }
 
   cerrarSesion(): void {
-    this.authService.signOut().subscribe({
-      next: () => {
-        console.log('Sesión cerrada correctamente');
-      },
-      error: (err) => {
-        console.error('Error al cerrar sesión:', err);
-      }
-    });
+    this.authService.signOut().subscribe();
   }
 }

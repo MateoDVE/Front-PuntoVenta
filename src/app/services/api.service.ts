@@ -251,4 +251,151 @@ export class ApiService {
       payload
     );
   }
+
+  // ==================== VENTAS ====================
+  crearVenta(payload: CrearVentaRequest): Observable<VentaResponse> {
+    return this.http.post<VentaResponse>(`${this.apiUrl}/ventas`, payload);
+  }
+
+  getCierreJornada(idVendedor: string, fecha: string): Observable<CierreJornadaResponse> {
+    return this.http.get<CierreJornadaResponse>(`${this.apiUrl}/ventas/cierre-jornada`, {
+      params: { idVendedor, fecha }
+    });
+  }
+
+  confirmarCierreJornada(idVendedor: string, fecha: string, dineroContado: number): Observable<ConfirmarCierreResponse> {
+    return this.http.post<ConfirmarCierreResponse>(`${this.apiUrl}/ventas/confirmar-cierre`, {
+      idVendedor,
+      fecha,
+      dineroContado
+    });
+  }
+
+  // ==================== CRUD CIERRES ====================
+  registrarCierre(payload: RegistrarCierrePayload): Observable<CierreGuardado> {
+    return this.http.post<CierreGuardado>(`${this.apiUrl}/cierres`, payload);
+  }
+
+  getCierresVendedor(idVendedor: string): Observable<CierreGuardado[]> {
+    return this.http.get<CierreGuardado[]>(`${this.apiUrl}/cierres/vendedor/${idVendedor}`);
+  }
+}
+
+// ==================== INTERFACES VENTAS ====================
+export interface ItemVentaRequest {
+  idProducto: string;
+  cantidad: number;
+  tipoUnidad: string;
+}
+
+export interface CrearVentaRequest {
+  idCliente: number;
+  idVendedor: string;
+  descuento: number;
+  items: ItemVentaRequest[];
+}
+
+export interface DetalleVentaResponse {
+  idDetalle: string;
+  idProducto: string;
+  cantidad: number;
+  tipoUnidad: string;
+  precioUnitario: number;
+  subtotal: number;
+}
+
+export interface VentaResponse {
+  idVenta: string;
+  idCliente: number;
+  idVendedor: string;
+  fechaHora: string;
+  subtotal: number;
+  descuento: number;
+  totalEfectivo: number;
+  estado: string;
+  detalles: DetalleVentaResponse[];
+}
+
+// ==================== INTERFACES CIERRE DE JORNADA ====================
+export interface DetalleVentaCierre {
+  idVenta: string;
+  fechaHora: string;
+  subtotal: number;
+  descuento: number;
+  totalEfectivo: number;
+  estado: string;
+}
+
+export interface ResumenFinancieroCierre {
+  ventasRealizadas: number;
+  totalEfectivo: number;
+  totalDescuentos: number;
+  detalleVentas: DetalleVentaCierre[];
+}
+
+export interface DetalleProductoConciliacion {
+  idProducto: string;
+  nombre: string;
+  stockInicial: number;
+  vendido: number;
+  esperado: number;
+  actual: number;
+}
+
+export interface ConciliacionInventario {
+  stockInicialTotal: number;
+  vendidosTotal: number;
+  stockFinalTotal: number;
+  estadoConciliacion: string;
+  detalleProductos: DetalleProductoConciliacion[];
+}
+
+export interface CierreJornadaResponse {
+  idVendedor: string;
+  fecha: string;
+  resumenFinanciero: ResumenFinancieroCierre;
+  conciliacionInventario: ConciliacionInventario;
+}
+
+export interface ConfirmarCierreResponse {
+  dineroEsperado: number;
+  dineroContado: number;
+  diferencia: number;
+  estadoConciliacion: string;
+}
+
+// ==================== INTERFACES CRUD CIERRES ====================
+export interface RegistrarCierrePayload {
+  idVendedor: string;
+  fecha: string;
+  ventasRealizadas: number;
+  totalEfectivo: number;
+  totalDescuentos: number;
+  stockInicialTotal: number;
+  vendidosTotal: number;
+  stockFinalTotal: number;
+  estadoInventario: string;
+  dineroEsperado: number;
+  dineroContado: number;
+  diferencia: number;
+  estadoEfectivo: string;
+}
+
+export interface CierreGuardado {
+  id_cierre: string;
+  id_vendedor: string;
+  fecha: string;
+  ventas_realizadas: number;
+  total_efectivo: number;
+  total_descuentos: number;
+  stock_inicial_total: number;
+  vendidos_total: number;
+  stock_final_total: number;
+  estado_inventario: string;
+  dinero_esperado: number;
+  dinero_contado: number;
+  diferencia: number;
+  estado_efectivo: string;
+  estado: string;
+  created_at: string;
 }

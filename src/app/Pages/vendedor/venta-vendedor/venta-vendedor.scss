@@ -70,6 +70,7 @@ $blanco: #ffffff;
   padding: 18px 18px;
   border: 1px solid rgba(56, 142, 60, 0.18);
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+  position: relative;
 
   .campo-label {
     font-size: 13px;
@@ -77,46 +78,174 @@ $blanco: #ffffff;
     display: block;
     margin-bottom: 10px;
   }
+}
 
-  .cliente-selector {
+// ── Cliente seleccionado (chip) ──
+.cliente-seleccionado {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f0fdf4;
+  border: 1.5px solid $verde-primary;
+  border-radius: 14px;
+  padding: 12px 14px;
+
+  .cliente-sel-icono {
+    font-size: 28px;
+    color: $verde-primary;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .cliente-sel-info {
+    flex: 1;
+    min-width: 0;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 2px;
 
-    .cliente-select {
-      flex: 1;
-      border: none;
-      outline: none;
+    .cliente-sel-nombre {
       font-size: 15px;
-      font-weight: 600;
-      color: #212121;
-      background: transparent;
-      appearance: none;
-      cursor: pointer;
-      padding: 12px 0;
+      font-weight: 700;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .historial-btn {
-      background: #f3f4f6;
-      border: 1px solid #d1d5db;
-      cursor: pointer;
-      border-radius: 12px;
+    .cliente-sel-nit {
+      font-size: 12px;
       color: $gris-texto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      transition: background-color 180ms ease, transform 180ms ease;
+    }
+  }
 
-      &:hover {
-        background: #e5e7eb;
-        transform: translateY(-1px);
-      }
+  .btn-limpiar-cliente {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    flex-shrink: 0;
 
-      ion-icon {
-        font-size: 20px;
-      }
+    &:hover { color: #dc2626; }
+  }
+}
+
+// ── Buscador de clientes ──
+.cliente-buscador-wrap {
+  position: relative;
+}
+
+.cliente-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f9fafb;
+  border: 1.5px solid $gris-borde;
+  border-radius: 14px;
+  padding: 11px 14px;
+  transition: border-color 0.15s;
+
+  &:focus-within {
+    border-color: $verde-primary;
+    background: $blanco;
+  }
+
+  ion-icon {
+    font-size: 20px;
+    color: $gris-texto;
+    flex-shrink: 0;
+  }
+
+  .cliente-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: #212121;
+    background: transparent;
+
+    &::placeholder { color: #9ca3af; }
+  }
+
+  .btn-limpiar-input {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    flex-shrink: 0;
+
+    &:hover { color: #374151; }
+  }
+}
+
+// ── Dropdown de resultados ──
+.clientes-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: $blanco;
+  border-radius: 16px;
+  border: 1px solid $gris-borde;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+  z-index: 150;
+  max-height: 220px;
+  overflow-y: auto;
+  animation: aparecer 0.15s ease;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cliente-opcion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.12s;
+
+  &:last-child { border-bottom: none; }
+
+  &:hover, &:active {
+    background-color: #f0fdf4;
+  }
+
+  ion-icon {
+    font-size: 22px;
+    color: $verde-primary;
+    flex-shrink: 0;
+  }
+
+  .opcion-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    .opcion-nombre {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .opcion-nit {
+      font-size: 12px;
+      color: $gris-texto;
     }
   }
 }
@@ -269,4 +398,447 @@ $blanco: #ffffff;
 // ===== SPACER NAVBAR =====
 .navbar-spacer {
   height: 110px;
+}
+
+// ===== ESTADO VACÍO / CARGANDO =====
+.estado-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  color: $gris-texto;
+  gap: 12px;
+
+  ion-icon {
+    font-size: 44px;
+    color: #b0bec5;
+  }
+
+  p {
+    font-size: 15px;
+    margin: 0;
+  }
+}
+
+// ===== ANIMACIÓN SPIN =====
+.spin {
+  animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ===== CARD ACTIVA (en carrito) =====
+.producto-card.en-carrito {
+  border: 1.5px solid $verde-primary;
+  background: linear-gradient(135deg, $blanco 80%, #f1f8e9 100%);
+}
+
+.cantidad-valor.activo {
+  color: $verde-primary;
+  font-weight: 800;
+}
+
+// ===== BARRA DEL CARRITO =====
+.carrito-bar {
+  position: fixed;
+  bottom: 68px;
+  left: 16px;
+  right: 16px;
+  background: $verde-primary;
+  border-radius: 20px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 8px 28px rgba(46, 125, 50, 0.35);
+  cursor: pointer;
+  z-index: 100;
+  animation: subirBarra 0.25s ease;
+
+  .carrito-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+
+    .carrito-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.75);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .carrito-total {
+      font-size: 22px;
+      font-weight: 800;
+      color: $blanco;
+      line-height: 1.2;
+    }
+
+    .carrito-items {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  .btn-confirmar {
+    background: $blanco;
+    color: $verde-primary;
+    border: none;
+    border-radius: 14px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+@keyframes subirBarra {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+// ===== MODAL OVERLAY =====
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: aparecerOverlay 0.2s ease;
+}
+
+.modal-overlay-center {
+  align-items: center;
+}
+
+@keyframes aparecerOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+// ===== MODAL CARRITO =====
+.modal-carrito {
+  background: $blanco;
+  border-radius: 28px 28px 0 0;
+  width: 100%;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  animation: subirModal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid $gris-borde;
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      ion-icon {
+        font-size: 22px;
+        color: $verde-primary;
+      }
+    }
+
+    .btn-cerrar {
+      background: #f3f4f6;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      color: $gris-texto;
+    }
+  }
+
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .modal-footer {
+    padding: 14px 20px 20px;
+    border-top: 1px solid $gris-borde;
+
+    .btn-procesar {
+      width: 100%;
+      background: $verde-primary;
+      color: $blanco;
+      border: none;
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+@keyframes subirModal {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+// ===== ITEMS DEL CARRITO =====
+.carrito-items-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.carrito-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f9fafb;
+  border-radius: 14px;
+  padding: 12px 14px;
+
+  .item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+
+    .item-nombre {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-cantidad {
+      font-size: 13px;
+      color: $gris-texto;
+    }
+  }
+
+  .item-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 12px;
+
+    .item-subtotal {
+      font-size: 15px;
+      font-weight: 700;
+      color: $verde-primary;
+      white-space: nowrap;
+    }
+
+    .btn-eliminar-item {
+      background: #fee2e2;
+      border: none;
+      border-radius: 10px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #dc2626;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// ===== DESCUENTO =====
+.descuento-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  label {
+    font-size: 14px;
+    color: $gris-texto;
+    font-weight: 500;
+  }
+
+  .descuento-input {
+    width: 120px;
+    border: 1.5px solid $gris-borde;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #212121;
+    outline: none;
+    text-align: right;
+
+    &:focus {
+      border-color: $verde-primary;
+    }
+  }
+}
+
+// ===== TOTALES =====
+.totales-section {
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #424242;
+
+  &.total-final {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111827;
+    border-top: 1px solid $gris-borde;
+    padding-top: 10px;
+    margin-top: 2px;
+  }
+}
+
+.descuento-valor {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+// ===== ERROR =====
+.error-msg {
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  ion-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+}
+
+// ===== MODAL ÉXITO =====
+.modal-exito {
+  background: $blanco;
+  border-radius: 28px;
+  padding: 36px 28px;
+  margin: 20px;
+  width: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  .exito-icon {
+    font-size: 72px;
+    color: $verde-primary;
+    line-height: 1;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+  }
+
+  .exito-id {
+    font-size: 13px;
+    color: $gris-texto;
+    margin: 0;
+    font-family: monospace;
+    background: #f3f4f6;
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+
+  .exito-total {
+    font-size: 32px;
+    font-weight: 800;
+    color: $verde-primary;
+    margin: 0;
+  }
+
+  .exito-detalles {
+    font-size: 14px;
+    color: $gris-texto;
+  }
+
+  .btn-nueva-venta {
+    background: $verde-primary;
+    color: $blanco;
+    border: none;
+    border-radius: 16px;
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    margin-top: 8px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.75); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
 }
