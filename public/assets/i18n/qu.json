@@ -336,6 +336,11 @@
       "FREQUENCY_LABEL": "Riqsichiy Kallpan",
       "NOT_SPECIFIED": "Mana specifikasqa",
       "ACTIVE_STATUS": "Kawsachikuchkan",
+      "STATUS": {
+        "ACTIVO": "Kawsachikuchkan",
+        "INACTIVO": "Mana kawsachikuchkanchu",
+        "EN_RUTA": "Nanpi"
+      },
       "ERROR_TITLE": "Pantay",
       "LOADING_CLIENTS_TITLE": "Compradorkunata cargarichiwankuman",
       "LOADING_CLIENTS_SUBTITLE": "Qawariy...",
@@ -355,8 +360,9 @@
       "FREQUENCY_MONTHLY": "Sapa killa",
       "GPS_LOCATION_LABEL": "GPS Kaypi kasqan",
       "LAT_LABEL": "Lat:",
-      "LONG_LABEL": "Lng:",
+      "LNG_LABEL": "Lng:",
       "USE_CURRENT_LOCATION": "Kaypi kasqayta llamkay",
+      "LOCATION_DETECTING": "Tarishaniku...",
       "LOCATION_HINT": "Mapapikunata clampiywanpas ubicacionta saywanaykipaq",
       "CANCEL_BUTTON": "Cancelar",
       "REGISTER_CLIENT_BUTTON": "Compradorta registrar",

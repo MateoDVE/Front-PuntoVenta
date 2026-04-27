@@ -336,6 +336,11 @@
       "FREQUENCY_LABEL": "Frecuencia de visita",
       "NOT_SPECIFIED": "No especificado",
       "ACTIVE_STATUS": "Activo",
+      "STATUS": {
+        "ACTIVO": "Activo",
+        "INACTIVO": "Inactivo",
+        "EN_RUTA": "En ruta"
+      },
       "ERROR_TITLE": "Error",
       "LOADING_CLIENTS_TITLE": "Cargando clientes",
       "LOADING_CLIENTS_SUBTITLE": "Por favor espera...",
@@ -355,8 +360,9 @@
       "FREQUENCY_MONTHLY": "Mensual",
       "GPS_LOCATION_LABEL": "Ubicación GPS",
       "LAT_LABEL": "Lat:",
-      "LONG_LABEL": "Lng:",
+      "LNG_LABEL": "Lng:",
       "USE_CURRENT_LOCATION": "Usar mi ubicación actual",
+      "LOCATION_DETECTING": "Detectando...",
       "LOCATION_HINT": "También puedes hacer clic en el mapa para marcar la ubicación",
       "CANCEL_BUTTON": "Cancelar",
       "REGISTER_CLIENT_BUTTON": "Registrar cliente",
