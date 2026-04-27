@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { TranslateModule } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { ApiService, Producto, Cliente, CrearVentaRequest, VentaResponse } from '../../../services/api.service';
 import { AuthService } from '../../../services/auth.service';
@@ -16,7 +18,7 @@ interface ItemCarrito {
 @Component({
   selector: 'app-venta-vendedor',
   standalone: true,
-  imports: [CommonModule, FormsModule, VendedorNavbar],
+  imports: [CommonModule, FormsModule, VendedorNavbar, TranslateModule],
   templateUrl: './venta-vendedor.html',
   styleUrls: ['./venta-vendedor.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -46,8 +48,10 @@ export class VentaVendedorComponent implements OnInit {
   cargando: boolean = false;
   enviandoVenta: boolean = false;
   error: string = '';
+  jornadaCerrada: boolean = false;
 
   idVendedor: string = '';
+  readonly fechaHoy: string = this.getFechaHoy();
 
   constructor(
     private apiService: ApiService,
@@ -59,8 +63,25 @@ export class VentaVendedorComponent implements OnInit {
     if (user) {
       this.idVendedor = user.id_usuario || '';
     }
-    this.cargarProductos();
-    this.cargarClientes();
+    this.verificarJornada();
+  }
+
+  private verificarJornada(): void {
+    if (!this.idVendedor) return;
+    this.apiService.getCierresVendedor(this.idVendedor).pipe(
+      catchError(() => of([]))
+    ).subscribe(cierres => {
+      this.jornadaCerrada = cierres.some(c => c.fecha === this.fechaHoy);
+      if (!this.jornadaCerrada) {
+        this.cargarProductos();
+        this.cargarClientes();
+      }
+    });
+  }
+
+  private getFechaHoy(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
   cargarProductos(): void {
@@ -69,16 +90,38 @@ export class VentaVendedorComponent implements OnInit {
 
     forkJoin({
       inventario: this.apiService.getInventarioVendedor(this.idVendedor),
-      todos: this.apiService.getProductos()
+      todos: this.apiService.getProductos(),
+      cierre: this.apiService.getCierreJornada(this.idVendedor, this.fechaHoy).pipe(
+        catchError(() => of(null))
+      )
     }).subscribe({
-      next: ({ inventario, todos }) => {
-        const asignadosIds = new Set(
-          inventario
-            .filter(a => a.estado_validacion === 'VALIDADO')
-            .map(a => String(a.id_producto))
-        );
+      next: ({ inventario, todos, cierre }) => {
+        // Suma de cantidad_inicial por producto para cargas VALIDADO
+        const cantidadAsignada = new Map<string, number>();
+        for (const carga of inventario) {
+          if (carga.estado_validacion !== 'VALIDADO') continue;
+          const id = String(carga.id_producto);
+          cantidadAsignada.set(id, (cantidadAsignada.get(id) ?? 0) + carga.cantidad_inicial);
+        }
 
-        this.productos = todos.filter(p => asignadosIds.has(String(p.id_producto ?? p.sku)));
+        // Unidades vendidas hoy por producto (desde el cierre)
+        const vendidoHoy = new Map<string, number>();
+        if (cierre) {
+          for (const det of cierre.conciliacionInventario.detalleProductos) {
+            vendidoHoy.set(String(det.idProducto), det.vendido);
+          }
+        }
+
+        // Stock actual del vendedor = asignado − vendido hoy
+        this.productos = todos
+          .filter(p => cantidadAsignada.has(String(p.id_producto ?? p.sku)))
+          .map(p => {
+            const id = String(p.id_producto ?? p.sku);
+            const asignado = cantidadAsignada.get(id) ?? 0;
+            const vendido  = vendidoHoy.get(id) ?? 0;
+            return { ...p, stock_almacen_central: Math.max(0, asignado - vendido) };
+          });
+
         this.productosFiltrados = [...this.productos];
         this.productos.forEach(p => this.cantidades.set(this.getKey(p), 0));
         this.cargando = false;
@@ -256,6 +299,7 @@ export class VentaVendedorComponent implements OnInit {
     this.mostrarModalExito = false;
     this.ventaConfirmada = null;
     this.limpiarCliente();
+    this.cargarProductos();
   }
 
   trackByKey(_: number, producto: Producto): string {
