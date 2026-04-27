@@ -95,7 +95,21 @@
 
   <section class="ventas">
     <h3>{{ 'VENDEDOR.DASHBOARD.LAST_SALES_TITLE' | translate }}</h3>
-    <p class="empty">{{ 'VENDEDOR.DASHBOARD.LAST_SALES_EMPTY' | translate }}</p>
+
+    <ul *ngIf="ultimasVentas.length > 0">
+      <li *ngFor="let venta of ultimasVentas">
+        <div>
+          <strong>#{{ venta.idVenta | slice:0:8 }}...</strong>
+          <small>{{ venta.fechaHora | date:'HH:mm' }}</small>
+        </div>
+        <div class="cantidad">
+          Bs. {{ venta.totalEfectivo | number:'1.2-2' }}
+          <small *ngIf="venta.descuento > 0">-{{ venta.descuento | number:'1.2-2' }}</small>
+        </div>
+      </li>
+    </ul>
+
+    <p class="empty" *ngIf="ultimasVentas.length === 0">{{ 'VENDEDOR.DASHBOARD.LAST_SALES_EMPTY' | translate }}</p>
   </section>
 
 </section>

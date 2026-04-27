@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
-import { ApiService, InventarioAsignacion, Producto, Usuario } from '../../../services/api.service';
-import { forkJoin } from 'rxjs';
+import { ApiService, CierreJornadaResponse, InventarioAsignacion, Producto, Usuario } from '../../../services/api.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 interface ProductoTransporte {
   idProducto: string;
@@ -23,6 +24,7 @@ export class DashboardVendedor implements OnInit {
   perfil: Usuario | null = null;
   productosCatalogo: Producto[] = [];
   cargas: InventarioAsignacion[] = [];
+  cierreData: CierreJornadaResponse | null = null;
 
   cargando = false;
   confirmando = '';
@@ -31,17 +33,23 @@ export class DashboardVendedor implements OnInit {
 
   constructor(private apiService: ApiService, private translate: TranslateService) {
     const idioma = localStorage.getItem('idioma') || 'es';
-  this.translate.setDefaultLang('es');
-  this.translate.use(idioma);
+    this.translate.setDefaultLang('es');
+    this.translate.use(idioma);
   }
 
   ngOnInit(): void {
     this.cargarDashboard();
   }
 
+  private getFechaHoy(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
   cargarDashboard(): void {
     this.cargando = true;
     this.errorMensaje = '';
+    const fechaHoy = this.getFechaHoy();
 
     this.apiService.getMyProfile().subscribe({
       next: (perfil) => {
@@ -50,10 +58,14 @@ export class DashboardVendedor implements OnInit {
         forkJoin({
           productos: this.apiService.getProductos(),
           cargas: this.apiService.getInventarioVendedor(perfil.id_usuario),
+          cierre: this.apiService.getCierreJornada(perfil.id_usuario, fechaHoy).pipe(
+            catchError(() => of(null))
+          ),
         }).subscribe({
-          next: ({ productos, cargas }) => {
+          next: ({ productos, cargas, cierre }) => {
             this.productosCatalogo = productos;
             this.cargas = cargas;
+            this.cierreData = cierre;
             this.cargando = false;
           },
           error: (error) => {
@@ -100,44 +112,59 @@ export class DashboardVendedor implements OnInit {
   }
 
   get stockTransporte(): ProductoTransporte[] {
+    // Unidades vendidas hoy por producto (desde el cierre del día)
+    const vendidoHoy = new Map<string, number>();
+    if (this.cierreData) {
+      for (const det of this.cierreData.conciliacionInventario.detalleProductos) {
+        vendidoHoy.set(String(det.idProducto), det.vendido);
+      }
+    }
+
+    // Suma de cantidad_inicial para cargas VALIDADO, restando lo vendido hoy
     const acumulado = new Map<string, ProductoTransporte>();
 
     for (const carga of this.cargas) {
-      const estado = this.normalizarEstado(carga.estado_validacion);
-      if (estado !== 'VALIDADO_ADMIN' && estado !== 'VALIDADO') {
-        continue;
-      }
+      if (this.normalizarEstado(carga.estado_validacion) !== 'VALIDADO') continue;
 
       const idProducto = String(carga.id_producto);
-      const producto = this.productosCatalogo.find((item) => String(item.id_producto) === idProducto);
+      const producto = this.productosCatalogo.find(p => String(p.id_producto) === idProducto);
       const existente = acumulado.get(idProducto);
 
       if (existente) {
         existente.cantidad += carga.cantidad_inicial;
-        continue;
+      } else {
+        acumulado.set(idProducto, {
+          idProducto,
+          nombre: producto?.nombre ?? `Producto ${idProducto}`,
+          cantidad: carga.cantidad_inicial,
+          precio: producto?.precio_unidad ?? 0,
+        });
       }
+    }
 
-      acumulado.set(idProducto, {
-        idProducto,
-        nombre: producto?.nombre ?? `Producto ${idProducto}`,
-        cantidad: carga.cantidad_inicial,
-        precio: producto?.precio_unidad ?? 0,
-      });
+    // Restar lo vendido hoy a cada producto
+    for (const [id, item] of acumulado) {
+      item.cantidad = Math.max(0, item.cantidad - (vendidoHoy.get(id) ?? 0));
     }
 
     return [...acumulado.values()];
   }
 
   get stockActual(): number {
-    return this.stockTransporte.reduce((acumulado, item) => acumulado + item.cantidad, 0);
+    return this.stockTransporte.reduce((sum, item) => sum + item.cantidad, 0);
+  }
+
+  get ultimasVentas() {
+    const ventas = this.cierreData?.resumenFinanciero.detalleVentas ?? [];
+    return [...ventas].reverse().slice(0, 5);
   }
 
   get ventasHoy(): number {
-    return 0;
+    return this.cierreData?.resumenFinanciero.ventasRealizadas ?? 0;
   }
 
   get ingresos(): number {
-    return 0;
+    return this.cierreData?.resumenFinanciero.totalEfectivo ?? 0;
   }
 
   getNombreProducto(idProducto: string): string {

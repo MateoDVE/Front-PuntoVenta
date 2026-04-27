@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { AuthService } from '../../../services/auth.service';
 import {
@@ -9,13 +13,14 @@ import {
   CierreJornadaResponse,
   CierreGuardado,
   ConfirmarCierreResponse,
-  RegistrarCierrePayload
+  RegistrarCierrePayload,
+  InventarioAsignacion
 } from '../../../services/api.service';
 
 @Component({
   selector: 'app-cierre-vendedor',
   standalone: true,
-  imports: [CommonModule, FormsModule, VendedorNavbar],
+  imports: [CommonModule, FormsModule, VendedorNavbar, TranslateModule],
   templateUrl: './cierre-vendedor.html',
   styleUrl: './cierre-vendedor.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -24,6 +29,7 @@ export class CierreVendedor implements OnInit {
 
   // Datos del cierre
   cierre: CierreJornadaResponse | null = null;
+  asignaciones: InventarioAsignacion[] = [];
   resultadoCierre: ConfirmarCierreResponse | null = null;
   cierreGuardado: CierreGuardado | null = null;
   errorGuardado: string = '';
@@ -38,6 +44,7 @@ export class CierreVendedor implements OnInit {
   cargando: boolean = false;
   enviando: boolean = false;
   error: string = '';
+  jornadaYaCerrada: boolean = false;
 
   // Modal confirmar cierre
   mostrarModalConfirmar: boolean = false;
@@ -69,9 +76,15 @@ export class CierreVendedor implements OnInit {
     this.cargando = true;
     this.error = '';
 
-    this.apiService.getCierreJornada(this.idVendedor, this.fechaHoy).subscribe({
-      next: (data) => {
-        this.cierre = data;
+    forkJoin({
+      cierre: this.apiService.getCierreJornada(this.idVendedor, this.fechaHoy),
+      inventario: this.apiService.getInventarioVendedor(this.idVendedor),
+      cierresGuardados: this.apiService.getCierresVendedor(this.idVendedor).pipe(catchError(() => of([])))
+    }).subscribe({
+      next: ({ cierre, inventario, cierresGuardados }) => {
+        this.cierre = cierre;
+        this.asignaciones = inventario;
+        this.jornadaYaCerrada = cierresGuardados.some(c => c.fecha === this.fechaHoy);
         this.cargando = false;
       },
       error: (err) => {
@@ -130,9 +143,9 @@ export class CierreVendedor implements OnInit {
       ventasRealizadas: this.cierre.resumenFinanciero.ventasRealizadas,
       totalEfectivo: this.cierre.resumenFinanciero.totalEfectivo,
       totalDescuentos: this.cierre.resumenFinanciero.totalDescuentos,
-      stockInicialTotal: this.cierre.conciliacionInventario.stockInicialTotal,
+      stockInicialTotal: this.stockInicialTotalCorregido,
       vendidosTotal: this.cierre.conciliacionInventario.vendidosTotal,
-      stockFinalTotal: this.cierre.conciliacionInventario.stockFinalTotal,
+      stockFinalTotal: this.stockFinalTotalCorregido,
       estadoInventario: this.cierre.conciliacionInventario.estadoConciliacion,
       dineroEsperado: resultado.dineroEsperado,
       dineroContado: resultado.dineroContado,
@@ -144,6 +157,7 @@ export class CierreVendedor implements OnInit {
       next: (guardado) => {
         this.cierreGuardado = guardado;
         this.errorGuardado = '';
+        this.jornadaYaCerrada = true;
         this.mostrarModalResultado = true;
         this.enviando = false;
       },
@@ -162,12 +176,31 @@ export class CierreVendedor implements OnInit {
     this.errorGuardado = '';
   }
 
+  get detallesCorregidos() {
+    return (this.cierre?.conciliacionInventario.detalleProductos ?? []).map(det => {
+      const asignadoTotal = this.asignaciones
+        .filter(a => a.estado_validacion === 'VALIDADO' && String(a.id_producto) === String(det.idProducto))
+        .reduce((sum, a) => sum + a.cantidad_inicial, 0);
+      const stockInicialCorregido = asignadoTotal > 0 ? asignadoTotal : det.stockInicial;
+      const esperadoCorregido = stockInicialCorregido - det.vendido;
+      return { ...det, stockInicialCorregido, esperadoCorregido };
+    });
+  }
+
+  get stockInicialTotalCorregido(): number {
+    return this.detallesCorregidos.reduce((sum, d) => sum + d.stockInicialCorregido, 0);
+  }
+
+  get stockFinalTotalCorregido(): number {
+    return this.stockInicialTotalCorregido - (this.cierre?.conciliacionInventario.vendidosTotal ?? 0);
+  }
+
   get estadoConciliacionInventario(): string {
     return this.cierre?.conciliacionInventario?.estadoConciliacion ?? '';
   }
 
   get esConciliacionCorrecta(): boolean {
-    return this.estadoConciliacionInventario === 'CORRECTO';
+    return this.detallesCorregidos.every(d => d.esperadoCorregido === d.actual);
   }
 
   cerrarSesion(): void {

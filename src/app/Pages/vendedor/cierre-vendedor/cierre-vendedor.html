@@ -8,8 +8,8 @@
       <ion-icon name="calendar-outline"></ion-icon>
     </div>
     <div class="header-text">
-      <h1>Cierre de Jornada</h1>
-      <p>Conciliación de efectivo y stock</p>
+      <h1>{{ 'VENDEDOR.CIERRE.TITLE' | translate }}</h1>
+      <p>{{ 'VENDEDOR.CIERRE.SUBTITLE' | translate }}</p>
     </div>
   </div>
 
@@ -17,7 +17,7 @@
   @if (cargando) {
     <div class="estado-cargando">
       <ion-icon name="reload-outline" class="spin"></ion-icon>
-      <p>Cargando datos del día...</p>
+      <p>{{ 'VENDEDOR.CIERRE.LOADING' | translate }}</p>
     </div>
   }
 
@@ -26,7 +26,7 @@
     <div class="error-global">
       <ion-icon name="alert-circle-outline"></ion-icon>
       {{ error }}
-      <button (click)="cargarCierre()">Reintentar</button>
+      <button (click)="cargarCierre()">{{ 'VENDEDOR.CIERRE.RETRY_BUTTON' | translate }}</button>
     </div>
   }
 
@@ -36,15 +36,15 @@
     <div class="section">
       <div class="section-title">
         <ion-icon name="cash-outline"></ion-icon>
-        <span>Resumen Financiero</span>
+        <span>{{ 'VENDEDOR.CIERRE.FINANCIAL_SUMMARY' | translate }}</span>
       </div>
       <div class="summary-cards">
         <div class="summary-card">
-          <div class="card-label">Ventas Realizadas</div>
+          <div class="card-label">{{ 'VENDEDOR.CIERRE.SALES_MADE' | translate }}</div>
           <div class="card-value">{{ cierre.resumenFinanciero.ventasRealizadas }}</div>
         </div>
         <div class="summary-card total">
-          <div class="card-label">Total Efectivo</div>
+          <div class="card-label">{{ 'VENDEDOR.CIERRE.TOTAL_CASH' | translate }}</div>
           <div class="card-value">Bs. {{ cierre.resumenFinanciero.totalEfectivo | number:'1.2-2' }}</div>
         </div>
       </div>
@@ -52,14 +52,14 @@
       @if (cierre.resumenFinanciero.totalDescuentos > 0) {
         <div class="descuentos-row">
           <ion-icon name="pricetag-outline"></ion-icon>
-          Total descuentos: <strong>Bs. {{ cierre.resumenFinanciero.totalDescuentos | number:'1.2-2' }}</strong>
+          {{ 'VENDEDOR.CIERRE.TOTAL_DISCOUNTS' | translate }}: <strong>Bs. {{ cierre.resumenFinanciero.totalDescuentos | number:'1.2-2' }}</strong>
         </div>
       }
 
       <!-- Detalle de ventas -->
-      <div class="section-subtitle">Detalle de Ventas</div>
+      <div class="section-subtitle">{{ 'VENDEDOR.CIERRE.SALES_DETAIL' | translate }}</div>
       @if (cierre.resumenFinanciero.detalleVentas.length === 0) {
-        <div class="empty-state">No se realizaron ventas hoy</div>
+        <div class="empty-state">{{ 'VENDEDOR.CIERRE.NO_SALES_TODAY' | translate }}</div>
       } @else {
         <div class="ventas-list">
           @for (venta of cierre.resumenFinanciero.detalleVentas; track venta.idVenta) {
@@ -84,20 +84,20 @@
     <div class="section inventory-section" [class.error-inventario]="!esConciliacionCorrecta">
       <div class="section-title">
         <ion-icon name="layers-outline"></ion-icon>
-        <span>Conciliación de Inventario</span>
+        <span>{{ 'VENDEDOR.CIERRE.INVENTORY_CONCILIATION' | translate }}</span>
       </div>
       <div class="inventory-stats">
         <div class="stat-item">
-          <div class="stat-label">Stock Inicial</div>
-          <div class="stat-value">{{ cierre.conciliacionInventario.stockInicialTotal }}</div>
+          <div class="stat-label">{{ 'VENDEDOR.CIERRE.INITIAL_STOCK' | translate }}</div>
+          <div class="stat-value">{{ stockInicialTotalCorregido }}</div>
         </div>
         <div class="stat-item">
-          <div class="stat-label">Vendidos</div>
+          <div class="stat-label">{{ 'VENDEDOR.CIERRE.SOLD' | translate }}</div>
           <div class="stat-value vendidos">{{ cierre.conciliacionInventario.vendidosTotal }}</div>
         </div>
         <div class="stat-item">
-          <div class="stat-label">Stock Final</div>
-          <div class="stat-value morado">{{ cierre.conciliacionInventario.stockFinalTotal }}</div>
+          <div class="stat-label">{{ 'VENDEDOR.CIERRE.FINAL_STOCK' | translate }}</div>
+          <div class="stat-value morado">{{ stockFinalTotalCorregido }}</div>
         </div>
       </div>
 
@@ -106,10 +106,10 @@
         <div class="inventory-status success">
           <ion-icon name="checkmark-circle"></ion-icon>
           <div>
-            <span>Inventario Correcto</span>
+            <span>{{ 'VENDEDOR.CIERRE.INVENTORY_CORRECT' | translate }}</span>
             <small>
-              Stock esperado: {{ cierre.conciliacionInventario.stockFinalTotal }} |
-              Stock actual: {{ cierre.conciliacionInventario.stockFinalTotal }}
+              {{ 'VENDEDOR.CIERRE.EXPECTED_STOCK' | translate }}: {{ stockFinalTotalCorregido }} |
+              {{ 'VENDEDOR.CIERRE.ACTUAL_STOCK' | translate }}: {{ stockFinalTotalCorregido }}
             </small>
           </div>
         </div>
@@ -117,22 +117,22 @@
         <div class="inventory-status danger">
           <ion-icon name="warning-outline"></ion-icon>
           <div>
-            <span>Diferencia en Inventario</span>
-            <small>Revisa el detalle por producto</small>
+            <span>{{ 'VENDEDOR.CIERRE.INVENTORY_DIFFERENCE' | translate }}</span>
+            <small>{{ 'VENDEDOR.CIERRE.REVIEW_DETAIL' | translate }}</small>
           </div>
         </div>
       }
 
       <!-- Detalle por producto -->
-      <div class="section-subtitle" style="margin-top: 16px;">Detalle por Producto</div>
+      <div class="section-subtitle" style="margin-top: 16px;">{{ 'VENDEDOR.CIERRE.PRODUCT_DETAIL' | translate }}</div>
       <div class="productos-detail">
-        @for (prod of cierre.conciliacionInventario.detalleProductos; track prod.idProducto) {
-          <div class="producto-detail-item" [class.diferencia]="prod.esperado !== prod.actual">
+        @for (prod of detallesCorregidos; track prod.idProducto) {
+          <div class="producto-detail-item" [class.diferencia]="prod.esperadoCorregido !== prod.actual">
             <div class="producto-info">
               <div class="producto-nombre">{{ prod.nombre }}</div>
-              <small>Inicial: {{ prod.stockInicial }} | Vendido: {{ prod.vendido }} | Esperado: {{ prod.esperado }}</small>
+              <small>{{ 'VENDEDOR.CIERRE.INITIAL_LABEL' | translate }}: {{ prod.stockInicialCorregido }} | {{ 'VENDEDOR.CIERRE.SOLD_LABEL' | translate }}: {{ prod.vendido }} | {{ 'VENDEDOR.CIERRE.EXPECTED_LABEL' | translate }}: {{ prod.esperadoCorregido }}</small>
             </div>
-            <div class="producto-stock" [class.stock-diff]="prod.esperado !== prod.actual">
+            <div class="producto-stock" [class.stock-diff]="prod.esperadoCorregido !== prod.actual">
               {{ prod.actual }}
             </div>
           </div>
@@ -148,13 +148,13 @@
 
 <!-- BARRA DE ACCIONES -->
 <div class="action-bar">
-  <button class="btn-confirmar" (click)="abrirModalConfirmar()" [disabled]="cargando || !cierre">
-    <ion-icon name="clipboard-outline"></ion-icon>
-    Confirmar Cierre de Jornada
+  <button class="btn-confirmar" (click)="abrirModalConfirmar()" [disabled]="cargando || !cierre || jornadaYaCerrada">
+    <ion-icon [name]="jornadaYaCerrada ? 'checkmark-circle-outline' : 'clipboard-outline'"></ion-icon>
+    {{ jornadaYaCerrada ? ('VENDEDOR.CIERRE.JORNADA_CERRADA' | translate) : ('VENDEDOR.CIERRE.CONFIRM_BUTTON' | translate) }}
   </button>
   <button class="btn-logout" (click)="cerrarSesion()">
     <ion-icon name="exit-outline"></ion-icon>
-    Cerrar Sesión
+    {{ 'VENDEDOR.CIERRE.LOGOUT_BUTTON' | translate }}
   </button>
 </div>
 
@@ -169,7 +169,7 @@
       <div class="modal-header">
         <h2>
           <ion-icon name="cash-outline"></ion-icon>
-          Confirmar Cierre
+          {{ 'VENDEDOR.CIERRE.CONFIRM_MODAL_TITLE' | translate }}
         </h2>
         <button class="btn-cerrar" (click)="cerrarModalConfirmar()">
           <ion-icon name="close-outline"></ion-icon>
@@ -179,7 +179,7 @@
       <div class="modal-body">
         @if (cierre) {
           <div class="resumen-esperado">
-            <span class="resumen-label">Dinero esperado del sistema</span>
+            <span class="resumen-label">{{ 'VENDEDOR.CIERRE.EXPECTED_MONEY' | translate }}</span>
             <span class="resumen-monto">
               Bs. {{ cierre.resumenFinanciero.totalEfectivo | number:'1.2-2' }}
             </span>
@@ -187,7 +187,7 @@
         }
 
         <div class="campo-dinero">
-          <label>¿Cuánto dinero estás entregando?</label>
+          <label>{{ 'VENDEDOR.CIERRE.MONEY_INPUT_LABEL' | translate }}</label>
           <div class="dinero-input-wrap">
             <span class="dinero-prefix">Bs.</span>
             <input
@@ -195,7 +195,7 @@
               [(ngModel)]="dineroContado"
               min="0"
               step="0.01"
-              placeholder="0.00"
+              [placeholder]="'VENDEDOR.CIERRE.MONEY_PLACEHOLDER' | translate"
               class="dinero-input"
               autofocus />
           </div>
@@ -219,7 +219,7 @@
           } @else {
             <ion-icon name="checkmark-circle-outline"></ion-icon>
           }
-          {{ enviando ? 'Procesando...' : 'Confirmar Cierre' }}
+          {{ enviando ? ('VENDEDOR.CIERRE.PROCESSING' | translate) : ('VENDEDOR.CIERRE.CONFIRM_CLOSURE' | translate) }}
         </button>
       </div>
 
@@ -240,31 +240,31 @@
         <div class="resultado-icono correcto">
           <ion-icon name="checkmark-circle"></ion-icon>
         </div>
-        <h2 class="resultado-titulo correcto">¡Cierre Correcto!</h2>
+        <h2 class="resultado-titulo correcto">{{ 'VENDEDOR.CIERRE.RESULT_CORRECT' | translate }}</h2>
       } @else if (resultadoCierre.estadoConciliacion === 'SOBRANTE') {
         <div class="resultado-icono sobrante">
           <ion-icon name="trending-up-outline"></ion-icon>
         </div>
-        <h2 class="resultado-titulo sobrante">Dinero Sobrante</h2>
+        <h2 class="resultado-titulo sobrante">{{ 'VENDEDOR.CIERRE.RESULT_SURPLUS' | translate }}</h2>
       } @else {
         <div class="resultado-icono faltante">
           <ion-icon name="trending-down-outline"></ion-icon>
         </div>
-        <h2 class="resultado-titulo faltante">Dinero Faltante</h2>
+        <h2 class="resultado-titulo faltante">{{ 'VENDEDOR.CIERRE.RESULT_DEFICIT' | translate }}</h2>
       }
 
       <!-- Detalle financiero -->
       <div class="resultado-detalle">
         <div class="resultado-fila">
-          <span>Dinero esperado</span>
+          <span>{{ 'VENDEDOR.CIERRE.EXPECTED_MONEY_LABEL' | translate }}</span>
           <span class="monto">Bs. {{ resultadoCierre.dineroEsperado | number:'1.2-2' }}</span>
         </div>
         <div class="resultado-fila">
-          <span>Dinero contado</span>
+          <span>{{ 'VENDEDOR.CIERRE.COUNTED_MONEY_LABEL' | translate }}</span>
           <span class="monto">Bs. {{ resultadoCierre.dineroContado | number:'1.2-2' }}</span>
         </div>
         <div class="resultado-fila diferencia-fila" [class.positivo]="resultadoCierre.diferencia >= 0" [class.negativo]="resultadoCierre.diferencia < 0">
-          <span>Diferencia</span>
+          <span>{{ 'VENDEDOR.CIERRE.DIFFERENCE_LABEL' | translate }}</span>
           <span class="monto-dif">
             {{ resultadoCierre.diferencia >= 0 ? '+' : '' }}Bs. {{ resultadoCierre.diferencia | number:'1.2-2' }}
           </span>
@@ -275,7 +275,7 @@
       @if (cierreGuardado) {
         <div class="guardado-ok">
           <ion-icon name="checkmark-circle-outline"></ion-icon>
-          Cierre guardado · ID: {{ cierreGuardado.id_cierre | slice:0:8 }}...
+          {{ 'VENDEDOR.CIERRE.SAVED_OK' | translate }} {{ cierreGuardado.id_cierre | slice:0:8 }}...
         </div>
       }
       @if (errorGuardado) {
@@ -286,7 +286,7 @@
       }
 
       <button class="btn-cerrar-resultado" (click)="cerrarModalResultado()">
-        Cerrar
+        {{ 'VENDEDOR.CIERRE.CLOSE_RESULT' | translate }}
       </button>
 
     </div>
