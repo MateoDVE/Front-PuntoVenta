@@ -3,28 +3,36 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-iniciarsesion',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './iniciarsesion.html',
-  styleUrl: './iniciarsesion.scss',
+  styleUrls: ['./iniciarsesion.scss'],
 })
 export class Iniciarsesion {
   loginForm: FormGroup;
   errorMessage: string = '';
   loading: boolean = false;
+  idiomaActual: string = 'es';
+  menuAbierto: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+
+    const idiomaGuardado = localStorage.getItem('idioma') || 'es';
+    this.idiomaActual = idiomaGuardado;
+    this.translate.use(idiomaGuardado);
   }
 
   onSubmit() {
@@ -38,8 +46,19 @@ export class Iniciarsesion {
         next: (response) => {
           console.log('Inicio de sesión exitoso', response);
           this.loading = false;
-          // Redirigir a la página principal o dashboard
-          this.router.navigate(['/admin/dashboard']);
+          if (this.authService.isAuthenticated()) {
+            const loginRole = this.authService.extractRoleFromLoginResponse(response);
+            const targetRoute = this.authService.getDashboardRouteByRole(loginRole);
+
+            if (targetRoute === '/login') {
+              this.errorMessage = 'No se pudo determinar el rol del usuario.';
+              return;
+            }
+
+            this.router.navigate([targetRoute]);
+          } else {
+            this.errorMessage = 'No se pudo obtener el token de sesión, intente nuevamente.';
+          }
         },
         error: (error) => {
           console.error('Error al iniciar sesión', error);
@@ -48,5 +67,16 @@ export class Iniciarsesion {
         }
       });
     }
+  }
+
+  toggleMenu(): void {
+    this.menuAbierto = !this.menuAbierto;
+  }
+
+  cambiarIdioma(idioma: string): void {
+    this.idiomaActual = idioma;
+    this.translate.use(idioma);
+    localStorage.setItem('idioma', idioma);
+    this.menuAbierto = false;
   }
 }

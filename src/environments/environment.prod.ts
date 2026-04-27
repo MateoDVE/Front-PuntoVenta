@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://tu-dominio-produccion.com'
+  apiUrl: 'https://back-puntoventa-2.onrender.com',
+  googleMapsKey: 'AIzaSyAbbumO3yYDHqn_TKs-onKq2sFz5uubKYc'
 };

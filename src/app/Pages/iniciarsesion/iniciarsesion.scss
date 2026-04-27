@@ -118,3 +118,82 @@ section {
         }
     }
 }
+// boton de traduccion
+
+// Al final del archivo, completamente fuera de section { }
+.lang-switcher {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;  // ← cambia left por right
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;  // ← cambia flex-start por flex-end
+  gap: 8px;
+
+  .lang-toggle {
+    background-color: white;
+    border: 1px solid $color-button;
+    color: $color-button;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    &:hover {
+      background-color: $color-button;
+      color: white;
+    }
+  }
+
+  .lang-menu {
+    display: none;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    overflow: hidden;
+    min-width: 150px;
+    border: 1px solid rgba($color-button, 0.15);
+
+    &.open {
+      display: flex;
+    }
+
+    button {
+      background: none;
+      border: none;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 13px;
+      cursor: pointer;
+      color: $colorTextoPrincipal;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background-color: #f0f4ff;
+        color: $color-button;
+      }
+
+      &.active {
+        background-color: #e8eeff;
+        color: $color-button;
+        font-weight: 600;
+      }
+    }
+  }
+}

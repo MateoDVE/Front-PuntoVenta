@@ -1,0 +1,142 @@
+.navbar-container {
+  position: relative;
+}
+
+.navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 20;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  background: #ffffffee;
+  border-top: 1px solid #d6d6d6;
+  padding: 10px 0;
+  box-shadow: 0 -6px 24px rgba(15, 23, 42, 0.08);
+}
+
+.language-control {
+  position: fixed;
+  right: 16px;
+  bottom: 82px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.language-switch {
+  border: 1px solid rgba(107, 114, 128, 0.25);
+  background: #ffffff;
+  color: #374151;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 220ms ease, border-color 220ms ease, background-color 220ms ease;
+}
+
+.language-switch:hover {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.language-options {
+  margin: 8px 0 0;
+  padding: 8px 0;
+  width: max-content;
+  min-width: 140px;
+  list-style: none;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.language-options li {
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 180ms ease;
+}
+
+.language-options li:hover {
+  background-color: #eff6ff;
+}
+
+.navbar a,
+.navbar .link-disabled {
+  text-decoration: none;
+  color: #6b7280;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 16px;
+  transition: transform 220ms ease, color 220ms ease, background-color 220ms ease;
+}
+
+.navbar a:hover {
+  transform: translateY(-1px);
+  color: #1d4ed8;
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.navbar .link-disabled {
+  color: #a1a1aa;
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.navbar .icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.navbar .active {
+  color: #2563eb;
+  font-weight: 700;
+  transform: translateY(-2px);
+}
+
+.navbar .active::after {
+  content: '';
+  display: block;
+  width: 22px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  margin-top: 6px;
+  animation: activeTabGlow 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes activeTabGlow {
+  from {
+    opacity: 0.75;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+.cerrar-sesion {
+  color: #dc2626;
+  cursor: pointer;
+}
+
+.cerrar-sesion:hover {
+  color: #b91c1c;
+  background-color: rgba(220, 38, 38, 0.08);
+}
+

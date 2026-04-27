@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   VendedorListado,
   VendedoresRegistradosComponent,
@@ -19,7 +20,7 @@ interface VendedorForm {
 @Component({
   selector: 'app-gestion-vendedores',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminNavbar, VendedoresRegistradosComponent],
+  imports: [CommonModule, FormsModule, AdminNavbar, VendedoresRegistradosComponent, TranslateModule],
   templateUrl: './gestion-vendedores.html',
   styleUrls: ['./gestion-vendedores.scss'],
 })

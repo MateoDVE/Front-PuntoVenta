@@ -1,46 +1,63 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 interface AdminNavItem {
-  label: string;
-  href: string;
+  labelKey: string;
+  href?: string;
   current?: boolean;
+  disabled?: boolean;
+  icon: string;
 }
 
 @Component({
   selector: 'app-admin-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule],
   templateUrl: './admin-navbar.html',
-  styleUrl: './admin-navbar.scss',
+  styleUrls: ['./admin-navbar.scss'],
 })
-export class AdminNavbar implements OnInit {
+export class AdminNavbar {
   @Output() signOut = new EventEmitter<void>();
 
   navItems: AdminNavItem[] = [
-    { label: 'Dashboard', href: '/admin/dashboard' },
-    { label: 'Vendedores', href: '/admin/gestion-vendedores' },
-    { label: 'Catalogo', href: '/admin/catalogo' },
-    { label: 'Asignacion', href: '#' },
-    { label: 'Monitor', href: '#' },
-    { label: 'Reportes', href: '#' },
+    { labelKey: 'ADMIN.NAVBAR.DASHBOARD', href: '/admin/dashboard', icon: 'dashboard' },
+    { labelKey: 'ADMIN.NAVBAR.VENDEDORES', href: '/admin/gestion-vendedores', icon: 'vendedores' },
+    { labelKey: 'ADMIN.NAVBAR.CATALOGO', href: '/admin/catalogo', icon: 'catalogo' },
+    { labelKey: 'ADMIN.NAVBAR.ASIGNACION', href: '/admin/asignacion', icon: 'asignacion' },
+    { labelKey: 'ADMIN.NAVBAR.MONITOR', disabled: true, icon: 'monitor' },
+    { labelKey: 'ADMIN.NAVBAR.REPORTES', disabled: true, icon: 'reportes' },
   ];
 
-  constructor(private router: Router) {}
+  idiomaActual: string = 'es';
+  menuAbierto: boolean = false;
+  idiomas = [
+    { value: 'es', label: '🇧🇴 Español' },
+    { value: 'en', label: '🇺🇸 English' },
+    { value: 'qu', label: '🌿 Quechua' }
+  ];
 
-  ngOnInit(): void {
-    this.updateCurrentItem();
-    this.router.events.subscribe(() => {
-      this.updateCurrentItem();
-    });
+  constructor(private translate: TranslateService) {
+    const idiomaGuardado = localStorage.getItem('idioma') || 'es';
+    this.idiomaActual = idiomaGuardado;
+    this.translate.use(idiomaGuardado);
   }
 
-  private updateCurrentItem(): void {
-    const currentUrl = this.router.url;
-    this.navItems.forEach(item => {
-      item.current = item.href === currentUrl;
-    });
+  get idiomaLabel(): string {
+    const idioma = this.idiomas.find((item) => item.value === this.idiomaActual);
+    return idioma ? idioma.label : '🌐 Idioma';
+  }
+
+  toggleMenu(): void {
+    this.menuAbierto = !this.menuAbierto;
+  }
+
+  cambiarIdioma(idioma: string): void {
+    this.idiomaActual = idioma;
+    this.translate.use(idioma);
+    localStorage.setItem('idioma', idioma);
+    this.menuAbierto = false;
   }
 
   onSignOut(): void {

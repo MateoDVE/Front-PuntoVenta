@@ -8,40 +8,40 @@
 
   <div class="producto-info">
     <h3>{{ producto.nombre }}</h3>
-    <p class="sku">SKU: {{ producto.sku }}</p>
+    <p class="sku">{{ 'ADMIN.CATALOG.PRODUCT_SKU_LABEL' | translate }}: {{ producto.sku }}</p>
     
     <p class="descripcion" *ngIf="producto.descripcion">
-      {{ producto.descripcion }}
+      {{ getTranslatedProductDescription(producto.descripcion) }}
     </p>
 
     <div class="precios">
       <div class="precio-unit">
-        <span class="label">Unitario</span>
+        <span class="label">{{ 'ADMIN.CATALOG.PRICE_UNIT_LABEL' | translate }}</span>
         <p class="valor">Bs. {{ producto.precio_unidad.toFixed(2) }}</p>
       </div>
       <div class="precio-caja">
-        <span class="label">Caja</span>
+        <span class="label">{{ 'ADMIN.CATALOG.PRICE_BOX_LABEL' | translate }}</span>
         <p class="valor">Bs. {{ producto.precio_caja.toFixed(2) }}</p>
       </div>
     </div>
 
     <div class="especificaciones">
       <div class="spec">
-        <span class="label">Unidades/Caja:</span>
+        <span class="label">{{ 'ADMIN.CATALOG.UNITS_PER_BOX_LABEL' | translate }}:</span>
         <span class="valor">{{ producto.unidades_por_caja }}</span>
       </div>
       <div class="spec">
-        <span class="label">Stock:</span>
-        <span class="valor">{{ producto.stock_almacen_central }} unid</span>
+        <span class="label">{{ 'ADMIN.CATALOG.STOCK_LABEL' | translate }}:</span>
+        <span class="valor">{{ producto.stock_almacen_central }} {{ 'ADMIN.CATALOG.UNITS_SHORT' | translate }}</span>
       </div>
     </div>
 
     <div class="acciones">
-      <button class="btn-editar" (click)="onEditar()" title="Editar producto">
-        ✏️ Editar
+      <button class="btn-editar" (click)="onEditar()" title="{{ 'ADMIN.CATALOG.EDIT_PRODUCT_BUTTON' | translate }}">
+        ✏️ {{ 'ADMIN.CATALOG.EDIT_PRODUCT_BUTTON' | translate }}
       </button>
-      <button class="btn-eliminar" (click)="onEliminar()" title="Eliminar producto">
-        🗑️ Eliminar
+      <button class="btn-eliminar" (click)="onEliminar()" title="{{ 'ADMIN.CATALOG.DELETE_PRODUCT_BUTTON' | translate }}">
+        🗑️ {{ 'ADMIN.CATALOG.DELETE_PRODUCT_BUTTON' | translate }}
       </button>
     </div>
   </div>

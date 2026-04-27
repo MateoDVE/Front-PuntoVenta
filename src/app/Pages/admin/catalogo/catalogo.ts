@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ProductoCardComponent } from '../../../components/producto-card/producto-card';
 import { ApiService, Producto } from '../../../services/api.service';
 import { AuthService } from '../../../services/auth.service';
@@ -9,7 +10,7 @@ import { AuthService } from '../../../services/auth.service';
 @Component({
   selector: 'app-catalogo',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminNavbar, ProductoCardComponent],
+  imports: [CommonModule, FormsModule, AdminNavbar, ProductoCardComponent, TranslateModule],
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.scss',
 })
@@ -36,9 +37,18 @@ export class Catalogo implements OnInit {
 
   categorias = ['Bebidas', 'Snacks', 'Lácteos'];
 
+  // Errores de validación en tiempo real
+  erroresValidacion = {
+    precio_unidad: '',
+    precio_caja: '',
+    unidades_por_caja: '',
+    stock_almacen_central: ''
+  };
+
   constructor(
     private apiService: ApiService,
-    private authService: AuthService
+    private authService: AuthService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -83,6 +93,47 @@ export class Catalogo implements OnInit {
       unidades_por_caja: 1,
       stock_almacen_central: 0,
     };
+    // Limpiar errores de validación
+    this.erroresValidacion = {
+      precio_unidad: '',
+      precio_caja: '',
+      unidades_por_caja: '',
+      stock_almacen_central: ''
+    };
+  }
+
+  // ==================== VALIDACIONES EN TIEMPO REAL ====================
+
+  validarPrecioUnidad(): void {
+    if (this.nuevoProducto.precio_unidad < 0) {
+      this.erroresValidacion.precio_unidad = this.translate.instant('ADMIN.CATALOG.VALIDATION.PRICE_NON_NEGATIVE');
+    } else {
+      this.erroresValidacion.precio_unidad = '';
+    }
+  }
+
+  validarPrecioCaja(): void {
+    if (this.nuevoProducto.precio_caja < 0) {
+      this.erroresValidacion.precio_caja = this.translate.instant('ADMIN.CATALOG.VALIDATION.PRICE_NON_NEGATIVE');
+    } else {
+      this.erroresValidacion.precio_caja = '';
+    }
+  }
+
+  validarUnidadesCaja(): void {
+    if (this.nuevoProducto.unidades_por_caja < 1) {
+      this.erroresValidacion.unidades_por_caja = this.translate.instant('ADMIN.CATALOG.VALIDATION.MIN_ONE_UNIT');
+    } else {
+      this.erroresValidacion.unidades_por_caja = '';
+    }
+  }
+
+  validarStockCentral(): void {
+    if (this.nuevoProducto.stock_almacen_central < 0) {
+      this.erroresValidacion.stock_almacen_central = this.translate.instant('ADMIN.CATALOG.VALIDATION.STOCK_NON_NEGATIVE');
+    } else {
+      this.erroresValidacion.stock_almacen_central = '';
+    }
   }
 
   // ==================== MANEJO DE IMÁGENES ====================
@@ -97,13 +148,15 @@ export class Catalogo implements OnInit {
       // Validar tipo MIME
       const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
       if (!allowedTypes.includes(file.type)) {
-        throw new Error('Tipo de archivo no permitido. Solo se aceptan JPEG, PNG, WebP y GIF');
+        throw new Error(this.translate.instant('ADMIN.CATALOG.ERROR.INVALID_FILE_TYPE'));
       }
 
       // Validar tamaño (5MB)
       const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
-        throw new Error(`El archivo excede el tamaño máximo de 5MB (actual: ${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+        throw new Error(this.translate.instant('ADMIN.CATALOG.ERROR.FILE_TOO_LARGE', {
+          size: (file.size / 1024 / 1024).toFixed(2),
+        }));
       }
 
       // Guardar archivo
@@ -116,7 +169,7 @@ export class Catalogo implements OnInit {
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      alert(`Error: ${error instanceof Error ? error.message : 'Error al procesar imagen'}`);
+      alert(`Error: ${error instanceof Error ? error.message : this.translate.instant('ADMIN.CATALOG.ERROR.PROCESS_IMAGE')}`);
       input.value = '';
     }
   }
@@ -170,14 +223,14 @@ export class Catalogo implements OnInit {
   eliminarImagenGuardada(): void {
     if (!this.nuevoProducto.url_imagen) return;
 
-    if (confirm('¿Desea eliminar esta imagen?')) {
+    if (confirm(this.translate.instant('ADMIN.CATALOG.CONFIRM.DELETE_IMAGE'))) {
       this.apiService.deleteProductImage(this.nuevoProducto.url_imagen).subscribe({
         next: () => {
           this.nuevoProducto.url_imagen = '';
-          alert('Imagen eliminada correctamente');
+          alert(this.translate.instant('ADMIN.CATALOG.SUCCESS.IMAGE_DELETED'));
         },
         error: (error) => {
-          alert(`Error al eliminar imagen: ${error?.error?.message || 'Error desconocido'}`);
+          alert(`${this.translate.instant('ADMIN.CATALOG.ERROR.DELETE_IMAGE')}: ${error?.error?.message || this.translate.instant('ADMIN.CATALOG.ERROR.UNKNOWN')}`);
         },
       });
     }
@@ -243,10 +296,18 @@ export class Catalogo implements OnInit {
   }
 
   validarFormulario(): boolean {
+    // Verificar errores en tiempo real primero
+    if (this.erroresValidacion.precio_unidad || this.erroresValidacion.precio_caja ||
+        this.erroresValidacion.unidades_por_caja || this.erroresValidacion.stock_almacen_central) {
+      alert('Por favor corrija los errores en los campos antes de guardar.');
+      return false;
+    }
+
+    // Verificar campos requeridos
     if (!this.nuevoProducto.sku || !this.nuevoProducto.nombre ||
-        this.nuevoProducto.precio_unidad <= 0 || this.nuevoProducto.precio_caja <= 0 ||
-        this.nuevoProducto.unidades_por_caja <= 0) {
-      alert('Por favor complete todos los campos requeridos correctamente');
+        this.nuevoProducto.precio_unidad < 0 || this.nuevoProducto.precio_caja < 0 ||
+        this.nuevoProducto.unidades_por_caja <= 0 || this.nuevoProducto.stock_almacen_central < 0) {
+      alert('Por favor complete todos los campos requeridos correctamente.');
       return false;
     }
     return true;

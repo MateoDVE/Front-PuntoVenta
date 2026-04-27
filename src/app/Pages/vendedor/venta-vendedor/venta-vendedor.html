@@ -1,0 +1,283 @@
+<app-vendedor-navbar></app-vendedor-navbar>
+
+<div class="venta-container">
+
+  <!-- HEADER -->
+  <div class="venta-header">
+    <div class="header-icon">
+      <ion-icon name="cart-outline"></ion-icon>
+    </div>
+    <div class="header-text">
+      <h1>Proceso de Venta</h1>
+      <p>Registra ventas con validación de stock</p>
+    </div>
+  </div>
+
+  <!-- CLIENTE SELECTOR CON BÚSQUEDA -->
+  <div class="cliente-section">
+    <label class="campo-label">Cliente</label>
+
+    @if (clienteSeleccionado) {
+      <!-- Cliente ya seleccionado -->
+      <div class="cliente-seleccionado">
+        <div class="cliente-sel-icono">
+          <ion-icon name="person-circle-outline"></ion-icon>
+        </div>
+        <div class="cliente-sel-info">
+          <span class="cliente-sel-nombre">{{ clienteSeleccionado.nombre_negocio }}</span>
+          <span class="cliente-sel-nit">CI/NIT: {{ clienteSeleccionado.ci_nit }}</span>
+        </div>
+        <button class="btn-limpiar-cliente" (click)="limpiarCliente()">
+          <ion-icon name="close-circle-outline"></ion-icon>
+        </button>
+      </div>
+    } @else {
+      <!-- Buscador + dropdown -->
+      <div class="cliente-buscador-wrap">
+        <div class="cliente-input-row">
+          <ion-icon name="person-outline"></ion-icon>
+          <input
+            type="text"
+            placeholder="Escribe el nombre o NIT del cliente..."
+            [(ngModel)]="busquedaCliente"
+            (input)="filtrarClientes()"
+            (blur)="cerrarDropdownClientes()"
+            autocomplete="off"
+            class="cliente-input" />
+          @if (busquedaCliente) {
+            <button class="btn-limpiar-input" (click)="limpiarCliente()">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          }
+        </div>
+
+        @if (mostrarDropdownClientes) {
+          <div class="clientes-dropdown">
+            @for (cliente of clientesFiltrados; track cliente.id_cliente) {
+              <div class="cliente-opcion" (mousedown)="seleccionarCliente(cliente)">
+                <ion-icon name="storefront-outline"></ion-icon>
+                <div class="opcion-texto">
+                  <span class="opcion-nombre">{{ cliente.nombre_negocio }}</span>
+                  <span class="opcion-nit">CI/NIT: {{ cliente.ci_nit }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+
+  <!-- BUSCADOR -->
+  <div class="buscador-section">
+    <div class="buscador-input">
+      <ion-icon name="search-outline"></ion-icon>
+      <input
+        type="text"
+        placeholder="Buscar productos..."
+        [(ngModel)]="busqueda"
+        (input)="buscarProductos()" />
+    </div>
+  </div>
+
+  <!-- CARGANDO -->
+  @if (cargando) {
+    <div class="estado-vacio">
+      <ion-icon name="reload-outline" class="spin"></ion-icon>
+      <p>Cargando productos...</p>
+    </div>
+  }
+
+  <!-- LISTA DE PRODUCTOS -->
+  @if (!cargando) {
+    <div class="productos-list">
+
+      @if (productosFiltrados.length === 0) {
+        <div class="estado-vacio">
+          <ion-icon name="cube-outline"></ion-icon>
+          <p>No se encontraron productos</p>
+        </div>
+      }
+
+      @for (producto of productosFiltrados; track trackByKey($index, producto)) {
+        <div class="producto-card" [class.en-carrito]="getCantidad(producto) > 0">
+
+          <div class="producto-info">
+            <div class="producto-top">
+              <h3 class="producto-nombre">{{ producto.nombre }}</h3>
+              <span class="producto-stock">{{ producto.stock_almacen_central }} disponibles</span>
+            </div>
+            <p class="producto-categoria">{{ producto.descripcion || 'Producto' }}</p>
+            <p class="producto-precio">Bs. {{ producto.precio_unidad | number:'1.2-2' }}</p>
+          </div>
+
+          <div class="producto-cantidad">
+            <button class="btn-cantidad btn-minus" (click)="decrementar(producto)">
+              <ion-icon name="remove-outline"></ion-icon>
+            </button>
+            <span class="cantidad-valor" [class.activo]="getCantidad(producto) > 0">
+              {{ getCantidad(producto) }}
+            </span>
+            <button
+              class="btn-cantidad btn-plus"
+              (click)="incrementar(producto)"
+              [disabled]="getCantidad(producto) >= producto.stock_almacen_central">
+              <ion-icon name="add-outline"></ion-icon>
+            </button>
+          </div>
+
+        </div>
+      }
+
+    </div>
+  }
+
+  <div class="navbar-spacer"></div>
+
+</div>
+
+<!-- ── BARRA DEL CARRITO ── -->
+@if (carrito.length > 0) {
+  <div class="carrito-bar" (click)="abrirModalCarrito()">
+    <div class="carrito-info">
+      <span class="carrito-label">Total del Carrito</span>
+      <span class="carrito-total">Bs. {{ totalFinal | number:'1.2-2' }}</span>
+      <span class="carrito-items">{{ totalItems }} {{ totalItems === 1 ? 'item' : 'items' }}</span>
+    </div>
+    <button class="btn-confirmar">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+      Confirmar Venta
+    </button>
+  </div>
+}
+
+
+<!-- ══════════════════════════════════════════════════
+     MODAL 1 — CARRITO DE VENTA
+══════════════════════════════════════════════════ -->
+@if (mostrarModalCarrito) {
+  <div class="modal-overlay" (click)="cerrarModalCarrito()">
+    <div class="modal-carrito" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>
+          <ion-icon name="cart-outline"></ion-icon>
+          Carrito de Venta
+        </h2>
+        <button class="btn-cerrar" (click)="cerrarModalCarrito()">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- Items del carrito -->
+        <div class="carrito-items-lista">
+          @for (item of carrito; track item.producto.sku) {
+            <div class="carrito-item">
+              <div class="item-info">
+                <span class="item-nombre">{{ item.producto.nombre }}</span>
+                <span class="item-cantidad">
+                  x {{ item.cantidad }} — Bs. {{ item.producto.precio_unidad | number:'1.2-2' }} c/u
+                </span>
+              </div>
+              <div class="item-right">
+                <span class="item-subtotal">Bs. {{ item.subtotal | number:'1.2-2' }}</span>
+                <button class="btn-eliminar-item" (click)="eliminarDelCarrito(item)">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Descuento -->
+        <div class="descuento-section">
+          <label>Descuento (Bs.)</label>
+          <input
+            type="number"
+            [(ngModel)]="descuento"
+            min="0"
+            [max]="subtotalCarrito"
+            class="descuento-input"
+            placeholder="0.00" />
+        </div>
+
+        <!-- Totales -->
+        <div class="totales-section">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <span>Bs. {{ subtotalCarrito | number:'1.2-2' }}</span>
+          </div>
+          @if (descuento > 0) {
+            <div class="total-row">
+              <span>Descuento</span>
+              <span class="descuento-valor">- Bs. {{ descuento | number:'1.2-2' }}</span>
+            </div>
+          }
+          <div class="total-row total-final">
+            <span>Total</span>
+            <span>Bs. {{ totalFinal | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <!-- Mensaje de error -->
+        @if (error) {
+          <div class="error-msg">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ error }}
+          </div>
+        }
+
+      </div>
+
+      <div class="modal-footer">
+        <button
+          class="btn-procesar"
+          (click)="confirmarVenta()"
+          [disabled]="enviandoVenta">
+          @if (!enviandoVenta) {
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          }
+          @if (enviandoVenta) {
+            <ion-icon name="reload-outline" class="spin"></ion-icon>
+          }
+          {{ enviandoVenta ? 'Procesando...' : 'Procesar Venta' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+
+<!-- ══════════════════════════════════════════════════
+     MODAL 2 — VENTA COMPLETADA (ÉXITO)
+══════════════════════════════════════════════════ -->
+@if (mostrarModalExito) {
+  <div class="modal-overlay modal-overlay-center">
+    <div class="modal-exito">
+
+      <div class="exito-icon">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+
+      <h2>¡Venta Completada!</h2>
+
+      @if (ventaConfirmada) {
+        <p class="exito-id">ID: {{ ventaConfirmada.idVenta | slice:0:8 }}...</p>
+        <p class="exito-total">Bs. {{ ventaConfirmada.totalEfectivo | number:'1.2-2' }}</p>
+        <div class="exito-detalles">
+          <span>{{ ventaConfirmada.detalles.length }} producto(s) vendido(s)</span>
+        </div>
+      }
+
+      <button class="btn-nueva-venta" (click)="nuevaVenta()">
+        <ion-icon name="add-circle-outline"></ion-icon>
+        Nueva Venta
+      </button>
+
+    </div>
+  </div>
+}

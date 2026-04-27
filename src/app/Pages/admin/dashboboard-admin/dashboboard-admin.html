@@ -4,27 +4,30 @@
 
 		<main class="dashboard-main">
 			<header class="main-header">
-				<h2>Dashboard Administrativo</h2>
-				<p>Resumen general del sistema de distribucion</p>
-			</header>
+        <h2>{{ 'ADMIN.DASHBOARD.TITLE' | translate }}</h2>
+        <p>{{ 'ADMIN.DASHBOARD.SUBTITLE' | translate }}</p>
+      </header>
 
-			<!-- Error Message -->
-			<div *ngIf="error" class="error-message" role="alert">
-				<strong>Error:</strong> {{ error }}
-			</div>
+      <!-- Error Message -->
+      <div *ngIf="error" class="error-message" role="alert">
+        <strong>{{ 'ADMIN.DASHBOARD.ERROR_LABEL' | translate }}</strong> {{ error }}
+      </div>
 
-			<!-- Loading State -->
-			<div *ngIf="cargando" class="loading-message" role="status">
-				<p>Cargando datos...</p>
-			</div>
+      <!-- Loading State -->
+      <div *ngIf="cargando" class="loading-message" role="status">
+        <p>{{ 'ADMIN.DASHBOARD.LOADING_DATA' | translate }}</p>
+      </div>
 
-			<!-- Content When Loaded -->
+      <!-- Content When Loaded -->
 			<ng-container *ngIf="!cargando">
-				<section class="metrics" aria-label="Resumen de indicadores">
+				<section class="metrics" aria-label="{{ 'ADMIN.DASHBOARD.METRICS_ARIA' | translate }}">
 					<article class="metric-card" *ngFor="let metric of metrics">
-						<h3>{{ metric.title }}</h3>
-						<p class="metric-value">{{ metric.value }}</p>
-						<small>{{ metric.detail }}</small>
+						<div class="metric-card__header">
+							<span class="metric-icon {{ metric.icon }}" aria-hidden="true"></span>
+						<h3>{{ metric.titleKey | translate }}</h3>
+					</div>
+					<p class="metric-value">{{ metric.value }}</p>
+					<small>{{ metric.detailKey | translate: metric.detailParams }}</small>
 					</article>
 				</section>
 
@@ -32,21 +35,21 @@
 					<!-- Productos Panel -->
 					<section class="panel" aria-labelledby="stock-title">
 						<header>
-							<h3 id="stock-title">Stock Global por Producto</h3>
+							<h3 id="stock-title">{{ 'ADMIN.DASHBOARD.STOCK_GLOBAL_TITLE' | translate }}</h3>
 						</header>
 						<div *ngIf="productos.length === 0" class="empty-state">
-							<p>No hay productos en el catálogo</p>
+							<p>{{ 'ADMIN.DASHBOARD.NO_PRODUCTS' | translate }}</p>
 						</div>
 						<ul class="stock-list" *ngIf="productos.length > 0">
 							<li *ngFor="let product of productos">
 								<article>
 									<header>
 										<h4>{{ product.nombre }}</h4>
-										<p>{{ product.descripcion || 'Sin descripción' }}</p>
+										<p>{{ translateProductDescription(product.descripcion) }}</p>
 									</header>
 									<div class="stock-values">
-										<strong>{{ product.stock_almacen_central }} unidades</strong>
-										<small>Bs. {{ product.precio_unidad.toFixed(2) }}</small>
+										<strong>{{ product.stock_almacen_central }} {{ 'ADMIN.DASHBOARD.UNITS' | translate }}</strong>
+										<small>{{ 'ADMIN.DASHBOARD.PRICE_BS' | translate }} {{ product.precio_unidad.toFixed(2) }}</small>
 									</div>
 								</article>
 							</li>
@@ -56,10 +59,10 @@
 					<!-- Vendedores Panel -->
 					<aside class="panel" aria-labelledby="seller-title">
 						<header>
-							<h3 id="seller-title">Vendedores Registrados</h3>
+							<h3 id="seller-title">{{ 'ADMIN.DASHBOARD.SELLERS_TITLE' | translate }}</h3>
 						</header>
 						<div *ngIf="vendedores.length === 0" class="empty-state">
-							<p>No hay vendedores registrados</p>
+							<p>{{ 'ADMIN.DASHBOARD.NO_SELLERS' | translate }}</p>
 						</div>
 						<div class="seller-list" *ngIf="vendedores.length > 0">
 							<article class="seller-card" *ngFor="let vendedor of vendedores">
@@ -69,18 +72,18 @@
 								</header>
 								<dl>
 									<div>
-										<dt>Estado</dt>
+										<dt>{{ 'ADMIN.DASHBOARD.STATUS_LABEL' | translate }}</dt>
 										<dd>
 											<span
 												class="status-badge"
 												[ngClass]="{ active: vendedor.estado === 'activo', inactive: vendedor.estado !== 'activo' }"
 											>
-												{{ vendedor.estado || 'desconocido' }}
+												{{ (vendedor.estado ? ('ADMIN.DASHBOARD.STATUS.' + vendedor.estado.toUpperCase()) : 'ADMIN.DASHBOARD.UNKNOWN') | translate }}
 											</span>
 										</dd>
 									</div>
 									<div>
-										<dt>Registrado</dt>
+										<dt>{{ 'ADMIN.DASHBOARD.REGISTERED_LABEL' | translate }}</dt>
 										<dd>{{ vendedor.created_at | date : 'short' }}</dd>
 									</div>
 								</dl>
@@ -91,14 +94,14 @@
 
 				<section class="panel alerts" aria-labelledby="alerts-title">
 					<header>
-						<h3 id="alerts-title">Alertas de Stock Bajo</h3>
+						<h3 id="alerts-title">{{ 'ADMIN.DASHBOARD.LOW_STOCK_ALERTS_TITLE' | translate }}</h3>
 					</header>
 					<div *ngIf="productosConStockBajo.length === 0" class="empty-state">
-						<p>✓ No hay alertas de stock bajo</p>
+						<p>{{ 'ADMIN.DASHBOARD.NO_LOW_STOCK_ALERTS' | translate }}</p>
 					</div>
 					<ul *ngIf="productosConStockBajo.length > 0" class="alerts-list">
 						<li *ngFor="let product of productosConStockBajo">
-							<strong>{{ product.nombre }}</strong> - Stock: {{ product.stock_almacen_central }} unidades
+							<strong>{{ product.nombre }}</strong> - {{ 'ADMIN.DASHBOARD.STOCK_LABEL' | translate }}: {{ product.stock_almacen_central }} {{ 'ADMIN.DASHBOARD.UNITS' | translate }}
 						</li>
 					</ul>
 				</section>
