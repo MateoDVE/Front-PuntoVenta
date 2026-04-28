@@ -10,15 +10,15 @@
       <span>{{ 'VENDEDOR.NAVBAR.MAP' | translate }}</span>
     </a>
 
-    <span class="link-disabled" title="{{ 'VENDEDOR.NAVBAR.COMING_SOON' | translate }}">
+    <a routerLink="/vendedor/venta" routerLinkActive="active">
       <img class="icon" src="/NavbarVendedor-venta.png" alt="{{ 'VENDEDOR.NAVBAR.SALES' | translate }}" />
       <span>{{ 'VENDEDOR.NAVBAR.SALES' | translate }}</span>
-    </span>
+    </a>
 
-    <span class="link-disabled" title="{{ 'VENDEDOR.NAVBAR.COMING_SOON' | translate }}">
+    <a routerLink="/vendedor/cierre" routerLinkActive="active">
       <img class="icon" src="/NavbarVendedor-cierre.png" alt="{{ 'VENDEDOR.NAVBAR.CLOSURE' | translate }}" />
       <span>{{ 'VENDEDOR.NAVBAR.CLOSURE' | translate }}</span>
-    </span>
+    </a>
 
     <a class="cerrar-sesion" (click)="cerrarSesion()" href="#">
       <img class="icon" src="/NavbarVendedor-cerrar-sesion.png" alt="{{ 'VENDEDOR.NAVBAR.LOGOUT' | translate }}" />
