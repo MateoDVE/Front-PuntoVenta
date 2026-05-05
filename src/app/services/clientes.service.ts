@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { Cliente, ClienteBackend, CreateClientePayload } from './api.service';
+import { Cliente, ClienteBackend, CreateClientePayload, UpdateClientePayload } from './api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +42,24 @@ export class ClientesService {
 
   uploadClienteImage(formData: FormData): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/clientes/upload-photo`, formData);
+  }
+
+  updateCliente(id: string, payload: UpdateClientePayload): Observable<Cliente> {
+    return this.http.put<ClienteBackend>(`${this.apiUrl}/clientes/${id}`, payload).pipe(
+      map((c: ClienteBackend) => ({
+        id_cliente: c.id,
+        id_vendedor_creador: c.idVendedorCreador,
+        nombre_negocio: c.nombreNegocio,
+        ci_nit: c.ciNit || '',
+        celular: c.celular,
+        latitud: c.latitud,
+        longitud: c.longitud,
+        url_foto_fachada: c.urlFotoFachada,
+        frecuencia_visita: c.frecuenciaVisita || '',
+        estado: c.estado,
+        created_at: c.createdAt
+      }))
+    );
   }
 
   deleteCliente(id: string): Observable<void> {

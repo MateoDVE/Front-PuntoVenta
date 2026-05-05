@@ -87,6 +87,17 @@ export interface CreateClientePayload {
   frecuenciaVisita: string;
 }
 
+export interface UpdateClientePayload {
+  nombreNegocio?: string;
+  ciNit?: string;
+  celular?: string;
+  latitud?: number;
+  longitud?: number;
+  urlFotoFachada?: string;
+  frecuenciaVisita?: string;
+  estado?: string;
+}
+
 export interface InventarioAsignacion {
   id_carga: string;
   id_vendedor: string;

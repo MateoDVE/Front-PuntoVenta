@@ -140,7 +140,9 @@ export class VentaVendedorComponent implements OnInit {
   cargarClientes(): void {
     if (!this.idVendedor) return;
     this.clientesService.getClientes(this.idVendedor).subscribe({
-      next: (clientes) => { this.clientes = clientes; },
+      next: (clientes) => {
+        this.clientes = clientes.filter(c => c.estado?.toUpperCase() === 'ACTIVO');
+      },
       error: () => {}
     });
   }
