@@ -1,99 +1,285 @@
-<app-admin-navbar></app-admin-navbar>
+<div class="dashboard-shell">
+  <div class="dashboard-layout">
+    <app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
 
-<div class="container">
-  <h1>{{ 'GESTION_CLIENTES.TITULO' | translate }}</h1>
+    <main class="dashboard-main">
+      <section class="clientes-page" aria-labelledby="clientes-title">
 
-  <div class="actions">
-    <button class="btn btn-primary" (click)="abrirModalCrear()">
-      {{ 'GESTION_CLIENTES.CREAR_CLIENTE' | translate }}
-    </button>
-  </div>
-
-  <div *ngIf="errorMensaje" class="alert alert-danger">
-    {{ errorMensaje }}
-  </div>
-
-  <div *ngIf="cargando" class="loading">
-    {{ 'GENERAL.CARGANDO' | translate }}
-  </div>
-
-  <table *ngIf="!cargando" class="table">
-    <thead>
-      <tr>
-        <th>{{ 'GESTION_CLIENTES.NOMBRE_NEGOCIO' | translate }}</th>
-        <th>{{ 'GESTION_CLIENTES.CI_NIT' | translate }}</th>
-        <th>{{ 'GESTION_CLIENTES.CELULAR' | translate }}</th>
-        <th>{{ 'GESTION_CLIENTES.FRECUENCIA_VISITA' | translate }}</th>
-        <th>{{ 'GESTION_CLIENTES.ESTADO' | translate }}</th>
-        <th>{{ 'GENERAL.ACCIONES' | translate }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let cliente of clientes">
-        <td>{{ cliente.nombreNegocio }}</td>
-        <td>{{ cliente.ciNit }}</td>
-        <td>{{ cliente.celular }}</td>
-        <td>{{ cliente.frecuenciaVisita }}</td>
-        <td>{{ cliente.estado }}</td>
-        <td>
-          <button class="btn btn-sm btn-warning" (click)="abrirModalEditar(cliente)">
-            {{ 'GENERAL.EDITAR' | translate }}
+        <!-- Cabecera -->
+        <header class="page-header">
+          <div class="page-header__copy">
+            <h1 id="clientes-title">Gestión de Clientes</h1>
+            <p>Administra y visualiza los clientes de cada vendedor</p>
+          </div>
+          <button type="button" class="btn btn-secondary btn-reload" (click)="cargar()" title="Recargar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+            Recargar
           </button>
-          <button class="btn btn-sm btn-danger" (click)="eliminarCliente(cliente.id!)">
-            {{ 'GENERAL.ELIMINAR' | translate }}
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        </header>
+
+        <!-- Estado de carga inicial -->
+        @if (cargando) {
+          <div class="loading-state" role="status" aria-live="polite">
+            <div class="spinner"></div>
+            <p>Cargando vendedores y clientes...</p>
+          </div>
+        }
+
+        <!-- Error global -->
+        @if (!cargando && error) {
+          <div class="page-error" role="alert">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ error }}
+          </div>
+        }
+
+        <!-- Contenido principal -->
+        @if (!cargando && !error) {
+
+          <!-- Estadísticas -->
+          <section class="stats" aria-label="Resumen de clientes">
+            <article class="stat">
+              <span class="stat-icon icon-clientes" aria-hidden="true"></span>
+              <p class="stat__value">{{ totalClientes }}</p>
+              <p class="stat__label">Total clientes</p>
+            </article>
+            <article class="stat">
+              <span class="stat-icon icon-activos" aria-hidden="true"></span>
+              <p class="stat__value">{{ clientesActivos }}</p>
+              <p class="stat__label">Activos</p>
+            </article>
+            <article class="stat">
+              <span class="stat-icon icon-inactivos" aria-hidden="true"></span>
+              <p class="stat__value">{{ clientesInactivos }}</p>
+              <p class="stat__label">Inactivos</p>
+            </article>
+            <article class="stat">
+              <span class="stat-icon icon-vendedores" aria-hidden="true"></span>
+              <p class="stat__value">{{ grupos.length }}</p>
+              <p class="stat__label">Vendedores</p>
+            </article>
+          </section>
+
+          <!-- Sin vendedores -->
+          @if (grupos.length === 0) {
+            <div class="empty-state">
+              <p>No hay vendedores registrados aún.</p>
+            </div>
+          }
+
+          <!-- Lista de vendedores con sus clientes -->
+          <div class="vendedores-list">
+            @for (grupo of grupos; track grupo.id) {
+              <div class="vendedor-card">
+
+                <!-- Encabezado del vendedor (toggle) -->
+                <div
+                  class="vendedor-header"
+                  [class.is-expanded]="grupo.expandido"
+                  (click)="toggleVendedor(grupo)"
+                  role="button"
+                  [attr.aria-expanded]="grupo.expandido"
+                >
+                  <div class="vendedor-info">
+                    <div class="vendedor-avatar">{{ getInitials(grupo.nombre) }}</div>
+                    <div class="vendedor-meta-text">
+                      <strong class="vendedor-nombre">{{ grupo.nombre }}</strong>
+                      <span class="vendedor-email">{{ grupo.email }}</span>
+                    </div>
+                  </div>
+                  <div class="vendedor-actions-info">
+                    <span
+                      class="badge"
+                      [class.badge-activo]="grupo.estado?.toUpperCase() === 'ACTIVO'"
+                      [class.badge-inactivo]="grupo.estado?.toUpperCase() === 'INACTIVO'"
+                      [class.badge-en-ruta]="grupo.estado?.toUpperCase() === 'EN RUTA'"
+                    >{{ grupo.estado }}</span>
+                    <span class="clientes-count">
+                      <span class="clientes-count__num">{{ grupo.clientes.length }}</span>
+                      {{ grupo.clientes.length === 1 ? 'cliente' : 'clientes' }}
+                    </span>
+                    <span class="expand-chevron" [class.rotated]="grupo.expandido">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Tabla de clientes del vendedor -->
+                @if (grupo.expandido) {
+                  <div class="vendedor-clientes">
+                    @if (grupo.clientes.length === 0) {
+                      <div class="clientes-empty">
+                        <p>Este vendedor no tiene clientes registrados.</p>
+                      </div>
+                    }
+                    @if (grupo.clientes.length > 0) {
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Negocio</th>
+                            <th>CI / NIT</th>
+                            <th>Celular</th>
+                            <th>Frecuencia</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (cliente of grupo.clientes; track cliente.id_cliente) {
+                            <tr>
+                              <td class="td-negocio">
+                                <span class="negocio-icon">🏪</span>
+                                {{ cliente.nombre_negocio }}
+                              </td>
+                              <td>{{ cliente.ci_nit }}</td>
+                              <td>{{ cliente.celular || '—' }}</td>
+                              <td>
+                                <span class="frecuencia-badge frecuencia-{{ cliente.frecuencia_visita?.toLowerCase() }}">
+                                  {{ getFrecuenciaLabel(cliente.frecuencia_visita) }}
+                                </span>
+                              </td>
+                              <td>
+                                <span
+                                  class="badge"
+                                  [class.badge-activo]="esActivo(cliente.estado)"
+                                  [class.badge-inactivo]="!esActivo(cliente.estado)"
+                                >{{ esActivo(cliente.estado) ? 'Activo' : 'Inactivo' }}</span>
+                              </td>
+                              <td class="td-actions">
+                                <button
+                                  type="button"
+                                  class="btn-icon btn-edit"
+                                  title="Editar cliente"
+                                  (click)="abrirModalEditar(cliente); $event.stopPropagation()"
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                  </svg>
+                                  Editar
+                                </button>
+                                <button
+                                  type="button"
+                                  class="btn-icon"
+                                  [class.btn-deactivate]="esActivo(cliente.estado)"
+                                  [class.btn-activate]="!esActivo(cliente.estado)"
+                                  [title]="esActivo(cliente.estado) ? 'Desactivar cliente' : 'Activar cliente'"
+                                  (click)="toggleEstadoCliente(cliente); $event.stopPropagation()"
+                                >
+                                  @if (esActivo(cliente.estado)) {
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                      <circle cx="12" cy="12" r="10"/>
+                                      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                                    </svg>
+                                    Desactivar
+                                  }
+                                  @if (!esActivo(cliente.estado)) {
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                      <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    Activar
+                                  }
+                                </button>
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    }
+                  </div>
+                }
+
+              </div>
+            }
+          </div>
+
+        }
+
+      </section>
+    </main>
+  </div>
 </div>
 
-<!-- Modal -->
-<div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <h2>{{ editando ? ('GESTION_CLIENTES.EDITAR_CLIENTE' | translate) : ('GESTION_CLIENTES.CREAR_CLIENTE' | translate) }}</h2>
+<!-- Modal editar cliente -->
+@if (mostrarModal) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-cliente-title" (click)="$event.stopPropagation()">
+      <header class="modal__header">
+        <h2 id="modal-cliente-title">Editar cliente</h2>
+        <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar formulario">✕</button>
+      </header>
 
-    <form (ngSubmit)="guardarCliente()">
-      <div class="form-group">
-        <label for="nombreNegocio">{{ 'GESTION_CLIENTES.NOMBRE_NEGOCIO' | translate }}</label>
-        <input type="text" id="nombreNegocio" [(ngModel)]="formulario.nombreNegocio" name="nombreNegocio" required>
-      </div>
+      <form class="modal__form" (ngSubmit)="guardarCambios()">
+        <fieldset class="form-card form-card--info">
+          <legend>Datos del negocio</legend>
 
-      <div class="form-group">
-        <label for="ciNit">{{ 'GESTION_CLIENTES.CI_NIT' | translate }}</label>
-        <input type="text" id="ciNit" [(ngModel)]="formulario.ciNit" name="ciNit" required>
-      </div>
+          <label for="nombreNegocio">Nombre del negocio *</label>
+          <input
+            id="nombreNegocio"
+            type="text"
+            name="nombreNegocio"
+            [(ngModel)]="formulario.nombreNegocio"
+            placeholder="Ej: Tienda Don Juan"
+            autocomplete="off"
+          >
 
-      <div class="form-group">
-        <label for="celular">{{ 'GESTION_CLIENTES.CELULAR' | translate }}</label>
-        <input type="text" id="celular" [(ngModel)]="formulario.celular" name="celular">
-      </div>
+          <label for="ciNit">CI / NIT *</label>
+          <input
+            id="ciNit"
+            type="text"
+            name="ciNit"
+            [(ngModel)]="formulario.ciNit"
+            placeholder="Ej: 12345678"
+            autocomplete="off"
+          >
 
-      <div class="form-group">
-        <label for="frecuenciaVisita">{{ 'GESTION_CLIENTES.FRECUENCIA_VISITA' | translate }}</label>
-        <select id="frecuenciaVisita" [(ngModel)]="formulario.frecuenciaVisita" name="frecuenciaVisita">
-          <option value="diaria">{{ 'GENERAL.DIARIA' | translate }}</option>
-          <option value="semanal">{{ 'GENERAL.SEMANAL' | translate }}</option>
-          <option value="mensual">{{ 'GENERAL.MENSUAL' | translate }}</option>
-        </select>
-      </div>
+          <label for="celular">Celular</label>
+          <input
+            id="celular"
+            type="text"
+            name="celular"
+            [(ngModel)]="formulario.celular"
+            placeholder="Ej: 70012345"
+            autocomplete="off"
+          >
+        </fieldset>
 
-      <div class="form-group">
-        <label for="estado">{{ 'GESTION_CLIENTES.ESTADO' | translate }}</label>
-        <select id="estado" [(ngModel)]="formulario.estado" name="estado">
-          <option value="activo">{{ 'GENERAL.ACTIVO' | translate }}</option>
-          <option value="inactivo">{{ 'GENERAL.INACTIVO' | translate }}</option>
-        </select>
-      </div>
+        <fieldset class="form-card form-card--access">
+          <legend>Configuración de visita</legend>
 
-      <div class="actions">
-        <button type="submit" class="btn btn-primary" [disabled]="guardando">
-          {{ guardando ? ('GENERAL.GUARDANDO' | translate) : (editando ? ('GENERAL.ACTUALIZAR' | translate) : ('GENERAL.CREAR' | translate)) }}
-        </button>
-        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
-          {{ 'GENERAL.CANCELAR' | translate }}
-        </button>
-      </div>
-    </form>
+          <label for="frecuenciaVisita">Frecuencia de visita</label>
+          <select id="frecuenciaVisita" name="frecuenciaVisita" [(ngModel)]="formulario.frecuenciaVisita">
+            <option value="diaria">Diaria</option>
+            <option value="semanal">Semanal</option>
+            <option value="quincenal">Quincenal</option>
+            <option value="mensual">Mensual</option>
+          </select>
+
+          <label for="estado">Estado</label>
+          <select id="estado" name="estado" [(ngModel)]="formulario.estado">
+            <option value="ACTIVO">Activo</option>
+            <option value="INACTIVO">Inactivo</option>
+          </select>
+        </fieldset>
+
+        @if (errorModal) {
+          <p class="form-error" role="alert">{{ errorModal }}</p>
+        }
+
+        <footer class="modal__actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()" [disabled]="guardando">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </footer>
+      </form>
+    </section>
   </div>
-</div>
+}

@@ -1,10 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { switchMap, catchError } from 'rxjs/operators';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
-import { TranslateModule } from '@ngx-translate/core';
-import { ApiService, ClienteBackend, CreateClientePayload } from '../../../services/api.service';
-import { AuthService } from '../../../services/auth.service';
+import { ClientesService } from '../../../services/clientes.service';
+import { VendedoresService } from '../../../services/vendedores.service';
+import { Cliente, VendedorBackend, UpdateClientePayload } from '../../../services/api.service';
+
+interface VendedorRow {
+  id: string;
+  nombre: string;
+  email: string;
+  estado: string;
+  expandido: boolean;
+  clientes: Cliente[];
+}
 
 interface ClienteForm {
   nombreNegocio: string;
@@ -17,158 +29,179 @@ interface ClienteForm {
 @Component({
   selector: 'app-gestion-clientes',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminNavbar, TranslateModule],
+  imports: [CommonModule, FormsModule, AdminNavbar],
   templateUrl: './gestion-clientes.html',
   styleUrls: ['./gestion-clientes.scss'],
 })
 export class GestionClientesComponent implements OnInit {
-  clientes: ClienteBackend[] = [];
+
+  grupos: VendedorRow[] = [];
   cargando = false;
-  guardando = false;
-  errorMensaje = '';
+  error = '';
 
   mostrarModal = false;
-  editando = false;
-  clienteEditandoId?: string;
-
+  guardando = false;
+  errorModal = '';
+  clienteEditandoId = '';
   formulario: ClienteForm = this.formularioInicial();
 
   constructor(
-    private apiService: ApiService,
-    private authService: AuthService,
+    private clientesService: ClientesService,
+    private vendedoresService: VendedoresService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.cargarClientes();
+    this.cargar();
   }
 
-  formularioInicial(): ClienteForm {
-    return {
-      nombreNegocio: '',
-      ciNit: '',
-      celular: '',
-      frecuenciaVisita: 'semanal',
-      estado: 'activo',
-    };
-  }
-
-  cargarClientes(): void {
+  cargar(): void {
     this.cargando = true;
-    this.errorMensaje = '';
-    // For admin, we need to get all clients. Since API requires vendedorId, perhaps get all vendedores and their clients
-    // For simplicity, assume we can call without param or modify API
-    // TODO: Implement proper getAllClientes
-    this.apiService.getVendedores().subscribe({
-      next: (vendedores) => {
-        const allClientes: ClienteBackend[] = [];
-        let completed = 0;
-        if (vendedores.length === 0) {
-          this.clientes = [];
-          this.cargando = false;
-          return;
-        }
-        vendedores.forEach(vendedor => {
-          this.apiService.getClientes(vendedor.id_usuario).subscribe({
-            next: (clientes) => {
-              allClientes.push(...clientes.map(c => ({ ...c, idVendedorCreador: vendedor.id_usuario })));
-              completed++;
-              if (completed === vendedores.length) {
-                this.clientes = allClientes;
-                this.cargando = false;
-              }
-            },
-            error: (error) => {
-              console.error('Error loading clients for vendedor', vendedor.id_usuario, error);
-              completed++;
-              if (completed === vendedores.length) {
-                this.clientes = allClientes;
-                this.cargando = false;
-              }
-            }
-          });
-        });
-      },
-      error: (error) => {
-        this.errorMensaje = 'Error al cargar vendedores';
-        this.cargando = false;
-        console.error(error);
-      }
+    this.error = '';
+
+    this.vendedoresService.getVendedores().pipe(
+      switchMap((vendedores: VendedorBackend[]) => {
+        if (vendedores.length === 0) return of([] as VendedorRow[]);
+
+        const peticiones = vendedores.map(v =>
+          this.clientesService.getClientes(v.id_usuario).pipe(
+            catchError(() => of([] as Cliente[])),
+          ).pipe(
+            switchMap(clientes => of({
+              id: v.id_usuario,
+              nombre: v.nombre,
+              email: v.email,
+              estado: v.estado,
+              expandido: false,
+              clientes,
+            } as VendedorRow))
+          )
+        );
+
+        return forkJoin(peticiones);
+      }),
+      catchError(() => {
+        this.error = 'No se pudieron cargar los datos. Verifica la conexión con el servidor.';
+        return of([] as VendedorRow[]);
+      })
+    ).subscribe(grupos => {
+      this.grupos = grupos;
+      if (grupos.length > 0) grupos[0].expandido = true;
+      this.cargando = false;
     });
   }
 
-  abrirModalCrear(): void {
-    this.editando = false;
-    this.formulario = this.formularioInicial();
-    this.mostrarModal = true;
+  get totalClientes(): number {
+    return this.grupos.reduce((sum, g) => sum + g.clientes.length, 0);
   }
 
-  abrirModalEditar(cliente: ClienteBackend): void {
-    this.editando = true;
-    this.clienteEditandoId = cliente.id;
-    this.formulario = {
-      nombreNegocio: cliente.nombreNegocio,
-      ciNit: cliente.ciNit || '',
-      celular: cliente.celular || '',
-      frecuenciaVisita: cliente.frecuenciaVisita || 'semanal',
-      estado: cliente.estado || 'activo',
+  get clientesActivos(): number {
+    return this.grupos.reduce(
+      (sum, g) => sum + g.clientes.filter(c => c.estado?.toUpperCase() === 'ACTIVO').length,
+      0,
+    );
+  }
+
+  get clientesInactivos(): number {
+    return this.grupos.reduce(
+      (sum, g) => sum + g.clientes.filter(c => c.estado?.toUpperCase() !== 'ACTIVO').length,
+      0,
+    );
+  }
+
+  toggleVendedor(grupo: VendedorRow): void {
+    grupo.expandido = !grupo.expandido;
+  }
+
+  getInitials(nombre: string): string {
+    return nombre.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase();
+  }
+
+  getFrecuenciaLabel(frecuencia: string): string {
+    const labels: Record<string, string> = {
+      diaria: 'Diaria', semanal: 'Semanal', quincenal: 'Quincenal', mensual: 'Mensual',
+      DIARIA: 'Diaria', SEMANAL: 'Semanal', QUINCENAL: 'Quincenal', MENSUAL: 'Mensual',
     };
+    return labels[frecuencia] ?? frecuencia;
+  }
+
+  esActivo(estado: string | undefined): boolean {
+    return estado?.toUpperCase() === 'ACTIVO';
+  }
+
+  abrirModalEditar(cliente: Cliente): void {
+    this.clienteEditandoId = cliente.id_cliente ?? '';
+    this.formulario = {
+      nombreNegocio: cliente.nombre_negocio,
+      ciNit: cliente.ci_nit,
+      celular: cliente.celular ?? '',
+      frecuenciaVisita: cliente.frecuencia_visita?.toLowerCase() || 'semanal',
+      estado: cliente.estado?.toUpperCase() === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO',
+    };
+    this.errorModal = '';
     this.mostrarModal = true;
   }
 
   cerrarModal(): void {
     this.mostrarModal = false;
+    this.clienteEditandoId = '';
     this.formulario = this.formularioInicial();
+    this.errorModal = '';
   }
 
-  guardarCliente(): void {
-    if (!this.formulario.nombreNegocio || !this.formulario.ciNit) {
-      this.errorMensaje = 'Nombre del negocio y CI/NIT son requeridos';
+  guardarCambios(): void {
+    if (!this.clienteEditandoId) return;
+    if (!this.formulario.nombreNegocio.trim() || !this.formulario.ciNit.trim()) {
+      this.errorModal = 'El nombre del negocio y el CI/NIT son obligatorios.';
       return;
     }
 
     this.guardando = true;
-    this.errorMensaje = '';
+    this.errorModal = '';
 
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser) {
-      this.errorMensaje = 'Usuario no autenticado';
-      this.guardando = false;
-      return;
-    }
-
-    const payload: CreateClientePayload = {
-      idVendedorCreador: currentUser.id_usuario,
-      nombreNegocio: this.formulario.nombreNegocio,
-      ciNit: this.formulario.ciNit,
-      celular: this.formulario.celular,
+    const payload: UpdateClientePayload = {
+      nombreNegocio: this.formulario.nombreNegocio.trim(),
+      ciNit: this.formulario.ciNit.trim(),
+      celular: this.formulario.celular.trim() || undefined,
       frecuenciaVisita: this.formulario.frecuenciaVisita,
+      estado: this.formulario.estado,
     };
 
-    if (this.editando && this.clienteEditandoId) {
-      // Assuming update method exists, but it doesn't in current API
-      // For now, just recreate or note that update is not implemented
-      this.errorMensaje = 'Actualización no implementada';
-      this.guardando = false;
-    } else {
-      this.apiService.createCliente(payload).subscribe({
-        next: () => {
-          this.cargarClientes();
-          this.cerrarModal();
-          this.guardando = false;
-        },
-        error: (error) => {
-          this.errorMensaje = 'Error al crear cliente';
-          this.guardando = false;
-          console.error(error);
-        },
-      });
-    }
+    this.clientesService.updateCliente(this.clienteEditandoId, payload).subscribe({
+      next: (actualizado) => {
+        for (const grupo of this.grupos) {
+          const idx = grupo.clientes.findIndex(c => c.id_cliente === this.clienteEditandoId);
+          if (idx !== -1) {
+            grupo.clientes[idx] = actualizado;
+            break;
+          }
+        }
+        this.guardando = false;
+        this.cerrarModal();
+      },
+      error: () => {
+        this.errorModal = 'No se pudo actualizar el cliente. Intenta de nuevo.';
+        this.guardando = false;
+      },
+    });
   }
 
-  eliminarCliente(id: string): void {
-    if (confirm('¿Estás seguro de eliminar este cliente?')) {
-      // Assuming delete method exists, but it doesn't in current API
-      this.errorMensaje = 'Eliminación no implementada';
-    }
+  toggleEstadoCliente(cliente: Cliente): void {
+    const nuevoEstado = this.esActivo(cliente.estado) ? 'INACTIVO' : 'ACTIVO';
+
+    this.clientesService.updateCliente(cliente.id_cliente!, { estado: nuevoEstado }).subscribe({
+      next: (actualizado) => {
+        cliente.estado = actualizado.estado;
+      },
+      error: () => {},
+    });
+  }
+
+  onSignOut(): void {
+    this.router.navigate(['/login']);
+  }
+
+  private formularioInicial(): ClienteForm {
+    return { nombreNegocio: '', ciNit: '', celular: '', frecuenciaVisita: 'semanal', estado: 'ACTIVO' };
   }
 }
