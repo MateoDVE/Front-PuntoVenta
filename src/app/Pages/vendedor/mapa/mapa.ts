@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { ApiService, Cliente as ApiCliente, CreateClientePayload } from '../../../services/api.service';
+import { ClientesService } from '../../../services/clientes.service';
 import { AuthService, UserProfile } from '../../../services/auth.service';
 import { environment } from '../../../../environments/environment';
 
@@ -49,7 +50,8 @@ export class Mapa implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private clientesService: ClientesService
   ) {}
 
   ngOnInit(): void {
@@ -87,7 +89,7 @@ export class Mapa implements OnInit {
     }
 
     this.loading = true;
-    this.apiService.getClientes(this.currentUserId).subscribe({
+    this.clientesService.getClientes(this.currentUserId).subscribe({
       next: (clientes) => {
         this.ubicaciones = clientes;
         this.loading = false;
@@ -285,7 +287,7 @@ export class Mapa implements OnInit {
       const formData = new FormData();
       formData.append('image', this.archivoFotoCliente);
 
-      this.apiService.uploadClienteImage(formData).subscribe({
+      this.clientesService.uploadClienteImage(formData).subscribe({
         next: (response: any) => {
           this.newCliente.urlFotoFachada = response.imageUrl;
           this.archivoFotoCliente = undefined;
@@ -314,7 +316,7 @@ export class Mapa implements OnInit {
 
     const uploadPromise = this.archivoFotoCliente ? this.subirFotoCliente() : Promise.resolve();
     uploadPromise.then(() => {
-      this.apiService.createCliente(this.newCliente).subscribe({
+      this.clientesService.createCliente(this.newCliente).subscribe({
         next: () => {
           this.closeNuevoClienteModal();
           this.loadClientes();

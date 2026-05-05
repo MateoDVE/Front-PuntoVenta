@@ -5,6 +5,7 @@ import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ProductoCardComponent } from '../../../components/producto-card/producto-card';
 import { ApiService, Producto } from '../../../services/api.service';
+import { ProductosService } from '../../../services/productos.service';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -48,7 +49,8 @@ export class Catalogo implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private productosService: ProductosService
   ) {}
 
   ngOnInit(): void {
@@ -57,7 +59,7 @@ export class Catalogo implements OnInit {
 
   cargarProductos(): void {
     this.cargando = true;
-    this.apiService.getProductos().subscribe({
+    this.productosService.getProductos().subscribe({
       next: (data) => {
         this.productos = data;
         this.cargando = false;
@@ -194,7 +196,7 @@ export class Catalogo implements OnInit {
           : 'productos/upload';
 
         // Usar HttpClient para enviar
-        this.apiService.uploadProductImage(endpoint, formData).subscribe({
+        this.productosService.uploadProductImage(endpoint, formData).subscribe({
           next: (response: any) => {
             this.nuevoProducto.url_imagen = response.imageUrl;
             this.cargandoImagen = false;
@@ -224,7 +226,7 @@ export class Catalogo implements OnInit {
     if (!this.nuevoProducto.url_imagen) return;
 
     if (confirm(this.translate.instant('ADMIN.CATALOG.CONFIRM.DELETE_IMAGE'))) {
-      this.apiService.deleteProductImage(this.nuevoProducto.url_imagen).subscribe({
+      this.productosService.deleteProductImage(this.nuevoProducto.url_imagen).subscribe({
         next: () => {
           this.nuevoProducto.url_imagen = '';
           alert(this.translate.instant('ADMIN.CATALOG.SUCCESS.IMAGE_DELETED'));
@@ -257,7 +259,7 @@ export class Catalogo implements OnInit {
 
       if (this.editando && this.productoEditandoId) {
         // Actualizar producto existente
-        this.apiService.updateProducto(this.productoEditandoId.toString(), this.nuevoProducto).subscribe({
+        this.productosService.updateProducto(this.productoEditandoId.toString(), this.nuevoProducto).subscribe({
           next: (response) => {
             const index = this.productos.findIndex(p => p.id_producto === this.productoEditandoId);
             if (index !== -1) {
@@ -275,7 +277,7 @@ export class Catalogo implements OnInit {
         });
       } else {
         // Crear nuevo producto
-        this.apiService.createProducto(this.nuevoProducto).subscribe({
+        this.productosService.createProducto(this.nuevoProducto).subscribe({
           next: (response) => {
             this.productos.push(response);
             this.cerrarModal();
@@ -323,7 +325,7 @@ export class Catalogo implements OnInit {
   eliminarProducto(id: number | undefined): void {
     if (!id) return;
     if (confirm('¿Desea eliminar este producto?')) {
-      this.apiService.deleteProducto(id.toString()).subscribe({
+    this.productosService.deleteProducto(id.toString()).subscribe({
         next: () => {
           this.productos = this.productos.filter(p => p.id_producto !== id);
         },
