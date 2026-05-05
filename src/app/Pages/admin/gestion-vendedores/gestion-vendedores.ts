@@ -8,6 +8,7 @@ import {
   VendedoresRegistradosComponent,
 } from '../../../components/vendedores-registrados/vendedores-registrados';
 import { ApiService } from '../../../services/api.service';
+import { VendedoresService } from '../../../services/vendedores.service';
 import { AuthService } from '../../../services/auth.service';
 
 interface VendedorForm {
@@ -44,6 +45,7 @@ export class GestionVendedoresComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
+    private vendedoresService: VendedoresService,
   ) {}
 
   ngOnInit(): void {
@@ -54,7 +56,7 @@ export class GestionVendedoresComponent implements OnInit {
     this.cargando = true;
     this.errorMensaje = '';
 
-    this.apiService.getVendedores().subscribe({
+    this.vendedoresService.getVendedores().subscribe({
       next: (data) => {
         this.vendedores = data;
         this.totalVendedores = data.length;
@@ -113,7 +115,7 @@ export class GestionVendedoresComponent implements OnInit {
         payload.password = password;
       }
 
-      this.apiService.updateVendedor(this.vendedorEditandoId, payload).subscribe({
+      this.vendedoresService.updateVendedor(this.vendedorEditandoId, payload).subscribe({
         next: () => {
           this.guardando = false;
           this.cerrarModal();
@@ -128,7 +130,7 @@ export class GestionVendedoresComponent implements OnInit {
       return;
     }
 
-    this.apiService
+    this.vendedoresService
       .createVendedor({
         nombre,
         email,
@@ -165,7 +167,7 @@ export class GestionVendedoresComponent implements OnInit {
     const confirmar = confirm(`¿Desea eliminar a ${vendedor.nombre}?`);
     if (!confirmar) return;
 
-    this.apiService.deleteVendedor(vendedor.id_usuario).subscribe({
+    this.vendedoresService.deleteVendedor(vendedor.id_usuario).subscribe({
       next: () => {
         this.cargarVendedores();
       },
