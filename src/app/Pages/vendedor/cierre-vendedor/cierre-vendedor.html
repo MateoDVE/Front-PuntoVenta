@@ -148,7 +148,13 @@
 
 <!-- BARRA DE ACCIONES -->
 <div class="action-bar">
-  <button class="btn-confirmar" (click)="abrirModalConfirmar()" [disabled]="cargando || !cierre || jornadaYaCerrada">
+  @if (hasPendientes) {
+    <div class="pending-sync-alert">
+      <ion-icon name="warning-outline"></ion-icon>
+      Debe conectarse a internet para sincronizar ventas pendientes antes de cerrar la caja.
+    </div>
+  }
+  <button class="btn-confirmar" (click)="abrirModalConfirmar()" [disabled]="cargando || !cierre || jornadaYaCerrada || hasPendientes">
     <ion-icon [name]="jornadaYaCerrada ? 'checkmark-circle-outline' : 'clipboard-outline'"></ion-icon>
     {{ jornadaYaCerrada ? ('VENDEDOR.CIERRE.JORNADA_CERRADA' | translate) : ('VENDEDOR.CIERRE.CONFIRM_BUTTON' | translate) }}
   </button>

@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { AuthService } from '../../../services/auth.service';
+import { SyncService } from '../../../services/sync.service';
 import {
   ApiService,
   CierreJornadaResponse,
@@ -25,7 +26,7 @@ import {
   styleUrl: './cierre-vendedor.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class CierreVendedor implements OnInit {
+export class CierreVendedor implements OnInit, OnDestroy {
 
   // Datos del cierre
   cierre: CierreJornadaResponse | null = null;
@@ -53,9 +54,13 @@ export class CierreVendedor implements OnInit {
   // Modal resultado
   mostrarModalResultado: boolean = false;
 
+  hasPendientes: boolean = false;
+  private syncSub: Subscription | null = null;
+
   constructor(
     private authService: AuthService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private syncService: SyncService
   ) {}
 
   ngOnInit(): void {
@@ -64,6 +69,13 @@ export class CierreVendedor implements OnInit {
       this.idVendedor = user.id_usuario || '';
     }
     this.cargarCierre();
+    this.syncSub = this.syncService.pendingCount$.subscribe(count => {
+      this.hasPendientes = count > 0;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.syncSub?.unsubscribe();
   }
 
   private getFechaHoy(): string {

@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, from, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { DatabaseService, VentaPendiente } from './database.service';
 
 export interface ClienteBackend {
   id?: string;
@@ -131,7 +133,8 @@ export class ApiService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private db: DatabaseService
   ) {}
 
   // ==================== USUARIOS ====================
@@ -165,8 +168,42 @@ export class ApiService {
   }
 
   // ==================== VENTAS ====================
-  crearVenta(payload: CrearVentaRequest): Observable<VentaResponse> {
+  crearVentaRaw(payload: CrearVentaRequest): Observable<VentaResponse> {
     return this.http.post<VentaResponse>(`${this.apiUrl}/ventas`, payload);
+  }
+
+  crearVenta(payload: CrearVentaRequest): Observable<VentaResponse> {
+    const id = payload.idTransaccionLocal ?? crypto.randomUUID();
+    const fullPayload: CrearVentaRequest = { ...payload, idTransaccionLocal: id };
+
+    return this.crearVentaRaw(fullPayload).pipe(
+      catchError(err => {
+        if (err.status === 0) {
+          const pending: VentaPendiente = {
+            idTransaccionLocal: id,
+            idCliente: fullPayload.idCliente,
+            idVendedor: fullPayload.idVendedor,
+            descuento: fullPayload.descuento,
+            items: fullPayload.items,
+            _savedAt: Date.now()
+          };
+          return from(this.db.ventasPendientes.put(pending)).pipe(
+            map(() => ({
+              idVenta: id,
+              idCliente: fullPayload.idCliente,
+              idVendedor: fullPayload.idVendedor,
+              fechaHora: new Date().toISOString(),
+              subtotal: 0,
+              descuento: fullPayload.descuento,
+              totalEfectivo: 0,
+              estado: 'PENDIENTE_SYNC',
+              detalles: []
+            } as VentaResponse))
+          );
+        }
+        return throwError(() => err);
+      })
+    );
   }
 
   getCierreJornada(idVendedor: string, fecha: string): Observable<CierreJornadaResponse> {
@@ -201,6 +238,7 @@ export interface ItemVentaRequest {
 }
 
 export interface CrearVentaRequest {
+  idTransaccionLocal?: string;
   idCliente: number;
   idVendedor: string;
   descuento: number;

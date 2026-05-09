@@ -898,6 +898,23 @@ $blanco: #ffffff;
   }
 }
 
+// ===== MODAL OFFLINE =====
+.modal-offline {
+  .offline-icon ion-icon {
+    color: #d97706 !important;
+  }
+
+  h2 { color: #92400e; }
+
+  .offline-msg {
+    font-size: 14px;
+    color: #6b7280;
+    text-align: center;
+    margin: 0 0 12px;
+    line-height: 1.5;
+  }
+}
+
 @keyframes popIn {
   from { transform: scale(0.75); opacity: 0; }
   to   { transform: scale(1);    opacity: 1; }
