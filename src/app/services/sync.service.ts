@@ -40,8 +40,15 @@ export class SyncService {
       try {
         await lastValueFrom(this.api.crearVentaRaw(payload));
         await this.db.ventasPendientes.delete(venta.idTransaccionLocal);
-      } catch {
-        break; // Se reintentará en la próxima reconexión
+      } catch (err: any) {
+        const status: number = err?.status ?? 0;
+        if (status === 0 || status >= 500) {
+          // Sin red o servidor caído → parar y reintentar en la próxima reconexión
+          break;
+        }
+        // Error del cliente (4xx): dato inválido, duplicado, stock insuficiente, etc.
+        // El backend ya rechazó esta venta y no la procesará en el futuro → eliminar de Dexie
+        await this.db.ventasPendientes.delete(venta.idTransaccionLocal);
       }
     }
   }
