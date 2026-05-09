@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { SyncService } from './services/sync.service';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 export class App {
   protected readonly title = signal('frontend-puntoventa');
 
-  constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService, _sync: SyncService) {
     translate.addLangs(['es', 'en', 'qu']);
     translate.setDefaultLang('es');
     translate.setDefaultLang('es');

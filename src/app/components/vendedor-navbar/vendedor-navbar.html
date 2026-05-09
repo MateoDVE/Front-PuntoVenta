@@ -1,4 +1,18 @@
 <div class="navbar-container">
+
+  @if (hayAlerta) {
+    <div class="sync-banner" [class.sync-banner--offline]="isOffline">
+      <ion-icon [name]="isOffline ? 'cloud-offline-outline' : 'sync-outline'"></ion-icon>
+      @if (isOffline && pendingCount > 0) {
+        Sin conexión · {{ pendingCount }} venta(s) pendiente(s)
+      } @else if (isOffline) {
+        Sin conexión a internet
+      } @else {
+        Sincronizando {{ pendingCount }} venta(s)...
+      }
+    </div>
+  }
+
   <nav class="navbar">
     <a routerLink="/vendedor/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <img class="icon" src="/NavbarVendedor-inicio.png" alt="{{ 'VENDEDOR.NAVBAR.HOME' | translate }}" />
