@@ -1,0 +1,461 @@
+:host {
+  --layout-bg: #e7eaef;
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --surface-subtle: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #525f72;
+  --text-muted: #93a0b3;
+  --border: #dbe3ef;
+  --border-soft: #eeeeee;
+  --accent: #2563eb;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.07);
+}
+
+// ── Shell / Layout ────────────────────────────────────────────────────────────
+
+.dashboard-shell {
+  min-height: 100vh;
+  background: var(--layout-bg);
+  color: var(--text-primary);
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.dashboard-main {
+  padding: 22px;
+  overflow: auto;
+}
+
+// ── Página ────────────────────────────────────────────────────────────────────
+
+.monitor-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ── Cabecera ──────────────────────────────────────────────────────────────────
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-header__copy {
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0.4rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+
+.btn-reload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+  }
+}
+
+// ── Estados de carga / error ──────────────────────────────────────────────────
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 3rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.page-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+// ── Tarjetas de vendedores ────────────────────────────────────────────────────
+
+.vendedores-row {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+
+  &::-webkit-scrollbar { height: 4px; }
+  &::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+}
+
+.vendedor-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  min-width: 260px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.vendedor-card--resumen {
+  background: #1d3a8a;
+  border-color: #1d3a8a;
+  color: #fff;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 180px;
+}
+
+.empty-card {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.vendedor-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vendedor-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vendedor-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vendedor-card__nombre {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vendedor-card__email {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Badges de estado ──────────────────────────────────────────────────────────
+
+.badge-estado {
+  margin-left: auto;
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge-ruta {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.badge-cerrado {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.badge-activo {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+// ── Stats mini ────────────────────────────────────────────────────────────────
+
+.vendedor-card__stats {
+  display: flex;
+  gap: 16px;
+  border-top: 1px solid var(--border-soft);
+  padding-top: 12px;
+  flex-wrap: wrap;
+}
+
+.stat-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-mini__valor {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.ingresos-val {
+  font-size: 1rem;
+  color: #15803d;
+}
+
+.stat-mini__label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.resumen-label {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #93c5fd;
+  font-weight: 500;
+}
+
+.resumen-valor {
+  margin: 6px 0 4px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.resumen-sub {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #93c5fd;
+}
+
+// ── Sección mapa ──────────────────────────────────────────────────────────────
+
+.mapa-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mapa-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+}
+
+.mapa-header__icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+}
+
+.mapa-count {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+// ── Mapa real ─────────────────────────────────────────────────────────────────
+
+.mapa-wrap {
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  height: 420px;
+  border: 1px solid var(--border);
+  background: var(--surface-subtle);
+}
+
+.mapa-container {
+  width: 100%;
+  height: 100%;
+}
+
+.mapa-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  text-align: center;
+  padding: 1rem;
+
+  svg {
+    opacity: 0.4;
+  }
+}
+
+// ── Leyenda ───────────────────────────────────────────────────────────────────
+
+.mapa-leyenda {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.leyenda-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &--green { background: #22c55e; }
+  &--blue  { background: #3b82f6; }
+  &--gray  { background: #9ca3af; }
+}
+
+.leyenda-info {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+
+@media (max-width: 1024px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-main {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mapa-wrap {
+    height: 300px;
+  }
+
+  .leyenda-info {
+    display: none;
+  }
+}

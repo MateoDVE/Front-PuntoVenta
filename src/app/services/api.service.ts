@@ -228,9 +228,24 @@ export class ApiService {
   getCierresVendedor(idVendedor: string): Observable<CierreGuardado[]> {
     return this.http.get<CierreGuardado[]>(`${this.apiUrl}/cierres/vendedor/${idVendedor}`);
   }
+
+  getVentas(): Observable<VentaResumenResponse[]> {
+    return this.http.get<VentaResumenResponse[]>(`${this.apiUrl}/ventas`);
+  }
 }
 
 // ==================== INTERFACES VENTAS ====================
+export interface VentaResumenResponse {
+  idVenta: string;
+  idCliente: number;
+  idVendedor: string;
+  fechaHora: string;
+  subtotal: number;
+  descuento: number;
+  totalEfectivo: number;
+  estado: string;
+}
+
 export interface ItemVentaRequest {
   idProducto: string;
   cantidad: number;
