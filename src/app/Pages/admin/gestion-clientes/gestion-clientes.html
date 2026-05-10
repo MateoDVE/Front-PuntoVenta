@@ -95,9 +95,9 @@
                   <div class="vendedor-actions-info">
                     <span
                       class="badge"
-                      [class.badge-activo]="grupo.estado?.toUpperCase() === 'ACTIVO'"
-                      [class.badge-inactivo]="grupo.estado?.toUpperCase() === 'INACTIVO'"
-                      [class.badge-en-ruta]="grupo.estado?.toUpperCase() === 'EN RUTA'"
+                      [class.badge-activo]="grupo.estado.toUpperCase() === 'ACTIVO'"
+                      [class.badge-inactivo]="grupo.estado.toUpperCase() === 'INACTIVO'"
+                      [class.badge-en-ruta]="grupo.estado.toUpperCase() === 'EN RUTA'"
                     >{{ grupo.estado }}</span>
                     <span class="clientes-count">
                       <span class="clientes-count__num">{{ grupo.clientes.length }}</span>
@@ -141,7 +141,7 @@
                               <td>{{ cliente.ci_nit }}</td>
                               <td>{{ cliente.celular || '—' }}</td>
                               <td>
-                                <span class="frecuencia-badge frecuencia-{{ cliente.frecuencia_visita?.toLowerCase() }}">
+                                <span class="frecuencia-badge frecuencia-{{ cliente.frecuencia_visita.toLowerCase() }}">
                                   {{ getFrecuenciaLabel(cliente.frecuencia_visita) }}
                                 </span>
                               </td>
