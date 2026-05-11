@@ -281,6 +281,121 @@
         "EDIT": "Edit",
         "DELETE": "Delete"
       }
+    },
+    "CLIENTES": {
+      "TITLE": "Client Management",
+      "SUBTITLE": "Manage and view each seller's clients",
+      "BUTTON": {
+        "RELOAD": "Reload"
+      },
+      "LOADING": "Loading sellers and clients...",
+      "STATS": {
+        "TOTAL": "Total clients",
+        "ACTIVE": "Active",
+        "INACTIVE": "Inactive",
+        "SELLERS": "Sellers"
+      },
+      "EMPTY": {
+        "NO_SELLERS": "No sellers registered yet."
+      },
+      "LABEL": {
+        "CLIENT": "client",
+        "CLIENTS": "clients"
+      },
+      "TABLE": {
+        "BUSINESS": "Business",
+        "CI_NIT": "CI / NIT",
+        "PHONE": "Phone",
+        "FREQUENCY": "Frequency",
+        "STATUS": "Status",
+        "ACTIONS": "Actions"
+      },
+      "ACTIONS": {
+        "EDIT": "Edit",
+        "DEACTIVATE": "Deactivate",
+        "ACTIVATE": "Activate"
+      },
+      "STATUS": {
+        "ACTIVE": "Active",
+        "INACTIVE": "Inactive"
+      },
+      "MODAL": {
+        "TITLE": "Edit client",
+        "CLOSE": "Close form",
+        "SECTION": {
+          "BUSINESS": "Business details",
+          "VISIT": "Visit settings"
+        },
+        "LABEL": {
+          "BUSINESS_NAME": "Business name",
+          "CI_NIT": "CI / NIT",
+          "PHONE": "Phone",
+          "FREQUENCY": "Visit frequency",
+          "STATUS": "Status"
+        },
+        "PLACEHOLDER": {
+          "BUSINESS": "E.g. Don Juan Store",
+          "CI_NIT": "E.g. 12345678",
+          "PHONE": "E.g. 70012345"
+        },
+        "OPTION": {
+          "DAILY": "Daily",
+          "WEEKLY": "Weekly",
+          "BIWEEKLY": "Biweekly",
+          "MONTHLY": "Monthly"
+        },
+        "BUTTON": {
+          "CANCEL": "Cancel",
+          "SAVE": "Save changes",
+          "SAVING": "Saving..."
+        }
+      },
+      "ERROR": {
+        "LOAD_FAILED": "Could not load data. Check server connection.",
+        "REQUIRED_FIELDS": "Business name and CI/NIT are required.",
+        "UPDATE_FAILED": "Could not update the client. Try again."
+      }
+    },
+    "MONITOR": {
+      "TITLE": "Real-Time Monitor",
+      "SUBTITLE": "Track sellers and clients being attended",
+      "LIVE": "Live",
+      "BUTTON": {
+        "RELOAD": "Reload"
+      },
+      "LOADING": "Loading monitor data...",
+      "EMPTY": {
+        "NO_SELLERS": "No sellers registered."
+      },
+      "CARD": {
+        "STOCK": "Stock",
+        "SALES": "Sales",
+        "INCOME": "Income"
+      },
+      "SUMMARY": {
+        "TOTAL_INCOME": "Total income",
+        "ON_ROUTE_SINGULAR": "seller on route",
+        "ON_ROUTE_PLURAL": "sellers on route"
+      },
+      "MAP": {
+        "TITLE": "Client Map",
+        "COUNT": "with registered location",
+        "EMPTY": "No client has a GPS location registered yet."
+      },
+      "LEGEND": {
+        "ATTENDED": "Attended today",
+        "PENDING": "Active · pending",
+        "INACTIVE": "Inactive",
+        "INFO": "Click a marker to view details"
+      },
+      "STATUS": {
+        "ACTIVE": "Active",
+        "EN_ROUTE": "On route",
+        "CLOSED": "Closed shift"
+      },
+      "ERROR": {
+        "LOAD_FAILED": "Could not load data. Check server connection."
+      }
     }
   },
   "VENDEDOR": {

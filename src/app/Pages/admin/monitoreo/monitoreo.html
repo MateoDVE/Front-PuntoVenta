@@ -8,15 +8,15 @@
         <!-- Cabecera -->
         <header class="page-header">
           <div class="page-header__copy">
-            <h1 id="monitor-title">Monitor en Tiempo Real</h1>
-            <p>Seguimiento de vendedores y clientes en atención</p>
+            <h1 id="monitor-title">{{ 'ADMIN.MONITOR.TITLE' | translate }}</h1>
+            <p>{{ 'ADMIN.MONITOR.SUBTITLE' | translate }}</p>
           </div>
           <div class="header-actions">
             <span class="live-badge">
               <span class="live-dot"></span>
-              En vivo
+              {{ 'ADMIN.MONITOR.LIVE' | translate }}
             </span>
-            <button type="button" class="btn-reload" (click)="cargar()" title="Recargar">
+            <button type="button" class="btn-reload" (click)="cargar()" title="{{ 'ADMIN.MONITOR.BUTTON.RELOAD' | translate }}">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="23 4 23 10 17 10"/>
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
@@ -29,7 +29,7 @@
         @if (cargando) {
           <div class="loading-state" role="status">
             <div class="spinner"></div>
-            <p>Cargando datos del monitor...</p>
+            <p>{{ 'ADMIN.MONITOR.LOADING' | translate }}</p>
           </div>
         }
 
@@ -61,39 +61,38 @@
                     [class.badge-ruta]="esEnRuta(v.estadoDisplay)"
                     [class.badge-cerrado]="esCerrado(v.estadoDisplay)"
                     [class.badge-activo]="!esEnRuta(v.estadoDisplay) && !esCerrado(v.estadoDisplay)"
-                  >{{ v.estadoDisplay }}</span>
+                  >{{ getEstadoLabel(v.estadoDisplay) }}</span>
                 </div>
 
                 <div class="vendedor-card__stats">
                   <div class="stat-mini">
                     <span class="stat-mini__valor">{{ v.stock }}</span>
-                    <span class="stat-mini__label">Stock</span>
+                    <span class="stat-mini__label">{{ 'ADMIN.MONITOR.CARD.STOCK' | translate }}</span>
                   </div>
                   <div class="stat-mini">
                     <span class="stat-mini__valor">{{ v.ventas }}</span>
-                    <span class="stat-mini__label">Ventas</span>
+                    <span class="stat-mini__label">{{ 'ADMIN.MONITOR.CARD.SALES' | translate }}</span>
                   </div>
                   <div class="stat-mini">
                     <span class="stat-mini__valor ingresos-val">Bs. {{ v.ingresos | number:'1.2-2' }}</span>
-                    <span class="stat-mini__label">Ingresos</span>
+                    <span class="stat-mini__label">{{ 'ADMIN.MONITOR.CARD.INCOME' | translate }}</span>
                   </div>
                 </div>
               </div>
             }
 
             @if (vendedoresDatos.length === 0) {
-              <div class="empty-card">Sin vendedores registrados.</div>
+              <div class="empty-card">{{ 'ADMIN.MONITOR.EMPTY.NO_SELLERS' | translate }}</div>
             }
 
             <!-- Tarjeta resumen total -->
             <div class="vendedor-card vendedor-card--resumen">
-              <p class="resumen-label">Ingresos totales</p>
+              <p class="resumen-label">{{ 'ADMIN.MONITOR.SUMMARY.TOTAL_INCOME' | translate }}</p>
               <p class="resumen-valor">Bs. {{ totalIngresos | number:'1.2-2' }}</p>
               <p class="resumen-sub">
-                {{ vendedoresEnRuta }} {{ vendedoresEnRuta === 1 ? 'vendedor en ruta' : 'vendedores en ruta' }}
+                {{ vendedoresEnRuta }} {{ vendedoresEnRuta === 1 ? ('ADMIN.MONITOR.SUMMARY.ON_ROUTE_SINGULAR' | translate) : ('ADMIN.MONITOR.SUMMARY.ON_ROUTE_PLURAL' | translate) }}
               </p>
             </div>
-
           </div>
 
           <!-- Sección mapa -->
@@ -105,8 +104,8 @@
                   <circle cx="12" cy="10" r="3"/>
                 </svg>
               </span>
-              <h2>Mapa de Clientes</h2>
-              <span class="mapa-count">{{ clientesMapa.length }} con ubicación registrada</span>
+              <h2>{{ 'ADMIN.MONITOR.MAP.TITLE' | translate }}</h2>
+              <span class="mapa-count">{{ clientesMapa.length }} {{ 'ADMIN.MONITOR.MAP.COUNT' | translate }}</span>
             </div>
 
             <!-- Contenedor del mapa real -->
@@ -119,7 +118,7 @@
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                     <circle cx="12" cy="10" r="3"/>
                   </svg>
-                  <p>Ningún cliente tiene ubicación GPS registrada aún.</p>
+                  <p>{{ 'ADMIN.MONITOR.MAP.EMPTY' | translate }}</p>
                 </div>
               }
             </div>
@@ -128,18 +127,18 @@
             <div class="mapa-leyenda">
               <span class="leyenda-item">
                 <span class="leyenda-dot leyenda-dot--green"></span>
-                Atendido hoy
+                {{ 'ADMIN.MONITOR.LEGEND.ATTENDED' | translate }}
               </span>
               <span class="leyenda-item">
                 <span class="leyenda-dot leyenda-dot--blue"></span>
-                Activo · pendiente
+                {{ 'ADMIN.MONITOR.LEGEND.PENDING' | translate }}
               </span>
               <span class="leyenda-item">
                 <span class="leyenda-dot leyenda-dot--gray"></span>
-                Inactivo
+                {{ 'ADMIN.MONITOR.LEGEND.INACTIVE' | translate }}
               </span>
               <span class="leyenda-info">
-                Haz clic en un marcador para ver el detalle
+                {{ 'ADMIN.MONITOR.LEGEND.INFO' | translate }}
               </span>
             </div>
           </div>

@@ -278,6 +278,121 @@
         "EDIT": "Editay",
         "DELETE": "Pichay"
       }
+    },
+    "CLIENTES": {
+      "TITLE": "Clientesqam qillqay",
+      "SUBTITLE": "Qhatuchikpa clienteskuna qhawariykuy",
+      "BUTTON": {
+        "RELOAD": "Qallarichiy"
+      },
+      "LOADING": "Qhatuchikwan clienteskuna cargarichiy...",
+      "STATS": {
+        "TOTAL": "Clientes total",
+        "ACTIVE": "Kawsachikun",
+        "INACTIVE": "Mana kawsachikun",
+        "SELLERS": "Qhatuchik"
+      },
+      "EMPTY": {
+        "NO_SELLERS": "Mana qhatuchikunqachu kachachun."
+      },
+      "LABEL": {
+        "CLIENT": "cliente",
+        "CLIENTS": "clientes"
+      },
+      "TABLE": {
+        "BUSINESS": "Negocio",
+        "CI_NIT": "CI / NIT",
+        "PHONE": "Celular",
+        "FREQUENCY": "Frecuencia",
+        "STATUS": "Estado",
+        "ACTIONS": "Acciones"
+      },
+      "ACTIONS": {
+        "EDIT": "Editay",
+        "DEACTIVATE": "Mana kawsachiy",
+        "ACTIVATE": "Kawsachiy"
+      },
+      "STATUS": {
+        "ACTIVE": "Kawsachikun",
+        "INACTIVE": "Mana kawsachikun"
+      },
+      "MODAL": {
+        "TITLE": "Cliente editay",
+        "CLOSE": "Formulario serray",
+        "SECTION": {
+          "BUSINESS": "Negocio datos",
+          "VISIT": "Visita config"
+        },
+        "LABEL": {
+          "BUSINESS_NAME": "Negocio sutin",
+          "CI_NIT": "CI / NIT",
+          "PHONE": "Celular",
+          "FREQUENCY": "Visita frecuencia",
+          "STATUS": "Estado"
+        },
+        "PLACEHOLDER": {
+          "BUSINESS": "Ej: Tienda Don Juan",
+          "CI_NIT": "Ej: 12345678",
+          "PHONE": "Ej: 70012345"
+        },
+        "OPTION": {
+          "DAILY": "Diaria",
+          "WEEKLY": "Semanal",
+          "BIWEEKLY": "Quincenal",
+          "MONTHLY": "Mensual"
+        },
+        "BUTTON": {
+          "CANCEL": "Cancelar",
+          "SAVE": "Guardaykuy",
+          "SAVING": "Guardachiy..."
+        }
+      },
+      "ERROR": {
+        "LOAD_FAILED": "Manaqa datoskuna qallarichiychu. Server qillqayta ruraykachun.",
+        "REQUIRED_FIELDS": "Negocio sutinmi kanqa, CI/NITmi kanqa.",
+        "UPDATE_FAILED": "Manaqa cliente qillqayta actualizaychu. Amañanchu chaskiy."
+      }
+    },
+    "MONITOR": {
+      "TITLE": "Real-Time Monitor",
+      "SUBTITLE": "Qhatuchik wan clientes nisqakunata qhawariykuy",
+      "LIVE": "Live",
+      "BUTTON": {
+        "RELOAD": "Qallarichiy"
+      },
+      "LOADING": "Monitor datoskuna cargarichiy...",
+      "EMPTY": {
+        "NO_SELLERS": "Mana qhatuchik qillqasqa."
+      },
+      "CARD": {
+        "STOCK": "Stock",
+        "SALES": "Qhatuykuna",
+        "INCOME": "Ingresos"
+      },
+      "SUMMARY": {
+        "TOTAL_INCOME": "Ingresos totales",
+        "ON_ROUTE_SINGULAR": "qhatuchik nampi",
+        "ON_ROUTE_PLURAL": "qhatuchikkuna nampi"
+      },
+      "MAP": {
+        "TITLE": "Clientes Mapa",
+        "COUNT": "ubicacion qillqasqa",
+        "EMPTY": "Manaqa clienteqa GPS ubicacion qillqasqa."
+      },
+      "LEGEND": {
+        "ATTENDED": "Kunan punchaw atendiy",
+        "PENDING": "Kawsachiy · pending",
+        "INACTIVE": "Mana kawsachikun",
+        "INFO": "Markerpi clicky qhawachiy detailkuna"
+      },
+      "STATUS": {
+        "ACTIVE": "Kawsachikun",
+        "EN_ROUTE": "Nampi",
+        "CLOSED": "Jornada kutiy"
+      },
+      "ERROR": {
+        "LOAD_FAILED": "Manaqa datoskuna qallarichiychu. Server qillqayta ruraykachun."
+      }
     }
   },
   "VENDEDOR": {

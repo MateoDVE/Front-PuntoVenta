@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
 import {
   ApiService,
@@ -32,7 +33,7 @@ interface ClienteMapaData extends Cliente {
 @Component({
   selector: 'app-monitoreo',
   standalone: true,
-  imports: [CommonModule, AdminNavbar],
+  imports: [CommonModule, AdminNavbar, TranslateModule],
   templateUrl: './monitoreo.html',
   styleUrls: ['./monitoreo.scss'],
 })
@@ -55,6 +56,7 @@ export class MonitoreoComponent implements OnInit {
     private vendedoresService: VendedoresService,
     private router: Router,
     private cdr: ChangeDetectorRef,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -106,8 +108,8 @@ export class MonitoreoComponent implements OnInit {
                 );
 
                 const estadoDisplay = jornadaCerradaHoy
-                  ? 'JORNADA CERRADA'
-                  : (v.estado?.toUpperCase() ?? 'ACTIVO');
+                  ? 'JORNADA_CERRADA'
+                  : (v.estado?.toUpperCase() === 'EN RUTA' ? 'EN_RUTA' : 'ACTIVO');
 
                 return {
                   vendedor: { id: v.id_usuario, nombre: v.nombre, email: v.email, estadoDisplay, stock, ventas, ingresos } as VendedorMonitorData,
@@ -153,7 +155,7 @@ export class MonitoreoComponent implements OnInit {
         );
       }),
       catchError(() => {
-        this.error = 'No se pudieron cargar los datos. Verifica la conexión con el servidor.';
+        this.error = this.translate.instant('ADMIN.MONITOR.ERROR.LOAD_FAILED');
         return of({ vendedoresDatos: [] as VendedorMonitorData[], clientesMapa: [] as ClienteMapaData[] });
       }),
     ).subscribe(({ vendedoresDatos, clientesMapa }) => {
@@ -179,12 +181,21 @@ export class MonitoreoComponent implements OnInit {
     return nombre.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase();
   }
 
+  getEstadoLabel(estado: string): string {
+    const keys: Record<string, string> = {
+      ACTIVO: 'ADMIN.MONITOR.STATUS.ACTIVE',
+      'EN_RUTA': 'ADMIN.MONITOR.STATUS.EN_ROUTE',
+      'JORNADA_CERRADA': 'ADMIN.MONITOR.STATUS.CLOSED',
+    };
+    return this.translate.instant(keys[estado] ?? estado);
+  }
+
   esEnRuta(estado: string): boolean {
-    return estado.toUpperCase().includes('RUTA');
+    return estado === 'EN_RUTA';
   }
 
   esCerrado(estado: string): boolean {
-    return estado.toUpperCase().includes('CERRADA');
+    return estado === 'JORNADA_CERRADA';
   }
 
   // ── Google Maps ───────────────────────────────────────────────────────────
