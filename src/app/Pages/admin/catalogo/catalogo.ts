@@ -4,14 +4,26 @@ import { FormsModule } from '@angular/forms';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ProductoCardComponent } from '../../../components/producto-card/producto-card';
+import { AppModalComponent, AppModalVariant } from '../../../components/app-modal/app-modal.component';
 import { ApiService, Producto } from '../../../services/api.service';
 import { ProductosService } from '../../../services/productos.service';
 import { AuthService } from '../../../services/auth.service';
 
+interface ModalState {
+  open: boolean;
+  title: string;
+  message: string;
+  variant: AppModalVariant;
+  showCancel: boolean;
+  confirmText: string;
+  cancelText: string;
+  closeLabel: string;
+}
+
 @Component({
   selector: 'app-catalogo',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminNavbar, ProductoCardComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, AdminNavbar, ProductoCardComponent, AppModalComponent, TranslateModule],
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.scss',
 })
@@ -24,6 +36,17 @@ export class Catalogo implements OnInit {
   cargandoImagen = false;
   imagenPreview?: string;
   archivoSeleccionado?: File;
+  modalState: ModalState = {
+    open: false,
+    title: '',
+    message: '',
+    variant: 'info',
+    showCancel: false,
+    confirmText: '',
+    cancelText: '',
+    closeLabel: '',
+  };
+  private modalAction: (() => void) | null = null;
   
   nuevoProducto: Producto = {
     sku: '',
@@ -54,6 +77,7 @@ export class Catalogo implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.modalState = this.crearModalInicial();
     this.cargarProductos();
   }
 
@@ -171,7 +195,11 @@ export class Catalogo implements OnInit {
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      alert(`Error: ${error instanceof Error ? error.message : this.translate.instant('ADMIN.CATALOG.ERROR.PROCESS_IMAGE')}`);
+      this.abrirModalMensaje(
+        this.translate.instant('COMMON.ERROR'),
+        error instanceof Error ? error.message : this.translate.instant('ADMIN.CATALOG.ERROR.PROCESS_IMAGE'),
+        'error'
+      );
       input.value = '';
     }
   }
@@ -225,17 +253,30 @@ export class Catalogo implements OnInit {
   eliminarImagenGuardada(): void {
     if (!this.nuevoProducto.url_imagen) return;
 
-    if (confirm(this.translate.instant('ADMIN.CATALOG.CONFIRM.DELETE_IMAGE'))) {
-      this.productosService.deleteProductImage(this.nuevoProducto.url_imagen).subscribe({
-        next: () => {
-          this.nuevoProducto.url_imagen = '';
-          alert(this.translate.instant('ADMIN.CATALOG.SUCCESS.IMAGE_DELETED'));
-        },
-        error: (error) => {
-          alert(`${this.translate.instant('ADMIN.CATALOG.ERROR.DELETE_IMAGE')}: ${error?.error?.message || this.translate.instant('ADMIN.CATALOG.ERROR.UNKNOWN')}`);
-        },
-      });
-    }
+    this.abrirModalConfirmacion(
+      this.translate.instant('COMMON.CONFIRM'),
+      this.translate.instant('ADMIN.CATALOG.CONFIRM.DELETE_IMAGE'),
+      () => {
+        this.productosService.deleteProductImage(this.nuevoProducto.url_imagen ?? '').subscribe({
+          next: () => {
+            this.nuevoProducto.url_imagen = '';
+            this.abrirModalMensaje(
+              this.translate.instant('COMMON.SUCCESS'),
+              this.translate.instant('ADMIN.CATALOG.SUCCESS.IMAGE_DELETED'),
+              'success'
+            );
+          },
+          error: (error) => {
+            this.abrirModalMensaje(
+              this.translate.instant('COMMON.ERROR'),
+              `${this.translate.instant('ADMIN.CATALOG.ERROR.DELETE_IMAGE')}: ${error?.error?.message || this.translate.instant('ADMIN.CATALOG.ERROR.UNKNOWN')}`,
+              'error'
+            );
+          },
+        });
+      },
+      this.translate.instant('COMMON.DELETE')
+    );
   }
 
   async guardarProducto(): Promise<void> {
@@ -251,7 +292,11 @@ export class Catalogo implements OnInit {
         try {
           await this.subirImagen();
         } catch (error) {
-          alert(`Error al subir imagen: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+          this.abrirModalMensaje(
+            this.translate.instant('COMMON.ERROR'),
+            error instanceof Error ? error.message : this.translate.instant('ADMIN.CATALOG.ERROR.UPLOAD_IMAGE'),
+            'error'
+          );
           this.cargando = false;
           return;
         }
@@ -267,11 +312,19 @@ export class Catalogo implements OnInit {
             }
             this.cerrarModal();
             this.cargando = false;
-            alert('Producto actualizado correctamente');
+            this.abrirModalMensaje(
+              this.translate.instant('COMMON.SUCCESS'),
+              this.translate.instant('ADMIN.CATALOG.SUCCESS.PRODUCT_UPDATED'),
+              'success'
+            );
           },
           error: (error) => {
             console.error('Error al actualizar producto:', error);
-            alert('Error al actualizar el producto');
+            this.abrirModalMensaje(
+              this.translate.instant('COMMON.ERROR'),
+              this.translate.instant('ADMIN.CATALOG.ERROR.PRODUCT_UPDATED'),
+              'error'
+            );
             this.cargando = false;
           },
         });
@@ -282,18 +335,30 @@ export class Catalogo implements OnInit {
             this.productos.push(response);
             this.cerrarModal();
             this.cargando = false;
-            alert('Producto creado correctamente');
+            this.abrirModalMensaje(
+              this.translate.instant('COMMON.SUCCESS'),
+              this.translate.instant('ADMIN.CATALOG.SUCCESS.PRODUCT_CREATED'),
+              'success'
+            );
           },
           error: (error) => {
             console.error('Error al crear producto:', error);
-            alert('Error al crear el producto');
+            this.abrirModalMensaje(
+              this.translate.instant('COMMON.ERROR'),
+              this.translate.instant('ADMIN.CATALOG.ERROR.PRODUCT_CREATED'),
+              'error'
+            );
             this.cargando = false;
           },
         });
       }
     } catch (error) {
       this.cargando = false;
-      alert(`Error inesperado: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      this.abrirModalMensaje(
+        this.translate.instant('COMMON.ERROR'),
+        error instanceof Error ? error.message : this.translate.instant('ADMIN.CATALOG.ERROR.UNKNOWN'),
+        'error'
+      );
     }
   }
 
@@ -301,7 +366,11 @@ export class Catalogo implements OnInit {
     // Verificar errores en tiempo real primero
     if (this.erroresValidacion.precio_unidad || this.erroresValidacion.precio_caja ||
         this.erroresValidacion.unidades_por_caja || this.erroresValidacion.stock_almacen_central) {
-      alert('Por favor corrija los errores en los campos antes de guardar.');
+      this.abrirModalMensaje(
+        this.translate.instant('COMMON.WARNING'),
+        this.translate.instant('ADMIN.CATALOG.ERROR.FIX_FIELDS'),
+        'warning'
+      );
       return false;
     }
 
@@ -309,7 +378,11 @@ export class Catalogo implements OnInit {
     if (!this.nuevoProducto.sku || !this.nuevoProducto.nombre ||
         this.nuevoProducto.precio_unidad < 0 || this.nuevoProducto.precio_caja < 0 ||
         this.nuevoProducto.unidades_por_caja <= 0 || this.nuevoProducto.stock_almacen_central < 0) {
-      alert('Por favor complete todos los campos requeridos correctamente.');
+      this.abrirModalMensaje(
+        this.translate.instant('COMMON.WARNING'),
+        this.translate.instant('ADMIN.CATALOG.ERROR.COMPLETE_REQUIRED_FIELDS'),
+        'warning'
+      );
       return false;
     }
     return true;
@@ -324,19 +397,91 @@ export class Catalogo implements OnInit {
 
   eliminarProducto(id: number | undefined): void {
     if (!id) return;
-    if (confirm('¿Desea eliminar este producto?')) {
-    this.productosService.deleteProducto(id.toString()).subscribe({
-        next: () => {
-          this.productos = this.productos.filter(p => p.id_producto !== id);
-        },
-        error: (error) => {
-          console.error('Error al eliminar producto:', error);
-        },
-      });
-    }
+    this.abrirModalConfirmacion(
+      this.translate.instant('COMMON.CONFIRM'),
+      this.translate.instant('ADMIN.CATALOG.CONFIRM.DELETE_PRODUCT'),
+      () => {
+        this.productosService.deleteProducto(id.toString()).subscribe({
+          next: () => {
+            this.productos = this.productos.filter(p => p.id_producto !== id);
+            this.abrirModalMensaje(
+              this.translate.instant('COMMON.SUCCESS'),
+              this.translate.instant('ADMIN.CATALOG.SUCCESS.PRODUCT_DELETED'),
+              'success'
+            );
+          },
+          error: (error) => {
+            console.error('Error al eliminar producto:', error);
+            this.abrirModalMensaje(
+              this.translate.instant('COMMON.ERROR'),
+              this.translate.instant('ADMIN.CATALOG.ERROR.PRODUCT_DELETED'),
+              'error'
+            );
+          },
+        });
+      },
+      this.translate.instant('COMMON.DELETE')
+    );
   }
 
   onSignOut(): void {
     this.authService.signOut().subscribe();
+  }
+
+  cerrarModalMensaje(): void {
+    this.modalState = this.crearModalInicial();
+    this.modalAction = null;
+  }
+
+  confirmarModalMensaje(): void {
+    const accion = this.modalAction;
+    this.cerrarModalMensaje();
+    accion?.();
+  }
+
+  private abrirModalMensaje(title: string, message: string, variant: AppModalVariant): void {
+    this.modalState = {
+      open: true,
+      title,
+      message,
+      variant,
+      showCancel: false,
+      confirmText: this.translate.instant('COMMON.ACCEPT'),
+      cancelText: this.translate.instant('COMMON.CANCEL'),
+      closeLabel: this.translate.instant('COMMON.CLOSE'),
+    };
+    this.modalAction = null;
+  }
+
+  private abrirModalConfirmacion(
+    title: string,
+    message: string,
+    onConfirm: () => void,
+    confirmText: string
+  ): void {
+    this.modalState = {
+      open: true,
+      title,
+      message,
+      variant: 'confirm',
+      showCancel: true,
+      confirmText,
+      cancelText: this.translate.instant('COMMON.CANCEL'),
+      closeLabel: this.translate.instant('COMMON.CLOSE'),
+    };
+    this.modalAction = onConfirm;
+  }
+
+  private crearModalInicial(): ModalState {
+    return {
+      open: false,
+      title: '',
+      message: '',
+      variant: 'info',
+      showCancel: false,
+      confirmText: 'Aceptar',
+      cancelText: 'Cancelar',
+      closeLabel: 'Cerrar',
+    };
   }
 }

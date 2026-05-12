@@ -8,7 +8,22 @@
     "PLACEHOLDER_PASSWORD": "Ñawiykita qillqay",
     "ERROR_PASSWORD": "Ñawiy 6 qillqamanta astawan kanan tiyan",
     "BOTON_INICIAR": "Yaykuy",
-    "CARGANDO": "Cargando..."
+    "CARGANDO": "Cargando...",
+    "ERROR_INVALID_CREDENTIALS": "Correo utaq ñawiy pantasqa.",
+    "ERROR_CONNECTION": "Servidorwan tinkuyta mana atichikchu. Wakmanta llamk'ay.",
+    "ERROR_GENERIC": "Yaykuyta mana atichikchu. Wakmanta llamk'ay.",
+    "ERROR_ROLE_UNDETERMINED": "Runapa rol-ninta mana riqsichikchu.",
+    "ERROR_TOKEN_MISSING": "Sesion token-ta mana tarisqachu. Wakmanta llamk'ay."
+  },
+  "COMMON": {
+    "ACCEPT": "Chaskiy",
+    "CANCEL": "Cancelar",
+    "CLOSE": "Wichqay",
+    "DELETE": "Pichay",
+    "CONFIRM": "Chaskiy",
+    "SUCCESS": "Allin",
+    "ERROR": "Pantay",
+    "WARNING": "Uyariy"
   },
   "ADMIN": {
     "NAVBAR": {
@@ -164,13 +179,22 @@
         "PROCESS_IMAGE": "Rikchay procesaypi pantay",
         "UPLOAD_IMAGE": "Rikchayta subirpi pantay",
         "DELETE_IMAGE": "Rikchayta pichaypi pantay",
-        "UNKNOWN": "Mana yuyaychay pantay"
+        "UNKNOWN": "Mana yuyaychay pantay",
+        "FIX_FIELDS": "Guardaraymanta ñawpaqmi pantaykunata chiqaspa.",
+        "COMPLETE_REQUIRED_FIELDS": "Munaq campokunata allinta hunt'ay.",
+        "PRODUCT_UPDATED": "Producto actualizaypi pantay.",
+        "PRODUCT_CREATED": "Producto kamaypi pantay.",
+        "PRODUCT_DELETED": "Producto pichaypi pantay."
       },
       "CONFIRM": {
-        "DELETE_IMAGE": "Kay rikchayta pichunkichu?"
+        "DELETE_IMAGE": "Kay rikchayta pichunkichu?",
+        "DELETE_PRODUCT": "Kay producto-ta pichunkichu?"
       },
       "SUCCESS": {
-        "IMAGE_DELETED": "Rikchay allinpuni pichasqa"
+        "IMAGE_DELETED": "Rikchay allinpuni pichasqa",
+        "PRODUCT_UPDATED": "Producto allinpuni actualizasqa.",
+        "PRODUCT_CREATED": "Producto allinpuni kamaqsqa.",
+        "PRODUCT_DELETED": "Producto allinpuni pichasqa."
       }
     },
     "ASIGNACION": {
@@ -276,7 +300,16 @@
         "UPDATE_BUTTON": "Qhatuchikta actualizay",
         "CREATE_BUTTON": "Qhatuchikta kamshiy",
         "EDIT": "Editay",
-        "DELETE": "Pichay"
+        "DELETE": "Pichay",
+        "CONFIRM": {
+          "DELETE_VENDOR": "¿Desea eliminar a {{name}}?"
+        },
+        "SUCCESS": {
+          "DELETED": "Qhatuchik allinpuni pichasqa."
+        },
+        "ERROR": {
+          "DELETE": "Qhatuchikta pichaypi pantay."
+        }
       }
     },
     "CLIENTES": {

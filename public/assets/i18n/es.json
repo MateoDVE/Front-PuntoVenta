@@ -8,7 +8,22 @@
     "PLACEHOLDER_PASSWORD": "Ingresa tu contraseña",
     "ERROR_PASSWORD": "La contraseña debe tener al menos 6 caracteres",
     "BOTON_INICIAR": "Iniciar Sesión",
-    "CARGANDO": "Cargando..."
+    "CARGANDO": "Cargando...",
+    "ERROR_INVALID_CREDENTIALS": "Correo o contraseña incorrectos.",
+    "ERROR_CONNECTION": "No se pudo conectar con el servidor. Intenta nuevamente.",
+    "ERROR_GENERIC": "No se pudo iniciar sesión. Intenta nuevamente.",
+    "ERROR_ROLE_UNDETERMINED": "No se pudo determinar el rol del usuario.",
+    "ERROR_TOKEN_MISSING": "No se pudo obtener el token de sesión. Intenta nuevamente."
+  },
+  "COMMON": {
+    "ACCEPT": "Aceptar",
+    "CANCEL": "Cancelar",
+    "CLOSE": "Cerrar",
+    "DELETE": "Eliminar",
+    "CONFIRM": "Confirmación",
+    "SUCCESS": "Éxito",
+    "ERROR": "Error",
+    "WARNING": "Advertencia"
   },
   "ADMIN": {
     "NAVBAR": {
@@ -164,13 +179,22 @@
         "PROCESS_IMAGE": "Error al procesar imagen",
         "UPLOAD_IMAGE": "Error al subir imagen",
         "DELETE_IMAGE": "Error al eliminar imagen",
-        "UNKNOWN": "Error desconocido"
+        "UNKNOWN": "Error desconocido",
+        "FIX_FIELDS": "Por favor corrige los errores en los campos antes de guardar.",
+        "COMPLETE_REQUIRED_FIELDS": "Por favor completa todos los campos requeridos correctamente.",
+        "PRODUCT_UPDATED": "Error al actualizar el producto.",
+        "PRODUCT_CREATED": "Error al crear el producto.",
+        "PRODUCT_DELETED": "Error al eliminar el producto."
       },
       "CONFIRM": {
-        "DELETE_IMAGE": "¿Desea eliminar esta imagen?"
+        "DELETE_IMAGE": "¿Desea eliminar esta imagen?",
+        "DELETE_PRODUCT": "¿Desea eliminar este producto?"
       },
       "SUCCESS": {
-        "IMAGE_DELETED": "Imagen eliminada correctamente"
+        "IMAGE_DELETED": "Imagen eliminada correctamente",
+        "PRODUCT_UPDATED": "Producto actualizado correctamente.",
+        "PRODUCT_CREATED": "Producto creado correctamente.",
+        "PRODUCT_DELETED": "Producto eliminado correctamente."
       }
     },
     "ASIGNACION": {
@@ -276,7 +300,16 @@
         "UPDATE_BUTTON": "Actualizar vendedor",
         "CREATE_BUTTON": "Crear vendedor",
         "EDIT": "Editar",
-        "DELETE": "Eliminar"
+        "DELETE": "Eliminar",
+        "CONFIRM": {
+          "DELETE_VENDOR": "¿Desea eliminar a {{name}}?"
+        },
+        "SUCCESS": {
+          "DELETED": "Vendedor eliminado correctamente."
+        },
+        "ERROR": {
+          "DELETE": "Error al eliminar el vendedor."
+        }
       }
     },
     "CLIENTES": {

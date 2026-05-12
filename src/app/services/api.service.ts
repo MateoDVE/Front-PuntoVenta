@@ -282,6 +282,14 @@ export interface VentaResponse {
 }
 
 // ==================== INTERFACES CIERRE DE JORNADA ====================
+export interface ItemVentaCierre {
+  nombreProducto: string;
+  cantidad: number;
+  tipoUnidad: string;
+  precioUnitario: number;
+  subtotal: number;
+}
+
 export interface DetalleVentaCierre {
   idVenta: string;
   fechaHora: string;
@@ -289,6 +297,7 @@ export interface DetalleVentaCierre {
   descuento: number;
   totalEfectivo: number;
   estado: string;
+  items: ItemVentaCierre[];
 }
 
 export interface ResumenFinancieroCierre {

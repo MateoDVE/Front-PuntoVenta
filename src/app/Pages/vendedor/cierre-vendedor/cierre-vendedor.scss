@@ -315,12 +315,17 @@ $blanco: #ffffff;
 
 .venta-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   padding: 11px 0;
   border-bottom: 1px solid $gris-borde;
 
   &:last-child { border-bottom: none; }
+}
+
+.venta-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   .venta-info {
     display: flex;
@@ -331,7 +336,6 @@ $blanco: #ffffff;
       font-size: 13px;
       font-weight: 600;
       color: #374151;
-      font-family: monospace;
     }
 
     .venta-hora {
@@ -356,6 +360,32 @@ $blanco: #ffffff;
       font-weight: 700;
       color: $morado-primary;
     }
+  }
+}
+
+.venta-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed $gris-borde;
+}
+
+.venta-item-detalle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .item-nombre {
+    font-size: 12px;
+    color: $gris-texto;
+  }
+
+  .item-subtotal {
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
   }
 }
 
