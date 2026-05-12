@@ -9,6 +9,8 @@ import {
   Producto,
   VendedorBackend,
 } from '../../../services/api.service';
+import { VendedoresService } from '../../../services/vendedores.service';
+import { ProductosService } from '../../../services/productos.service';
 import { AuthService } from '../../../services/auth.service';
 import { catchError, forkJoin, of } from 'rxjs';
 
@@ -63,7 +65,9 @@ export class Asignacion implements OnInit {
   constructor(
     private authService: AuthService,
     private apiService: ApiService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private vendedoresService: VendedoresService,
+    private productosService: ProductosService
   ) {}
 
   ngOnInit(): void {
@@ -75,8 +79,8 @@ export class Asignacion implements OnInit {
     this.errorMensaje = '';
 
     forkJoin({
-      vendedores: this.apiService.getVendedores(),
-      productos: this.apiService.getProductos(),
+      vendedores: this.vendedoresService.getVendedores(),
+      productos: this.productosService.getProductos(),
     }).subscribe({
       next: ({ vendedores, productos }) => {
         this.vendedores = vendedores;

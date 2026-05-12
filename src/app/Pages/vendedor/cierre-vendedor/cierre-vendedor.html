@@ -64,16 +64,28 @@
         <div class="ventas-list">
           @for (venta of cierre.resumenFinanciero.detalleVentas; track venta.idVenta) {
             <div class="venta-item">
-              <div class="venta-info">
-                <span class="venta-id">#{{ venta.idVenta | slice:0:8 }}...</span>
-                <span class="venta-hora">{{ venta.fechaHora | date:'HH:mm' }}</span>
+              <div class="venta-header-row">
+                <div class="venta-info">
+                  <span class="venta-id">Venta #{{ $index + 1 }}</span>
+                  <span class="venta-hora">{{ venta.fechaHora | date:'HH:mm' }}</span>
+                </div>
+                <div class="venta-montos">
+                  @if (venta.descuento > 0) {
+                    <span class="venta-descuento">-Bs. {{ venta.descuento | number:'1.2-2' }}</span>
+                  }
+                  <span class="venta-total">Bs. {{ venta.totalEfectivo | number:'1.2-2' }}</span>
+                </div>
               </div>
-              <div class="venta-montos">
-                @if (venta.descuento > 0) {
-                  <span class="venta-descuento">-Bs. {{ venta.descuento | number:'1.2-2' }}</span>
-                }
-                <span class="venta-total">Bs. {{ venta.totalEfectivo | number:'1.2-2' }}</span>
-              </div>
+              @if (venta.items && venta.items.length > 0) {
+                <div class="venta-items">
+                  @for (item of venta.items; track item.nombreProducto) {
+                    <div class="venta-item-detalle">
+                      <span class="item-nombre">{{ item.cantidad }} {{ item.tipoUnidad }} · {{ item.nombreProducto }}</span>
+                      <span class="item-subtotal">Bs. {{ item.subtotal | number:'1.2-2' }}</span>
+                    </div>
+                  }
+                </div>
+              }
             </div>
           }
         </div>
@@ -148,7 +160,13 @@
 
 <!-- BARRA DE ACCIONES -->
 <div class="action-bar">
-  <button class="btn-confirmar" (click)="abrirModalConfirmar()" [disabled]="cargando || !cierre || jornadaYaCerrada">
+  @if (hasPendientes) {
+    <div class="pending-sync-alert">
+      <ion-icon name="warning-outline"></ion-icon>
+      Debe conectarse a internet para sincronizar ventas pendientes antes de cerrar la caja.
+    </div>
+  }
+  <button class="btn-confirmar" (click)="abrirModalConfirmar()" [disabled]="cargando || !cierre || jornadaYaCerrada || hasPendientes">
     <ion-icon [name]="jornadaYaCerrada ? 'checkmark-circle-outline' : 'clipboard-outline'"></ion-icon>
     {{ jornadaYaCerrada ? ('VENDEDOR.CIERRE.JORNADA_CERRADA' | translate) : ('VENDEDOR.CIERRE.CONFIRM_BUTTON' | translate) }}
   </button>

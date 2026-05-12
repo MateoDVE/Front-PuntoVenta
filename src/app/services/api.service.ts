@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, from, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { DatabaseService, VentaPendiente } from './database.service';
 
 export interface ClienteBackend {
   id?: string;
@@ -87,6 +89,17 @@ export interface CreateClientePayload {
   frecuenciaVisita: string;
 }
 
+export interface UpdateClientePayload {
+  nombreNegocio?: string;
+  ciNit?: string;
+  celular?: string;
+  latitud?: number;
+  longitud?: number;
+  urlFotoFachada?: string;
+  frecuenciaVisita?: string;
+  estado?: string;
+}
+
 export interface InventarioAsignacion {
   id_carga: string;
   id_vendedor: string;
@@ -120,113 +133,15 @@ export class ApiService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private db: DatabaseService
   ) {}
 
   // ==================== USUARIOS ====================
   getMyProfile(): Observable<Usuario> {
     return this.http.get<Usuario>(`${this.apiUrl}/auth/me`);
   }
-
-  // ==================== VENDEDORES ====================
-  getVendedores(): Observable<VendedorBackend[]> {
-    return this.http.get<VendedorBackend[]>(`${this.apiUrl}/vendedores`).pipe(
-      map((vendedores) =>
-        vendedores.map((v) => ({
-          ...v,
-          rol: v.rol || 'VENDEDOR',
-        }))
-      )
-    );
-  }
-
-  createVendedor(payload: CreateVendedorPayload): Observable<VendedorBackend[]> {
-    return this.http.post<VendedorBackend[]>(`${this.apiUrl}/vendedores`, payload);
-  }
-
-  updateVendedor(id: string, payload: UpdateVendedorPayload): Observable<VendedorBackend> {
-    return this.http.put<VendedorBackend>(`${this.apiUrl}/vendedores/${id}`, payload);
-  }
-
-  deleteVendedor(id: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.apiUrl}/vendedores/${id}`);
-  }
-
-  // ==================== PRODUCTOS ====================
-  getProductos(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(`${this.apiUrl}/productos`);
-  }
-
-  getProductosStockBajo(umbral = 100): Observable<Producto[]> {
-    return this.http.get<Producto[]>(`${this.apiUrl}/productos/stock-bajo`, {
-      params: { umbral: String(umbral) }
-    });
-  }
-
-  getProductoById(id: string): Observable<Producto> {
-    return this.http.get<Producto>(`${this.apiUrl}/productos/${id}`);
-  }
-
-  createProducto(producto: Producto): Observable<Producto> {
-    return this.http.post<Producto>(`${this.apiUrl}/productos`, producto);
-  }
-
-  updateProducto(id: string, producto: Producto): Observable<Producto> {
-    return this.http.put<Producto>(`${this.apiUrl}/productos/${id}`, producto);
-  }
-
-  deleteProducto(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/productos/${id}`);
-  }
-
-  // ==================== CLIENTES ====================
-  getClientes(vendedorId: string): Observable<Cliente[]> {
-    return this.http.get<ClienteBackend[]>(`${this.apiUrl}/clientes`, {
-      params: { vendedorId }
-    }).pipe(
-      map((clientes) => clientes.map(c => ({
-        id_cliente: c.id,
-        id_vendedor_creador: c.idVendedorCreador,
-        nombre_negocio: c.nombreNegocio,
-        ci_nit: c.ciNit || '',
-        celular: c.celular,
-        latitud: c.latitud,
-        longitud: c.longitud,
-        url_foto_fachada: c.urlFotoFachada,
-        frecuencia_visita: c.frecuenciaVisita || '',
-        estado: c.estado,
-        created_at: c.createdAt
-      })))
-    );
-  }
-
-  createCliente(payload: CreateClientePayload): Observable<Cliente> {
-    return this.http.post<Cliente>(`${this.apiUrl}/clientes`, payload);
-  }
-
-  uploadClienteImage(formData: FormData): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/clientes/upload-photo`, formData);
-  }
-
-  // ==================== IMÁGENES ====================
-  /**
-   * Sube una imagen de producto al backend
-   * @param endpoint - Ruta del endpoint (ej: 'productos/upload' o 'productos/upload/123')
-   * @param formData - FormData con el archivo bajo la clave 'image'
-   * @returns Observable con { imageUrl: string }
-   */
-  uploadProductImage(endpoint: string, formData: FormData): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/${endpoint}`, formData);
-  }
-
-  /**
-   * Elimina una imagen de producto
-   * @param imageUrl - URL pública de la imagen a eliminar
-   * @returns Observable vacío
-   */
-  deleteProductImage(imageUrl: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/productos/delete-image`, { imageUrl });
-  }
+  // (Clientes/Productos/Vendedores moved to dedicated services)
 
   // ==================== INVENTARIO ====================
   asignarStock(payload: AsignarStockPayload): Observable<InventarioAsignacion> {
@@ -253,8 +168,42 @@ export class ApiService {
   }
 
   // ==================== VENTAS ====================
-  crearVenta(payload: CrearVentaRequest): Observable<VentaResponse> {
+  crearVentaRaw(payload: CrearVentaRequest): Observable<VentaResponse> {
     return this.http.post<VentaResponse>(`${this.apiUrl}/ventas`, payload);
+  }
+
+  crearVenta(payload: CrearVentaRequest): Observable<VentaResponse> {
+    const id = payload.idTransaccionLocal ?? crypto.randomUUID();
+    const fullPayload: CrearVentaRequest = { ...payload, idTransaccionLocal: id };
+
+    return this.crearVentaRaw(fullPayload).pipe(
+      catchError(err => {
+        if (err.status === 0) {
+          const pending: VentaPendiente = {
+            idTransaccionLocal: id,
+            idCliente: fullPayload.idCliente,
+            idVendedor: fullPayload.idVendedor,
+            descuento: fullPayload.descuento,
+            items: fullPayload.items,
+            _savedAt: Date.now()
+          };
+          return from(this.db.ventasPendientes.put(pending)).pipe(
+            map(() => ({
+              idVenta: id,
+              idCliente: fullPayload.idCliente,
+              idVendedor: fullPayload.idVendedor,
+              fechaHora: new Date().toISOString(),
+              subtotal: 0,
+              descuento: fullPayload.descuento,
+              totalEfectivo: 0,
+              estado: 'PENDIENTE_SYNC',
+              detalles: []
+            } as VentaResponse))
+          );
+        }
+        return throwError(() => err);
+      })
+    );
   }
 
   getCierreJornada(idVendedor: string, fecha: string): Observable<CierreJornadaResponse> {
@@ -279,9 +228,24 @@ export class ApiService {
   getCierresVendedor(idVendedor: string): Observable<CierreGuardado[]> {
     return this.http.get<CierreGuardado[]>(`${this.apiUrl}/cierres/vendedor/${idVendedor}`);
   }
+
+  getVentas(): Observable<VentaResumenResponse[]> {
+    return this.http.get<VentaResumenResponse[]>(`${this.apiUrl}/ventas`);
+  }
 }
 
 // ==================== INTERFACES VENTAS ====================
+export interface VentaResumenResponse {
+  idVenta: string;
+  idCliente: number;
+  idVendedor: string;
+  fechaHora: string;
+  subtotal: number;
+  descuento: number;
+  totalEfectivo: number;
+  estado: string;
+}
+
 export interface ItemVentaRequest {
   idProducto: string;
   cantidad: number;
@@ -289,6 +253,7 @@ export interface ItemVentaRequest {
 }
 
 export interface CrearVentaRequest {
+  idTransaccionLocal?: string;
   idCliente: number;
   idVendedor: string;
   descuento: number;
@@ -317,6 +282,14 @@ export interface VentaResponse {
 }
 
 // ==================== INTERFACES CIERRE DE JORNADA ====================
+export interface ItemVentaCierre {
+  nombreProducto: string;
+  cantidad: number;
+  tipoUnidad: string;
+  precioUnitario: number;
+  subtotal: number;
+}
+
 export interface DetalleVentaCierre {
   idVenta: string;
   fechaHora: string;
@@ -324,6 +297,7 @@ export interface DetalleVentaCierre {
   descuento: number;
   totalEfectivo: number;
   estado: string;
+  items: ItemVentaCierre[];
 }
 
 export interface ResumenFinancieroCierre {

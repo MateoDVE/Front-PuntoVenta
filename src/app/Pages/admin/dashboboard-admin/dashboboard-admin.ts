@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ApiService, Producto, VendedorBackend } from '../../../services/api.service';
+import { ProductosService } from '../../../services/productos.service';
+import { VendedoresService } from '../../../services/vendedores.service';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -34,7 +36,9 @@ export class DashboboardAdmin implements OnInit {
   constructor(
     private authService: AuthService,
     private apiService: ApiService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private productosService: ProductosService,
+    private vendedoresService: VendedoresService
   ) {}
 
   ngOnInit(): void {
@@ -64,7 +68,7 @@ export class DashboboardAdmin implements OnInit {
 
   cargarProductos(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.apiService.getProductos().subscribe({
+      this.productosService.getProductos().subscribe({
         next: (datos) => {
           this.productos = datos;
           resolve();
@@ -80,7 +84,7 @@ export class DashboboardAdmin implements OnInit {
 
   cargarVendedores(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.apiService.getVendedores().subscribe({
+      this.vendedoresService.getVendedores().subscribe({
         next: (datos) => {
           this.vendedores = datos;
           resolve();
@@ -96,7 +100,7 @@ export class DashboboardAdmin implements OnInit {
 
   cargarProductosStockBajo(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.apiService.getProductosStockBajo(this.umbralStockBajo).subscribe({
+      this.productosService.getProductosStockBajo(this.umbralStockBajo).subscribe({
         next: (datos) => {
           this.productosConStockBajo = datos;
           resolve();

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { ApiService, CierreJornadaResponse, InventarioAsignacion, Producto, Usuario } from '../../../services/api.service';
+import { ProductosService } from '../../../services/productos.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -31,7 +32,7 @@ export class DashboardVendedor implements OnInit {
   errorMensaje = '';
   exitoMensaje = '';
 
-  constructor(private apiService: ApiService, private translate: TranslateService) {
+  constructor(private apiService: ApiService, private translate: TranslateService, private productosService: ProductosService) {
     const idioma = localStorage.getItem('idioma') || 'es';
     this.translate.setDefaultLang('es');
     this.translate.use(idioma);
@@ -56,7 +57,7 @@ export class DashboardVendedor implements OnInit {
         this.perfil = perfil;
 
         forkJoin({
-          productos: this.apiService.getProductos(),
+          productos: this.productosService.getProductos(),
           cargas: this.apiService.getInventarioVendedor(perfil.id_usuario),
           cierre: this.apiService.getCierreJornada(perfil.id_usuario, fechaHoy).pipe(
             catchError(() => of(null))

@@ -37,6 +37,19 @@
 							></app-producto-card>
 						</li>
 					</ul>
+
+					<app-modal
+						[open]="modalState.open"
+						[title]="modalState.title"
+						[message]="modalState.message"
+						[variant]="modalState.variant"
+						[showCancel]="modalState.showCancel"
+						[confirmText]="modalState.confirmText"
+						[cancelText]="modalState.cancelText"
+						[closeLabel]="modalState.closeLabel"
+						(closed)="cerrarModalMensaje()"
+						(confirmed)="confirmarModalMensaje()"
+					></app-modal>
 				</section>
 
 				<div *ngIf="mostrarModal" class="modal-overlay">

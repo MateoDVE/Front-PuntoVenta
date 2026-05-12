@@ -1,0 +1,151 @@
+<div class="dashboard-shell">
+  <div class="dashboard-layout">
+    <app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
+
+    <main class="dashboard-main">
+      <section class="monitor-page" aria-labelledby="monitor-title">
+
+        <!-- Cabecera -->
+        <header class="page-header">
+          <div class="page-header__copy">
+            <h1 id="monitor-title">{{ 'ADMIN.MONITOR.TITLE' | translate }}</h1>
+            <p>{{ 'ADMIN.MONITOR.SUBTITLE' | translate }}</p>
+          </div>
+          <div class="header-actions">
+            <span class="live-badge">
+              <span class="live-dot"></span>
+              {{ 'ADMIN.MONITOR.LIVE' | translate }}
+            </span>
+            <button type="button" class="btn-reload" (click)="cargar()" title="{{ 'ADMIN.MONITOR.BUTTON.RELOAD' | translate }}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <!-- Estado de carga -->
+        @if (cargando) {
+          <div class="loading-state" role="status">
+            <div class="spinner"></div>
+            <p>{{ 'ADMIN.MONITOR.LOADING' | translate }}</p>
+          </div>
+        }
+
+        <!-- Error -->
+        @if (!cargando && error) {
+          <div class="page-error" role="alert">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ error }}
+          </div>
+        }
+
+        @if (!cargando && !error) {
+
+          <!-- Tarjetas de vendedores -->
+          <div class="vendedores-row">
+
+            @for (v of vendedoresDatos; track v.id) {
+              <div class="vendedor-card">
+                <div class="vendedor-card__header">
+                  <div class="vendedor-avatar">{{ getInitials(v.nombre) }}</div>
+                  <div class="vendedor-card__info">
+                    <strong class="vendedor-card__nombre">{{ v.nombre }}</strong>
+                    <span class="vendedor-card__email">{{ v.email }}</span>
+                  </div>
+                  <span
+                    class="badge-estado"
+                    [class.badge-ruta]="esEnRuta(v.estadoDisplay)"
+                    [class.badge-cerrado]="esCerrado(v.estadoDisplay)"
+                    [class.badge-activo]="!esEnRuta(v.estadoDisplay) && !esCerrado(v.estadoDisplay)"
+                  >{{ getEstadoLabel(v.estadoDisplay) }}</span>
+                </div>
+
+                <div class="vendedor-card__stats">
+                  <div class="stat-mini">
+                    <span class="stat-mini__valor">{{ v.stock }}</span>
+                    <span class="stat-mini__label">{{ 'ADMIN.MONITOR.CARD.STOCK' | translate }}</span>
+                  </div>
+                  <div class="stat-mini">
+                    <span class="stat-mini__valor">{{ v.ventas }}</span>
+                    <span class="stat-mini__label">{{ 'ADMIN.MONITOR.CARD.SALES' | translate }}</span>
+                  </div>
+                  <div class="stat-mini">
+                    <span class="stat-mini__valor ingresos-val">Bs. {{ v.ingresos | number:'1.2-2' }}</span>
+                    <span class="stat-mini__label">{{ 'ADMIN.MONITOR.CARD.INCOME' | translate }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (vendedoresDatos.length === 0) {
+              <div class="empty-card">{{ 'ADMIN.MONITOR.EMPTY.NO_SELLERS' | translate }}</div>
+            }
+
+            <!-- Tarjeta resumen total -->
+            <div class="vendedor-card vendedor-card--resumen">
+              <p class="resumen-label">{{ 'ADMIN.MONITOR.SUMMARY.TOTAL_INCOME' | translate }}</p>
+              <p class="resumen-valor">Bs. {{ totalIngresos | number:'1.2-2' }}</p>
+              <p class="resumen-sub">
+                {{ vendedoresEnRuta }} {{ vendedoresEnRuta === 1 ? ('ADMIN.MONITOR.SUMMARY.ON_ROUTE_SINGULAR' | translate) : ('ADMIN.MONITOR.SUMMARY.ON_ROUTE_PLURAL' | translate) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Sección mapa -->
+          <div class="mapa-section">
+            <div class="mapa-header">
+              <span class="mapa-header__icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+              </span>
+              <h2>{{ 'ADMIN.MONITOR.MAP.TITLE' | translate }}</h2>
+              <span class="mapa-count">{{ clientesMapa.length }} {{ 'ADMIN.MONITOR.MAP.COUNT' | translate }}</span>
+            </div>
+
+            <!-- Contenedor del mapa real -->
+            <div class="mapa-wrap">
+              <div #mapContainer class="mapa-container"></div>
+
+              @if (clientesMapa.length === 0) {
+                <div class="mapa-empty">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  <p>{{ 'ADMIN.MONITOR.MAP.EMPTY' | translate }}</p>
+                </div>
+              }
+            </div>
+
+            <!-- Leyenda -->
+            <div class="mapa-leyenda">
+              <span class="leyenda-item">
+                <span class="leyenda-dot leyenda-dot--green"></span>
+                {{ 'ADMIN.MONITOR.LEGEND.ATTENDED' | translate }}
+              </span>
+              <span class="leyenda-item">
+                <span class="leyenda-dot leyenda-dot--blue"></span>
+                {{ 'ADMIN.MONITOR.LEGEND.PENDING' | translate }}
+              </span>
+              <span class="leyenda-item">
+                <span class="leyenda-dot leyenda-dot--gray"></span>
+                {{ 'ADMIN.MONITOR.LEGEND.INACTIVE' | translate }}
+              </span>
+              <span class="leyenda-info">
+                {{ 'ADMIN.MONITOR.LEGEND.INFO' | translate }}
+              </span>
+            </div>
+          </div>
+
+        }
+
+      </section>
+    </main>
+  </div>
+</div>

@@ -7,6 +7,8 @@ import { catchError } from 'rxjs/operators';
 import { TranslateModule } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { ApiService, Producto, Cliente, CrearVentaRequest, VentaResponse } from '../../../services/api.service';
+import { ClientesService } from '../../../services/clientes.service';
+import { ProductosService } from '../../../services/productos.service';
 import { AuthService } from '../../../services/auth.service';
 
 interface ItemCarrito {
@@ -55,7 +57,9 @@ export class VentaVendedorComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private authService: AuthService
+    private authService: AuthService,
+    private clientesService: ClientesService,
+    private productosService: ProductosService
   ) {}
 
   ngOnInit(): void {
@@ -89,8 +93,8 @@ export class VentaVendedorComponent implements OnInit {
     this.cargando = true;
 
     forkJoin({
-      inventario: this.apiService.getInventarioVendedor(this.idVendedor),
-      todos: this.apiService.getProductos(),
+        inventario: this.apiService.getInventarioVendedor(this.idVendedor),
+      todos: this.productosService.getProductos(),
       cierre: this.apiService.getCierreJornada(this.idVendedor, this.fechaHoy).pipe(
         catchError(() => of(null))
       )
@@ -135,8 +139,10 @@ export class VentaVendedorComponent implements OnInit {
 
   cargarClientes(): void {
     if (!this.idVendedor) return;
-    this.apiService.getClientes(this.idVendedor).subscribe({
-      next: (clientes) => { this.clientes = clientes; },
+    this.clientesService.getClientes(this.idVendedor).subscribe({
+      next: (clientes) => {
+        this.clientes = clientes.filter(c => c.estado?.toUpperCase() === 'ACTIVO');
+      },
       error: () => {}
     });
   }

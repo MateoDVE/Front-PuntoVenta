@@ -140,3 +140,28 @@
   background-color: rgba(220, 38, 38, 0.08);
 }
 
+.sync-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  ion-icon { font-size: 15px; }
+}
+
+.sync-banner--offline {
+  background: #fee2e2;
+  color: #991b1b;
+}
+

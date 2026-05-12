@@ -272,9 +272,9 @@
 
 
 <!-- ══════════════════════════════════════════════════
-     MODAL 2 — VENTA COMPLETADA (ÉXITO)
+     MODAL 2A — VENTA COMPLETADA ONLINE (ÉXITO)
 ══════════════════════════════════════════════════ -->
-@if (mostrarModalExito) {
+@if (mostrarModalExito && ventaConfirmada?.estado !== 'PENDIENTE_SYNC') {
   <div class="modal-overlay modal-overlay-center">
     <div class="modal-exito">
 
@@ -290,6 +290,33 @@
         <div class="exito-detalles">
           <span>{{ ventaConfirmada.detalles.length }} {{ 'VENDEDOR.VENTA.PRODUCTS_SOLD' | translate }}</span>
         </div>
+      }
+
+      <button class="btn-nueva-venta" (click)="nuevaVenta()">
+        <ion-icon name="add-circle-outline"></ion-icon>
+        {{ 'VENDEDOR.VENTA.NEW_SALE' | translate }}
+      </button>
+
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════════════
+     MODAL 2B — VENTA GUARDADA OFFLINE
+══════════════════════════════════════════════════ -->
+@if (mostrarModalExito && ventaConfirmada?.estado === 'PENDIENTE_SYNC') {
+  <div class="modal-overlay modal-overlay-center">
+    <div class="modal-exito modal-offline">
+
+      <div class="exito-icon offline-icon">
+        <ion-icon name="cloud-offline-outline"></ion-icon>
+      </div>
+
+      <h2>¡Venta Guardada!</h2>
+      <p class="offline-msg">Sin conexión. La venta se enviará automáticamente cuando recuperes internet.</p>
+
+      @if (ventaConfirmada) {
+        <p class="exito-id">Ref: {{ ventaConfirmada.idVenta | slice:0:8 }}...</p>
       }
 
       <button class="btn-nueva-venta" (click)="nuevaVenta()">

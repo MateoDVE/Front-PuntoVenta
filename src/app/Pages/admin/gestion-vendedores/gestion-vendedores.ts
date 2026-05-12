@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
   VendedorListado,
   VendedoresRegistradosComponent,
 } from '../../../components/vendedores-registrados/vendedores-registrados';
+import { AppModalComponent, AppModalVariant } from '../../../components/app-modal/app-modal.component';
 import { ApiService } from '../../../services/api.service';
+import { VendedoresService } from '../../../services/vendedores.service';
 import { AuthService } from '../../../services/auth.service';
 
 interface VendedorForm {
@@ -20,7 +22,7 @@ interface VendedorForm {
 @Component({
   selector: 'app-gestion-vendedores',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminNavbar, VendedoresRegistradosComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, AdminNavbar, VendedoresRegistradosComponent, AppModalComponent, TranslateModule],
   templateUrl: './gestion-vendedores.html',
   styleUrls: ['./gestion-vendedores.scss'],
 })
@@ -38,24 +40,41 @@ export class GestionVendedoresComponent implements OnInit {
   mostrarModal = false;
   editando = false;
   vendedorEditandoId?: string;
+  modalState: any = {
+    open: false,
+    title: '',
+    message: '',
+    variant: 'info',
+    showCancel: false,
+    confirmText: '',
+    cancelText: '',
+    closeLabel: '',
+  };
+  private modalAction: (() => void) | null = null;
 
   formulario: VendedorForm = this.formularioInicial();
 
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
+    private vendedoresService: VendedoresService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
+    console.log('ngOnInit called');
+    this.modalState = this.crearModalInicial();
     this.cargarVendedores();
   }
 
   cargarVendedores(): void {
+    console.log('cargarVendedores called');
     this.cargando = true;
     this.errorMensaje = '';
 
-    this.apiService.getVendedores().subscribe({
+    this.vendedoresService.getVendedores().subscribe({
       next: (data) => {
+        console.log('Vendedores cargados:', data);
         this.vendedores = data;
         this.totalVendedores = data.length;
         this.enRuta = data.filter((v) => v.estado === 'EN_RUTA').length;
@@ -113,7 +132,7 @@ export class GestionVendedoresComponent implements OnInit {
         payload.password = password;
       }
 
-      this.apiService.updateVendedor(this.vendedorEditandoId, payload).subscribe({
+      this.vendedoresService.updateVendedor(this.vendedorEditandoId, payload).subscribe({
         next: () => {
           this.guardando = false;
           this.cerrarModal();
@@ -128,7 +147,7 @@ export class GestionVendedoresComponent implements OnInit {
       return;
     }
 
-    this.apiService
+    this.vendedoresService
       .createVendedor({
         nombre,
         email,
@@ -162,22 +181,91 @@ export class GestionVendedoresComponent implements OnInit {
   }
 
   eliminar(vendedor: VendedorListado): void {
-    const confirmar = confirm(`¿Desea eliminar a ${vendedor.nombre}?`);
-    if (!confirmar) return;
-
-    this.apiService.deleteVendedor(vendedor.id_usuario).subscribe({
-      next: () => {
-        this.cargarVendedores();
+    this.abrirModalConfirmacion(
+      this.translate.instant('COMMON.CONFIRM'),
+      this.translate.instant('ADMIN.GESTION.VENDOR.CONFIRM.DELETE_VENDOR', { name: vendedor.nombre }),
+      () => {
+        this.vendedoresService.deleteVendedor(vendedor.id_usuario).subscribe({
+          next: () => {
+            this.cargarVendedores();
+            this.abrirModalMensaje(
+              this.translate.instant('COMMON.SUCCESS'),
+              this.translate.instant('ADMIN.GESTION.VENDOR.SUCCESS.DELETED'),
+              'success'
+            );
+          },
+          error: (err) => {
+            this.abrirModalMensaje(
+              this.translate.instant('COMMON.ERROR'),
+              err?.error?.message ?? this.translate.instant('ADMIN.GESTION.VENDOR.ERROR.DELETE'),
+              'error'
+            );
+          },
+        });
       },
-      error: (err) => {
-        this.errorMensaje =
-          err?.error?.message ?? 'Error al eliminar el vendedor.';
-      },
-    });
+      this.translate.instant('COMMON.DELETE')
+    );
   }
 
   onSignOut(): void {
     this.authService.signOut().subscribe();
+  }
+
+  cerrarModalMensaje(): void {
+    this.modalState = this.crearModalInicial();
+    this.modalAction = null;
+  }
+
+  confirmarModalMensaje(): void {
+    const accion = this.modalAction;
+    this.cerrarModalMensaje();
+    accion?.();
+  }
+
+  private abrirModalMensaje(title: string, message: string, variant: AppModalVariant): void {
+    this.modalState = {
+      open: true,
+      title,
+      message,
+      variant,
+      showCancel: false,
+      confirmText: this.translate.instant('COMMON.ACCEPT'),
+      cancelText: this.translate.instant('COMMON.CANCEL'),
+      closeLabel: this.translate.instant('COMMON.CLOSE'),
+    };
+    this.modalAction = null;
+  }
+
+  private abrirModalConfirmacion(
+    title: string,
+    message: string,
+    onConfirm: () => void,
+    confirmText: string
+  ): void {
+    this.modalState = {
+      open: true,
+      title,
+      message,
+      variant: 'confirm',
+      showCancel: true,
+      confirmText,
+      cancelText: this.translate.instant('COMMON.CANCEL'),
+      closeLabel: this.translate.instant('COMMON.CLOSE'),
+    };
+    this.modalAction = onConfirm;
+  }
+
+  private crearModalInicial(): { open: boolean; title: string; message: string; variant: AppModalVariant; showCancel: boolean; confirmText: string; cancelText: string; closeLabel: string; } {
+    return {
+      open: false,
+      title: '',
+      message: '',
+      variant: 'info',
+      showCancel: false,
+      confirmText: this.translate.instant('COMMON.ACCEPT'),
+      cancelText: this.translate.instant('COMMON.CANCEL'),
+      closeLabel: this.translate.instant('COMMON.CLOSE'),
+    };
   }
 
   private formularioInicial(): VendedorForm {
