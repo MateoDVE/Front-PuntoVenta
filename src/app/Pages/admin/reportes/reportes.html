@@ -1,0 +1,170 @@
+<div class="dashboard-shell">
+  <div class="dashboard-layout">
+    <app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
+
+    <main class="dashboard-main">
+      <section class="reportes-page">
+
+        <!-- Cabecera -->
+        <header class="page-header">
+          <div class="page-header__copy">
+            <h1>Reportes y Análisis</h1>
+            <p>Estadísticas de ventas y gestión de inventario</p>
+          </div>
+          <button type="button" class="btn-reload" (click)="cargar()" title="Recargar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+          </button>
+        </header>
+
+        <!-- Cargando -->
+        @if (cargando) {
+          <div class="loading-state" role="status">
+            <div class="spinner"></div>
+            <p>Cargando reportes...</p>
+          </div>
+        }
+
+        <!-- Error -->
+        @if (!cargando && error) {
+          <div class="page-error" role="alert">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ error }}
+          </div>
+        }
+
+        @if (!cargando && !error) {
+
+          <!-- KPI Cards -->
+          <div class="kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-card__body">
+                <span class="kpi-card__label">Total Ventas</span>
+                <span class="kpi-card__value">{{ totalVentas }}</span>
+              </div>
+              <div class="kpi-icon kpi-icon--blue">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/>
+                  <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card__body">
+                <span class="kpi-card__label">Ingresos Totales</span>
+                <span class="kpi-card__value">Bs. {{ ingresosTotal | number:'1.2-2' }}</span>
+              </div>
+              <div class="kpi-icon kpi-icon--green">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card__body">
+                <span class="kpi-card__label">Ticket Promedio</span>
+                <span class="kpi-card__value">Bs. {{ ticketPromedio | number:'1.2-2' }}</span>
+              </div>
+              <div class="kpi-icon kpi-icon--purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila 1 de gráficos -->
+          <div class="charts-row">
+            <div class="chart-card">
+              <h3 class="chart-title">Ventas e Ingresos por Vendedor</h3>
+              <div class="chart-wrap">
+                <canvas #chartVentasIngresos></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3 class="chart-title">Productos por Categoría</h3>
+              <div class="chart-wrap chart-wrap--pie">
+                <canvas #chartCategorias></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila 2 de gráficos -->
+          <div class="charts-row">
+            <div class="chart-card">
+              <h3 class="chart-title">Stock Global por Producto</h3>
+              <div class="chart-wrap chart-wrap--tall">
+                <canvas #chartStock></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3 class="chart-title">Tendencia de Ventas</h3>
+              <div class="chart-wrap">
+                <canvas #chartTendencia></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Discrepancias de inventario -->
+          <div class="discrepancias-section">
+            <div class="discrepancias-header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              <h2>Reporte de Discrepancias de Inventario</h2>
+            </div>
+
+            @if (discrepancias.length === 0) {
+              <div class="discrepancias-empty">
+                No hay datos de cierre de jornada disponibles para hoy.
+              </div>
+            }
+
+            @for (d of discrepancias; track d.nombre) {
+              <div class="discrepancia-card" [class.discrepancia-card--ok]="d.correcto" [class.discrepancia-card--err]="!d.correcto">
+                <div class="discrepancia-card__left">
+                  <strong class="discrepancia-card__nombre">{{ d.nombre }}</strong>
+                  <div class="discrepancia-card__stats">
+                    <div class="dstat">
+                      <span class="dstat__label">Stock Esperado</span>
+                      <span class="dstat__val">{{ d.stockEsperado }} unidades</span>
+                    </div>
+                    <div class="dstat">
+                      <span class="dstat__label">Stock Actual</span>
+                      <span class="dstat__val">{{ d.stockActual }} unidades</span>
+                    </div>
+                    <div class="dstat">
+                      <span class="dstat__label">Diferencia</span>
+                      <span class="dstat__val" [class.text-ok]="d.diferencia === 0" [class.text-err]="d.diferencia !== 0">
+                        {{ d.diferencia }} unidades
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="discrepancia-card__badge" [class.badge--ok]="d.correcto" [class.badge--err]="!d.correcto">
+                  @if (d.correcto) { ✓ Correcto } @else { ⚠ Diferencia }
+                </div>
+              </div>
+            }
+          </div>
+
+        }
+      </section>
+    </main>
+  </div>
+</div>
