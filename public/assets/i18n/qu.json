@@ -97,8 +97,8 @@
         "VENDORS_DETAIL": "{{activeVendors}} kawsachikuchkan",
         "STOCK_TITLE": "Global stock",
         "STOCK_DETAIL": "Valor: Bs. {{totalValue}}",
-        "SALES_PROJECTS_TITLE": "Qhatuy projektokuna",
-        "SALES_PROJECTS_DETAIL": "Mana qhatuy qillqasqachu"
+        "SALES_PROJECTS_TITLE": "Llapanta qhatuykuna",
+        "SALES_PROJECTS_DETAIL": "{{totalSales}} qhatuy qillqasqakuna"
       }
     },
     "CATALOG": {

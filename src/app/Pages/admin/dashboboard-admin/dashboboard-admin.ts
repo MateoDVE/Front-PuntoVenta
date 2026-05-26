@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import { ApiService, Producto, VendedorBackend } from '../../../services/api.service';
+import { ApiService, Producto, VendedorBackend, VentaResumenResponse } from '../../../services/api.service';
 import { ProductosService } from '../../../services/productos.service';
 import { VendedoresService } from '../../../services/vendedores.service';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
@@ -29,6 +29,7 @@ export class DashboboardAdmin implements OnInit {
   productos: Producto[] = [];
   productosConStockBajo: Producto[] = [];
   vendedores: VendedorBackend[] = [];
+  ventas: VentaResumenResponse[] = [];
   
   cargando = true;
   error: string | null = null;
@@ -49,11 +50,12 @@ export class DashboboardAdmin implements OnInit {
     this.cargando = true;
     this.error = null;
 
-    // Cargar productos y vendedores en paralelo
+    // Cargar productos, vendedores y ventas en paralelo
     Promise.all([
       this.cargarProductos(),
       this.cargarVendedores(),
       this.cargarProductosStockBajo(),
+      this.cargarVentas(),
     ])
       .then(() => {
         this.actualizarMetricas();
@@ -114,6 +116,22 @@ export class DashboboardAdmin implements OnInit {
     });
   }
 
+  cargarVentas(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.apiService.getVentas().subscribe({
+        next: (datos) => {
+          this.ventas = datos;
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error al cargar ventas:', err);
+          this.ventas = [];
+          reject(err);
+        },
+      });
+    });
+  }
+
   actualizarMetricas(): void {
     const totalStockProductos = this.productos.reduce(
       (sum, p) => sum + (p.stock_almacen_central || 0),
@@ -122,6 +140,12 @@ export class DashboboardAdmin implements OnInit {
 
     const totalProductosValor = this.productos.reduce(
       (sum, p) => sum + (p.stock_almacen_central || 0) * p.precio_unidad,
+      0
+    );
+
+    const totalSalesCount = this.ventas.length;
+    const totalSalesAmount = this.ventas.reduce(
+      (sum, v) => sum + (v.totalEfectivo ?? 0),
       0
     );
 
@@ -149,8 +173,9 @@ export class DashboboardAdmin implements OnInit {
       },
       {
         titleKey: 'ADMIN.DASHBOARD.METRIC.SALES_PROJECTS_TITLE',
-        value: '0',
+        value: `Bs. ${totalSalesAmount.toFixed(2)}`,
         detailKey: 'ADMIN.DASHBOARD.METRIC.SALES_PROJECTS_DETAIL',
+        detailParams: { totalSales: totalSalesCount },
         icon: 'icon-sales',
       },
     ];
