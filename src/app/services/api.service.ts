@@ -105,6 +105,7 @@ export interface InventarioAsignacion {
   id_vendedor: string;
   id_producto: string;
   cantidad_inicial: number;
+  cantidad_actual: number;
   estado_validacion: string;
   fecha_asignacion: string;
   mensaje?: string;
@@ -229,8 +230,26 @@ export class ApiService {
     return this.http.get<CierreGuardado[]>(`${this.apiUrl}/cierres/vendedor/${idVendedor}`);
   }
 
+  getAllCierres(): Observable<CierreGuardado[]> {
+    return this.http.get<CierreGuardado[]>(`${this.apiUrl}/cierres`);
+  }
+
   getVentas(): Observable<VentaResumenResponse[]> {
     return this.http.get<VentaResumenResponse[]>(`${this.apiUrl}/ventas`);
+  }
+
+  getReportesConsolidados(fecha: string): Observable<ReportesResumenResponse> {
+    return this.http.get<ReportesResumenResponse>(`${this.apiUrl}/ventas/reportes`, {
+      params: { fecha }
+    });
+  }
+
+  devolverStock(idVendedor: string, fecha: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/ventas/devolver-stock`, { idVendedor, fecha });
+  }
+
+  liquidarJornada(idCierre: string, dineroRecibido: number): Observable<CierreGuardado> {
+    return this.http.put<CierreGuardado>(`${this.apiUrl}/cierres/${idCierre}/liquidar`, { dineroRecibido });
   }
 }
 
@@ -372,4 +391,20 @@ export interface CierreGuardado {
   estado_efectivo: string;
   estado: string;
   created_at: string;
+  dinero_recibido?: number;
+}
+
+export interface DiscrepanciaVendedorDto {
+  nombre: string;
+  stockEsperado: number;
+  stockActual: number;
+  diferencia: number;
+  correcto: boolean;
+}
+
+export interface ReportesResumenResponse {
+  ventas: VentaResumenResponse[];
+  vendedores: VendedorBackend[];
+  productos: Producto[];
+  discrepancias: DiscrepanciaVendedorDto[];
 }

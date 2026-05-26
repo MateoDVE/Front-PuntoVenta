@@ -386,6 +386,45 @@
         "UPDATE_FAILED": "No se pudo actualizar el cliente. Intenta de nuevo."
       }
     },
+    "REPORTES": {
+      "TITLE": "Reportes y Análisis",
+      "SUBTITLE": "Estadísticas de ventas y gestión de inventario",
+      "BUTTON": {
+        "RELOAD": "Recargar"
+      },
+      "LOADING": "Cargando reportes...",
+      "KPI": {
+        "TOTAL_SALES": "Total Ventas",
+        "TOTAL_INCOME": "Ingresos Totales",
+        "AVG_TICKET": "Ticket Promedio"
+      },
+      "CHART": {
+        "SALES_INCOME": "Ventas e Ingresos por Vendedor",
+        "CATEGORIES": "Productos por Categoría",
+        "STOCK": "Stock Global por Producto",
+        "TREND": "Tendencia de Ventas",
+        "NO_CATEGORY": "Sin categoría",
+        "CATEGORY_PREFIX": "Categoría",
+        "DATASET": {
+          "SALES": "Ventas",
+          "INCOME": "Ingresos (Bs.)",
+          "STOCK": "Stock"
+        }
+      },
+      "DISCREPANCIAS": {
+        "TITLE": "Reporte de Discrepancias de Inventario",
+        "EMPTY": "No hay datos de cierre de jornada disponibles para hoy.",
+        "EXPECTED": "Stock Esperado",
+        "ACTUAL": "Stock Actual",
+        "DIFFERENCE": "Diferencia",
+        "UNITS": "unidades",
+        "OK": "✓ Correcto",
+        "ERR": "⚠ Diferencia"
+      },
+      "ERROR": {
+        "LOAD_FAILED": "No se pudieron cargar los datos de reportes."
+      }
+    },
     "MONITOR": {
       "TITLE": "Monitor en Tiempo Real",
       "SUBTITLE": "Seguimiento de vendedores y clientes en atención",
@@ -421,10 +460,27 @@
       "STATUS": {
         "ACTIVE": "Activo",
         "EN_ROUTE": "En ruta",
-        "CLOSED": "Jornada cerrada"
+        "CLOSED": "Jornada cerrada",
+        "LIQUIDATED": "Liquidada"
       },
       "ERROR": {
         "LOAD_FAILED": "No se pudieron cargar los datos. Verifica la conexión con el servidor."
+      },
+      "MODAL": {
+        "TITLE": "Cierres de Jornada",
+        "LIQUIDATE": "Liquidar",
+        "DETAILS": "Ver Detalle",
+        "DATE": "Fecha",
+        "STATUS": "Estado",
+        "EXPECTED": "Dinero Esperado",
+        "DECLARED": "Efectivo Declarado",
+        "DIFFERENCE": "Diferencia",
+        "RECEIVED": "Efectivo Recibido",
+        "CONFIRM": "Registrar Liquidación",
+        "BACK": "Volver a la lista",
+        "CLOSE": "Cerrar",
+        "NO_CIERRES": "No hay cierres registrados para este vendedor.",
+        "LOCKED_MSG": "Esta jornada ha sido LIQUIDADA por el administrador y está bloqueada."
       }
     }
   },

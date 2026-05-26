@@ -386,6 +386,45 @@
         "UPDATE_FAILED": "Manaqa cliente qillqayta actualizaychu. Amañanchu chaskiy."
       }
     },
+    "REPORTES": {
+      "TITLE": "Reportes y Análisis",
+      "SUBTITLE": "Qhatuy estadísticas wan inventario gestion",
+      "BUTTON": {
+        "RELOAD": "Qallarichiy"
+      },
+      "LOADING": "Reportes cargarichiwankuman...",
+      "KPI": {
+        "TOTAL_SALES": "Total Qhatuykuna",
+        "TOTAL_INCOME": "Total Ingresos",
+        "AVG_TICKET": "Sapa Qhatuy Medio"
+      },
+      "CHART": {
+        "SALES_INCOME": "Qhatuykuna e Ingresos por Qhatuchik",
+        "CATEGORIES": "Productos por Categoría",
+        "STOCK": "Global Stock por Producto",
+        "TREND": "Qhatuy Tendencia",
+        "NO_CATEGORY": "Mana categoríachu",
+        "CATEGORY_PREFIX": "Categoría",
+        "DATASET": {
+          "SALES": "Qhatuykuna",
+          "INCOME": "Ingresos (Bs.)",
+          "STOCK": "Stock"
+        }
+      },
+      "DISCREPANCIAS": {
+        "TITLE": "Inventario Discrepancias Reporte",
+        "EMPTY": "Mana kunan punchaw cierre datoschu.",
+        "EXPECTED": "Stock Esperasqa",
+        "ACTUAL": "Stock Kunan",
+        "DIFFERENCE": "Diferencia",
+        "UNITS": "unidades",
+        "OK": "✓ Allin",
+        "ERR": "⚠ Diferencia"
+      },
+      "ERROR": {
+        "LOAD_FAILED": "Mana reportes datosta cargarita atisqa."
+      }
+    },
     "MONITOR": {
       "TITLE": "Real-Time Monitor",
       "SUBTITLE": "Qhatuchik wan clientes nisqakunata qhawariykuy",
@@ -421,10 +460,27 @@
       "STATUS": {
         "ACTIVE": "Kawsachikun",
         "EN_ROUTE": "Nampi",
-        "CLOSED": "Jornada kutiy"
+        "CLOSED": "Jornada kutiy",
+        "LIQUIDATED": "Liquidada"
       },
       "ERROR": {
         "LOAD_FAILED": "Manaqa datoskuna qallarichiychu. Server qillqayta ruraykachun."
+      },
+      "MODAL": {
+        "TITLE": "Jornada kutiykuna",
+        "LIQUIDATE": "Liquiday",
+        "DETAILS": "Detaynin qhaway",
+        "DATE": "Fecha",
+        "STATUS": "Estado",
+        "EXPECTED": "Quillqay esperasqa",
+        "DECLARED": "Quillqay declarasqa",
+        "DIFFERENCE": "Diferencia",
+        "RECEIVED": "Quillqay chaskisqa",
+        "CONFIRM": "Liquidacionta waqaychay",
+        "BACK": "Listaman kutiy",
+        "CLOSE": "Wichqay",
+        "NO_CIERRES": "Mana closures qillqasqachu kay qhatuchikpaq.",
+        "LOCKED_MSG": "Kay punchawqa LIQUIDADA kachkan administratormanta, wichqasqa."
       }
     }
   },

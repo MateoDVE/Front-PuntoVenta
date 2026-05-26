@@ -188,6 +188,22 @@ export class CierreVendedor implements OnInit, OnDestroy {
     this.errorGuardado = '';
   }
 
+  devolverStock(): void {
+    if (!this.idVendedor) return;
+    this.enviando = true;
+    this.error = '';
+    this.apiService.devolverStock(this.idVendedor, this.fechaHoy).subscribe({
+      next: (res) => {
+        this.enviando = false;
+        this.cargarCierre(); // Recargar datos
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Error al devolver el stock';
+        this.enviando = false;
+      }
+    });
+  }
+
   get detallesCorregidos() {
     return (this.cierre?.conciliacionInventario.detalleProductos ?? []).map(det => {
       const asignadoTotal = this.asignaciones

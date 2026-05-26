@@ -43,6 +43,7 @@ export class GestionClientesComponent implements OnInit {
   mostrarModal = false;
   guardando = false;
   errorModal = '';
+  ciNitError = '';
   clienteEditandoId = '';
   formulario: ClienteForm = this.formularioInicial();
 
@@ -150,6 +151,7 @@ export class GestionClientesComponent implements OnInit {
       estado: cliente.estado?.toUpperCase() === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO',
     };
     this.errorModal = '';
+    this.ciNitError = '';
     this.mostrarModal = true;
   }
 
@@ -158,12 +160,19 @@ export class GestionClientesComponent implements OnInit {
     this.clienteEditandoId = '';
     this.formulario = this.formularioInicial();
     this.errorModal = '';
+    this.ciNitError = '';
   }
 
   guardarCambios(): void {
     if (!this.clienteEditandoId) return;
     if (!this.formulario.nombreNegocio.trim() || !this.formulario.ciNit.trim()) {
       this.errorModal = this.translate.instant('ADMIN.CLIENTES.ERROR.REQUIRED_FIELDS');
+      return;
+    }
+
+    if (!this.isCiNitValid(this.formulario.ciNit)) {
+      this.ciNitError = 'Formatos de CI/NIT inválido. Solo se permiten números y extensiones válidas.';
+      this.errorModal = this.ciNitError;
       return;
     }
 
@@ -195,6 +204,26 @@ export class GestionClientesComponent implements OnInit {
         this.guardando = false;
       },
     });
+  }
+
+  onCiNitInput(): void {
+    if (!this.formulario.ciNit || !this.formulario.ciNit.trim()) {
+      this.ciNitError = '';
+      return;
+    }
+
+    if (!this.isCiNitValid(this.formulario.ciNit)) {
+      this.ciNitError = 'Formatos de CI/NIT inválido. Solo se permiten números y extensiones válidas.';
+    } else {
+      this.ciNitError = '';
+    }
+  }
+
+  private isCiNitValid(value: string | undefined): boolean {
+    if (!value) return false;
+    const v = value.trim();
+    const re = /^\d{6,12}(?:-?[A-Za-z0-9]{1,3})?$/;
+    return re.test(v);
   }
 
   toggleEstadoCliente(cliente: Cliente): void {
