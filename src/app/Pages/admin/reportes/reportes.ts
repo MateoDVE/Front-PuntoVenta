@@ -1,18 +1,14 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
 import {
   ApiService,
   VentaResumenResponse,
-  CierreJornadaResponse,
   Producto,
   VendedorBackend,
 } from '../../../services/api.service';
-import { VendedoresService } from '../../../services/vendedores.service';
-import { ProductosService } from '../../../services/productos.service';
 
 interface DiscrepanciaVendedor {
   nombre: string;
@@ -25,7 +21,7 @@ interface DiscrepanciaVendedor {
 @Component({
   selector: 'app-reportes',
   standalone: true,
-  imports: [CommonModule, AdminNavbar],
+  imports: [CommonModule, AdminNavbar, TranslateModule],
   templateUrl: './reportes.html',
   styleUrls: ['./reportes.scss'],
 })
@@ -48,10 +44,9 @@ export class ReportesComponent implements OnInit, OnDestroy {
 
   constructor(
     private apiService: ApiService,
-    private vendedoresService: VendedoresService,
-    private productosService: ProductosService,
     private router: Router,
     private cdr: ChangeDetectorRef,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -81,7 +76,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
           stockEsperado: d.stockEsperado,
           stockActual: d.stockActual,
           diferencia: d.diferencia,
-          correcto: d.correcto
+          correcto: d.correcto,
         }));
 
         this.cargando = false;
@@ -89,7 +84,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
         this.renderizarCharts(ventas, vendedores, productos);
       },
       error: () => {
-        this.error = 'No se pudieron cargar los datos de reportes.';
+        this.error = this.translate.instant('ADMIN.REPORTES.ERROR.LOAD_FAILED');
         this.cargando = false;
       },
     });
@@ -142,17 +137,23 @@ export class ReportesComponent implements OnInit, OnDestroy {
       }
     }
 
-    const labels = vendedores.map(v => v.nombre);
-    const dataVentas = vendedores.map(v => ventasPorVendedor.get(v.id_usuario)?.ventas ?? 0);
-    const dataIngresos = vendedores.map(v => ventasPorVendedor.get(v.id_usuario)?.ingresos ?? 0);
-
     const chart = new Chart(canvas, {
       type: 'bar',
       data: {
-        labels,
+        labels: vendedores.map(v => v.nombre),
         datasets: [
-          { label: 'Ventas', data: dataVentas, backgroundColor: '#3b82f6', borderRadius: 4 },
-          { label: 'Ingresos (Bs.)', data: dataIngresos, backgroundColor: '#22c55e', borderRadius: 4 },
+          {
+            label: this.translate.instant('ADMIN.REPORTES.CHART.DATASET.SALES'),
+            data: vendedores.map(v => ventasPorVendedor.get(v.id_usuario)?.ventas ?? 0),
+            backgroundColor: '#3b82f6',
+            borderRadius: 4,
+          },
+          {
+            label: this.translate.instant('ADMIN.REPORTES.CHART.DATASET.INCOME'),
+            data: vendedores.map(v => ventasPorVendedor.get(v.id_usuario)?.ingresos ?? 0),
+            backgroundColor: '#22c55e',
+            borderRadius: 4,
+          },
         ],
       },
       options: {
@@ -179,8 +180,11 @@ export class ReportesComponent implements OnInit, OnDestroy {
       conteo.set(cat, (conteo.get(cat) ?? 0) + 1);
     }
 
-    const labels = [...conteo.keys()].map(id => id === 0 ? 'Sin categoría' : `Categoría ${id}`);
-    const data = [...conteo.values()];
+    const sinCategoria = this.translate.instant('ADMIN.REPORTES.CHART.NO_CATEGORY');
+    const categoriaPrefix = this.translate.instant('ADMIN.REPORTES.CHART.CATEGORY_PREFIX');
+    const labels = [...conteo.keys()].map(id =>
+      id === 0 ? sinCategoria : `${categoriaPrefix} ${id}`
+    );
     const colors = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316'];
 
     const chart = new Chart(canvas, {
@@ -188,8 +192,8 @@ export class ReportesComponent implements OnInit, OnDestroy {
       data: {
         labels,
         datasets: [{
-          data,
-          backgroundColor: colors.slice(0, data.length),
+          data: [...conteo.values()],
+          backgroundColor: colors.slice(0, conteo.size),
           borderWidth: 2,
           borderColor: '#fff',
         }],
@@ -197,9 +201,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'right' },
-        },
+        plugins: { legend: { position: 'right' } },
       },
     });
     this.charts.push(chart);
@@ -219,7 +221,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
       data: {
         labels: top.map(p => p.nombre),
         datasets: [{
-          label: 'Stock',
+          label: this.translate.instant('ADMIN.REPORTES.CHART.DATASET.STOCK'),
           data: top.map(p => p.stock_almacen_central ?? 0),
           backgroundColor: '#6366f1',
           borderRadius: 4,
@@ -251,16 +253,13 @@ export class ReportesComponent implements OnInit, OnDestroy {
       ventasPorVendedor.set(venta.idVendedor, curr + 1);
     }
 
-    const labels = vendedores.map(v => v.nombre);
-    const data = vendedores.map(v => ventasPorVendedor.get(v.id_usuario) ?? 0);
-
     const chart = new Chart(canvas, {
       type: 'line',
       data: {
-        labels,
+        labels: vendedores.map(v => v.nombre),
         datasets: [{
-          label: 'Ventas',
-          data,
+          label: this.translate.instant('ADMIN.REPORTES.CHART.DATASET.SALES'),
+          data: vendedores.map(v => ventasPorVendedor.get(v.id_usuario) ?? 0),
           borderColor: '#3b82f6',
           backgroundColor: 'rgba(59,130,246,0.1)',
           tension: 0.3,
@@ -286,8 +285,6 @@ export class ReportesComponent implements OnInit, OnDestroy {
     this.charts.forEach(c => { try { c.destroy(); } catch {} });
     this.charts = [];
   }
-
-  // ── Utilidades ────────────────────────────────────────────────────────────
 
   private getFechaHoy(): string {
     const d = new Date();

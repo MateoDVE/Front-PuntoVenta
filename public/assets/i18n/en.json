@@ -389,6 +389,45 @@
         "UPDATE_FAILED": "Could not update the client. Try again."
       }
     },
+    "REPORTES": {
+      "TITLE": "Reports & Analytics",
+      "SUBTITLE": "Sales statistics and inventory management",
+      "BUTTON": {
+        "RELOAD": "Reload"
+      },
+      "LOADING": "Loading reports...",
+      "KPI": {
+        "TOTAL_SALES": "Total Sales",
+        "TOTAL_INCOME": "Total Revenue",
+        "AVG_TICKET": "Average Ticket"
+      },
+      "CHART": {
+        "SALES_INCOME": "Sales & Revenue by Seller",
+        "CATEGORIES": "Products by Category",
+        "STOCK": "Global Stock by Product",
+        "TREND": "Sales Trend",
+        "NO_CATEGORY": "No category",
+        "CATEGORY_PREFIX": "Category",
+        "DATASET": {
+          "SALES": "Sales",
+          "INCOME": "Revenue (Bs.)",
+          "STOCK": "Stock"
+        }
+      },
+      "DISCREPANCIAS": {
+        "TITLE": "Inventory Discrepancy Report",
+        "EMPTY": "No day-closure data available for today.",
+        "EXPECTED": "Expected Stock",
+        "ACTUAL": "Actual Stock",
+        "DIFFERENCE": "Difference",
+        "UNITS": "units",
+        "OK": "✓ Correct",
+        "ERR": "⚠ Discrepancy"
+      },
+      "ERROR": {
+        "LOAD_FAILED": "Could not load report data."
+      }
+    },
     "MONITOR": {
       "TITLE": "Real-Time Monitor",
       "SUBTITLE": "Track sellers and clients being attended",

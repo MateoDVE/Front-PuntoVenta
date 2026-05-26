@@ -386,6 +386,45 @@
         "UPDATE_FAILED": "Manaqa cliente qillqayta actualizaychu. Amañanchu chaskiy."
       }
     },
+    "REPORTES": {
+      "TITLE": "Reportes y Análisis",
+      "SUBTITLE": "Qhatuy estadísticas wan inventario gestion",
+      "BUTTON": {
+        "RELOAD": "Qallarichiy"
+      },
+      "LOADING": "Reportes cargarichiwankuman...",
+      "KPI": {
+        "TOTAL_SALES": "Total Qhatuykuna",
+        "TOTAL_INCOME": "Total Ingresos",
+        "AVG_TICKET": "Sapa Qhatuy Medio"
+      },
+      "CHART": {
+        "SALES_INCOME": "Qhatuykuna e Ingresos por Qhatuchik",
+        "CATEGORIES": "Productos por Categoría",
+        "STOCK": "Global Stock por Producto",
+        "TREND": "Qhatuy Tendencia",
+        "NO_CATEGORY": "Mana categoríachu",
+        "CATEGORY_PREFIX": "Categoría",
+        "DATASET": {
+          "SALES": "Qhatuykuna",
+          "INCOME": "Ingresos (Bs.)",
+          "STOCK": "Stock"
+        }
+      },
+      "DISCREPANCIAS": {
+        "TITLE": "Inventario Discrepancias Reporte",
+        "EMPTY": "Mana kunan punchaw cierre datoschu.",
+        "EXPECTED": "Stock Esperasqa",
+        "ACTUAL": "Stock Kunan",
+        "DIFFERENCE": "Diferencia",
+        "UNITS": "unidades",
+        "OK": "✓ Allin",
+        "ERR": "⚠ Diferencia"
+      },
+      "ERROR": {
+        "LOAD_FAILED": "Mana reportes datosta cargarita atisqa."
+      }
+    },
     "MONITOR": {
       "TITLE": "Real-Time Monitor",
       "SUBTITLE": "Qhatuchik wan clientes nisqakunata qhawariykuy",
