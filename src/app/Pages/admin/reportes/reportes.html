@@ -8,10 +8,10 @@
         <!-- Cabecera -->
         <header class="page-header">
           <div class="page-header__copy">
-            <h1>Reportes y Análisis</h1>
-            <p>Estadísticas de ventas y gestión de inventario</p>
+            <h1>{{ 'ADMIN.REPORTES.TITLE' | translate }}</h1>
+            <p>{{ 'ADMIN.REPORTES.SUBTITLE' | translate }}</p>
           </div>
-          <button type="button" class="btn-reload" (click)="cargar()" title="Recargar">
+          <button type="button" class="btn-reload" (click)="cargar()" [title]="'ADMIN.REPORTES.BUTTON.RELOAD' | translate">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
               stroke-linecap="round" stroke-linejoin="round">
               <polyline points="23 4 23 10 17 10"/>
@@ -24,7 +24,7 @@
         @if (cargando) {
           <div class="loading-state" role="status">
             <div class="spinner"></div>
-            <p>Cargando reportes...</p>
+            <p>{{ 'ADMIN.REPORTES.LOADING' | translate }}</p>
           </div>
         }
 
@@ -45,7 +45,7 @@
           <div class="kpi-row">
             <div class="kpi-card">
               <div class="kpi-card__body">
-                <span class="kpi-card__label">Total Ventas</span>
+                <span class="kpi-card__label">{{ 'ADMIN.REPORTES.KPI.TOTAL_SALES' | translate }}</span>
                 <span class="kpi-card__value">{{ totalVentas }}</span>
               </div>
               <div class="kpi-icon kpi-icon--blue">
@@ -59,7 +59,7 @@
 
             <div class="kpi-card">
               <div class="kpi-card__body">
-                <span class="kpi-card__label">Ingresos Totales</span>
+                <span class="kpi-card__label">{{ 'ADMIN.REPORTES.KPI.TOTAL_INCOME' | translate }}</span>
                 <span class="kpi-card__value">Bs. {{ ingresosTotal | number:'1.2-2' }}</span>
               </div>
               <div class="kpi-icon kpi-icon--green">
@@ -72,7 +72,7 @@
 
             <div class="kpi-card">
               <div class="kpi-card__body">
-                <span class="kpi-card__label">Ticket Promedio</span>
+                <span class="kpi-card__label">{{ 'ADMIN.REPORTES.KPI.AVG_TICKET' | translate }}</span>
                 <span class="kpi-card__value">Bs. {{ ticketPromedio | number:'1.2-2' }}</span>
               </div>
               <div class="kpi-icon kpi-icon--purple">
@@ -87,14 +87,14 @@
           <!-- Fila 1 de gráficos -->
           <div class="charts-row">
             <div class="chart-card">
-              <h3 class="chart-title">Ventas e Ingresos por Vendedor</h3>
+              <h3 class="chart-title">{{ 'ADMIN.REPORTES.CHART.SALES_INCOME' | translate }}</h3>
               <div class="chart-wrap">
                 <canvas #chartVentasIngresos></canvas>
               </div>
             </div>
 
             <div class="chart-card">
-              <h3 class="chart-title">Productos por Categoría</h3>
+              <h3 class="chart-title">{{ 'ADMIN.REPORTES.CHART.CATEGORIES' | translate }}</h3>
               <div class="chart-wrap chart-wrap--pie">
                 <canvas #chartCategorias></canvas>
               </div>
@@ -104,14 +104,14 @@
           <!-- Fila 2 de gráficos -->
           <div class="charts-row">
             <div class="chart-card">
-              <h3 class="chart-title">Stock Global por Producto</h3>
+              <h3 class="chart-title">{{ 'ADMIN.REPORTES.CHART.STOCK' | translate }}</h3>
               <div class="chart-wrap chart-wrap--tall">
                 <canvas #chartStock></canvas>
               </div>
             </div>
 
             <div class="chart-card">
-              <h3 class="chart-title">Tendencia de Ventas</h3>
+              <h3 class="chart-title">{{ 'ADMIN.REPORTES.CHART.TREND' | translate }}</h3>
               <div class="chart-wrap">
                 <canvas #chartTendencia></canvas>
               </div>
@@ -126,12 +126,12 @@
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                 <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
-              <h2>Reporte de Discrepancias de Inventario</h2>
+              <h2>{{ 'ADMIN.REPORTES.DISCREPANCIAS.TITLE' | translate }}</h2>
             </div>
 
             @if (discrepancias.length === 0) {
               <div class="discrepancias-empty">
-                No hay datos de cierre de jornada disponibles para hoy.
+                {{ 'ADMIN.REPORTES.DISCREPANCIAS.EMPTY' | translate }}
               </div>
             }
 
@@ -141,23 +141,27 @@
                   <strong class="discrepancia-card__nombre">{{ d.nombre }}</strong>
                   <div class="discrepancia-card__stats">
                     <div class="dstat">
-                      <span class="dstat__label">Stock Esperado</span>
-                      <span class="dstat__val">{{ d.stockEsperado }} unidades</span>
+                      <span class="dstat__label">{{ 'ADMIN.REPORTES.DISCREPANCIAS.EXPECTED' | translate }}</span>
+                      <span class="dstat__val">{{ d.stockEsperado }} {{ 'ADMIN.REPORTES.DISCREPANCIAS.UNITS' | translate }}</span>
                     </div>
                     <div class="dstat">
-                      <span class="dstat__label">Stock Actual</span>
-                      <span class="dstat__val">{{ d.stockActual }} unidades</span>
+                      <span class="dstat__label">{{ 'ADMIN.REPORTES.DISCREPANCIAS.ACTUAL' | translate }}</span>
+                      <span class="dstat__val">{{ d.stockActual }} {{ 'ADMIN.REPORTES.DISCREPANCIAS.UNITS' | translate }}</span>
                     </div>
                     <div class="dstat">
-                      <span class="dstat__label">Diferencia</span>
+                      <span class="dstat__label">{{ 'ADMIN.REPORTES.DISCREPANCIAS.DIFFERENCE' | translate }}</span>
                       <span class="dstat__val" [class.text-ok]="d.diferencia === 0" [class.text-err]="d.diferencia !== 0">
-                        {{ d.diferencia }} unidades
+                        {{ d.diferencia }} {{ 'ADMIN.REPORTES.DISCREPANCIAS.UNITS' | translate }}
                       </span>
                     </div>
                   </div>
                 </div>
                 <div class="discrepancia-card__badge" [class.badge--ok]="d.correcto" [class.badge--err]="!d.correcto">
-                  @if (d.correcto) { ✓ Correcto } @else { ⚠ Diferencia }
+                  @if (d.correcto) {
+                    {{ 'ADMIN.REPORTES.DISCREPANCIAS.OK' | translate }}
+                  } @else {
+                    {{ 'ADMIN.REPORTES.DISCREPANCIAS.ERR' | translate }}
+                  }
                 </div>
               </div>
             }

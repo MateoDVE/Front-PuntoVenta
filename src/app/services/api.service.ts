@@ -232,6 +232,16 @@ export class ApiService {
   getVentas(): Observable<VentaResumenResponse[]> {
     return this.http.get<VentaResumenResponse[]>(`${this.apiUrl}/ventas`);
   }
+
+  getReportesConsolidados(fecha: string): Observable<ReportesResumenResponse> {
+    return this.http.get<ReportesResumenResponse>(`${this.apiUrl}/ventas/reportes`, {
+      params: { fecha }
+    });
+  }
+
+  devolverStock(idVendedor: string, fecha: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/ventas/devolver-stock`, { idVendedor, fecha });
+  }
 }
 
 // ==================== INTERFACES VENTAS ====================
@@ -372,4 +382,19 @@ export interface CierreGuardado {
   estado_efectivo: string;
   estado: string;
   created_at: string;
+}
+
+export interface DiscrepanciaVendedorDto {
+  nombre: string;
+  stockEsperado: number;
+  stockActual: number;
+  diferencia: number;
+  correcto: boolean;
+}
+
+export interface ReportesResumenResponse {
+  ventas: VentaResumenResponse[];
+  vendedores: VendedorBackend[];
+  productos: Producto[];
+  discrepancias: DiscrepanciaVendedorDto[];
 }

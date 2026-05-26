@@ -170,6 +170,12 @@
     <ion-icon [name]="jornadaYaCerrada ? 'checkmark-circle-outline' : 'clipboard-outline'"></ion-icon>
     {{ jornadaYaCerrada ? ('VENDEDOR.CIERRE.JORNADA_CERRADA' | translate) : ('VENDEDOR.CIERRE.CONFIRM_BUTTON' | translate) }}
   </button>
+  @if (jornadaYaCerrada && stockFinalTotalCorregido > 0) {
+    <button class="btn-devolver" (click)="devolverStock()" [disabled]="enviando || cargando">
+      <ion-icon name="arrow-back-circle-outline"></ion-icon>
+      Devolver Stock al Almacén
+    </button>
+  }
   <button class="btn-logout" (click)="cerrarSesion()">
     <ion-icon name="exit-outline"></ion-icon>
     {{ 'VENDEDOR.CIERRE.LOGOUT_BUTTON' | translate }}
