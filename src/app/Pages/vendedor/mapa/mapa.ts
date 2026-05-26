@@ -22,6 +22,7 @@ export class Mapa implements OnInit {
 
   error = '';
   clienteFormError = '';
+  ciNitError = '';
   showNewClienteModal = false;
   currentUserId = '';
   loading = false;
@@ -124,9 +125,30 @@ export class Mapa implements OnInit {
     }
   }
 
+  onCiNitInput(): void {
+    if (!this.newCliente.ciNit || !this.newCliente.ciNit.trim()) {
+      this.ciNitError = '';
+      return;
+    }
+
+    if (!this.isCiNitValid(this.newCliente.ciNit)) {
+      this.ciNitError = 'Formatos de CI/NIT inválido. Solo se permiten números y extensiones válidas.';
+    } else {
+      this.ciNitError = '';
+    }
+  }
+
+  private isCiNitValid(value: string | undefined): boolean {
+    if (!value) return false;
+    const v = value.trim();
+    const re = /^\d{6,12}(?:-?[A-Za-z0-9]{1,3})?$/;
+    return re.test(v);
+  }
+
   openNuevoClienteModal(): void {
     this.clienteFormError = '';
     this.celularError = '';
+    this.ciNitError = '';
     this.newCliente = {
       idVendedorCreador: this.currentUserId,
       nombreNegocio: '',
@@ -307,12 +329,20 @@ export class Mapa implements OnInit {
       return;
     }
 
+    if (!this.isCiNitValid(this.newCliente.ciNit)) {
+      this.ciNitError = 'Formatos de CI/NIT inválido. Solo se permiten números y extensiones válidas.';
+      this.clienteFormError = this.ciNitError;
+      return;
+    }
+
     if (this.newCliente.latitud == null || this.newCliente.longitud == null) {
       this.clienteFormError = this.translate.instant('VENDEDOR.MAP.CLIENT_FORM_LOCATION_REQUIRED');
       return;
     }
 
     this.clienteFormError = '';
+
+    this.ciNitError = '';
 
     const uploadPromise = this.archivoFotoCliente ? this.subirFotoCliente() : Promise.resolve();
     uploadPromise.then(() => {
