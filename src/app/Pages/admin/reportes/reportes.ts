@@ -68,47 +68,21 @@ export class ReportesComponent implements OnInit, OnDestroy {
     this.error = '';
     this.destruirCharts();
 
-    forkJoin({
-      ventas: this.apiService.getVentas().pipe(catchError(() => of([] as VentaResumenResponse[]))),
-      vendedores: this.vendedoresService.getVendedores().pipe(catchError(() => of([] as VendedorBackend[]))),
-      productos: this.productosService.getProductos().pipe(catchError(() => of([] as Producto[]))),
-    }).pipe(
-      switchMap(({ ventas, vendedores, productos }) => {
+    this.apiService.getReportesConsolidados(this.fechaHoy).subscribe({
+      next: (reporte) => {
+        const { ventas, vendedores, productos, discrepancias } = reporte;
+
         this.totalVentas = ventas.length;
         this.ingresosTotal = ventas.reduce((s, v) => s + (v.totalEfectivo ?? 0), 0);
         this.ticketPromedio = this.totalVentas > 0 ? this.ingresosTotal / this.totalVentas : 0;
 
-        const cierres$ = vendedores.length > 0
-          ? forkJoin(
-              vendedores.map(v =>
-                this.apiService.getCierreJornada(v.id_usuario, this.fechaHoy).pipe(
-                  catchError(() => of(null as CierreJornadaResponse | null)),
-                  map(cierre => ({ idVendedor: v.id_usuario, nombre: v.nombre, cierre })),
-                ),
-              ),
-            )
-          : of([] as { idVendedor: string; nombre: string; cierre: CierreJornadaResponse | null }[]);
-
-        return cierres$.pipe(
-          map(cierres => ({ ventas, vendedores, productos, cierres })),
-        );
-      }),
-    ).subscribe({
-      next: ({ ventas, vendedores, productos, cierres }) => {
-        this.discrepancias = cierres
-          .filter(c => c.cierre != null)
-          .map(c => {
-            const inv = c.cierre!.conciliacionInventario;
-            const esperado = (inv.stockInicialTotal ?? 0) - (inv.vendidosTotal ?? 0);
-            const actual = inv.stockFinalTotal ?? 0;
-            return {
-              nombre: c.nombre,
-              stockEsperado: esperado,
-              stockActual: actual,
-              diferencia: actual - esperado,
-              correcto: inv.estadoConciliacion === 'CORRECTO',
-            } as DiscrepanciaVendedor;
-          });
+        this.discrepancias = discrepancias.map(d => ({
+          nombre: d.nombre,
+          stockEsperado: d.stockEsperado,
+          stockActual: d.stockActual,
+          diferencia: d.diferencia,
+          correcto: d.correcto
+        }));
 
         this.cargando = false;
         this.cdr.detectChanges();
