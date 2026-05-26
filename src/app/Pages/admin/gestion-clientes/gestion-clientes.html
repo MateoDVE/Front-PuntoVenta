@@ -236,9 +236,11 @@
             type="text"
             name="ciNit"
             [(ngModel)]="formulario.ciNit"
+            (input)="onCiNitInput()"
             placeholder="{{ 'ADMIN.CLIENTES.MODAL.PLACEHOLDER.CI_NIT' | translate }}"
             autocomplete="off"
           >
+          <p class="form-error" role="alert" *ngIf="ciNitError">{{ ciNitError }}</p>
 
           <label for="celular">{{ 'ADMIN.CLIENTES.MODAL.LABEL.PHONE' | translate }}</label>
           <input
