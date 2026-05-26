@@ -463,10 +463,27 @@
       "STATUS": {
         "ACTIVE": "Active",
         "EN_ROUTE": "On route",
-        "CLOSED": "Closed shift"
+        "CLOSED": "Closed shift",
+        "LIQUIDATED": "Liquidated"
       },
       "ERROR": {
         "LOAD_FAILED": "Could not load data. Check server connection."
+      },
+      "MODAL": {
+        "TITLE": "Shift Closures",
+        "LIQUIDATE": "Settle",
+        "DETAILS": "View Details",
+        "DATE": "Date",
+        "STATUS": "Status",
+        "EXPECTED": "Expected Money",
+        "DECLARED": "Declared Cash",
+        "DIFFERENCE": "Difference",
+        "RECEIVED": "Received Cash",
+        "CONFIRM": "Register Settlement",
+        "BACK": "Back to list",
+        "CLOSE": "Close",
+        "NO_CIERRES": "No closures registered for this seller.",
+        "LOCKED_MSG": "This shift has been SETTLED by the administrator and is locked."
       }
     }
   },

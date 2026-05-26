@@ -460,10 +460,27 @@
       "STATUS": {
         "ACTIVE": "Kawsachikun",
         "EN_ROUTE": "Nampi",
-        "CLOSED": "Jornada kutiy"
+        "CLOSED": "Jornada kutiy",
+        "LIQUIDATED": "Liquidada"
       },
       "ERROR": {
         "LOAD_FAILED": "Manaqa datoskuna qallarichiychu. Server qillqayta ruraykachun."
+      },
+      "MODAL": {
+        "TITLE": "Jornada kutiykuna",
+        "LIQUIDATE": "Liquiday",
+        "DETAILS": "Detaynin qhaway",
+        "DATE": "Fecha",
+        "STATUS": "Estado",
+        "EXPECTED": "Quillqay esperasqa",
+        "DECLARED": "Quillqay declarasqa",
+        "DIFFERENCE": "Diferencia",
+        "RECEIVED": "Quillqay chaskisqa",
+        "CONFIRM": "Liquidacionta waqaychay",
+        "BACK": "Listaman kutiy",
+        "CLOSE": "Wichqay",
+        "NO_CIERRES": "Mana closures qillqasqachu kay qhatuchikpaq.",
+        "LOCKED_MSG": "Kay punchawqa LIQUIDADA kachkan administratormanta, wichqasqa."
       }
     }
   },
