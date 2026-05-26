@@ -244,18 +244,24 @@ export class Asignacion implements OnInit {
   }
 
   private mapStockVendedor(vendedor: VendedorBackend, asignaciones: InventarioAsignacion[]): TransporteStock {
-    const items = asignaciones.map((asignacion) => {
-      const producto = this.productosCatalogo.find(
-        (item) => String(item.id_producto) === String(asignacion.id_producto)
-      );
+    const items = asignaciones
+      .map((asignacion) => {
+        const producto = this.productosCatalogo.find(
+          (item) => String(item.id_producto) === String(asignacion.id_producto)
+        );
 
-      return {
-        idCarga: asignacion.id_carga,
-        nombre: producto?.nombre ?? `Producto ${asignacion.id_producto}`,
-        cantidad: asignacion.cantidad_inicial,
-        estado: (asignacion.estado_validacion ?? '').toUpperCase(),
-      };
-    });
+        const estado = (asignacion.estado_validacion ?? '').toUpperCase();
+        // Si está VALIDADO, usamos cantidad_actual; de lo contrario, cantidad_inicial
+        const cantidad = estado === 'VALIDADO' ? (asignacion.cantidad_actual ?? 0) : asignacion.cantidad_inicial;
+
+        return {
+          idCarga: asignacion.id_carga,
+          nombre: producto?.nombre ?? `Producto ${asignacion.id_producto}`,
+          cantidad: cantidad,
+          estado: estado,
+        };
+      })
+      .filter((item) => item.cantidad > 0 || item.estado !== 'VALIDADO');
 
     const totalItems = items.reduce((acc, item) => acc + item.cantidad, 0);
 

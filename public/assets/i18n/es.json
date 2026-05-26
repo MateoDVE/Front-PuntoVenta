@@ -460,10 +460,27 @@
       "STATUS": {
         "ACTIVE": "Activo",
         "EN_ROUTE": "En ruta",
-        "CLOSED": "Jornada cerrada"
+        "CLOSED": "Jornada cerrada",
+        "LIQUIDATED": "Liquidada"
       },
       "ERROR": {
         "LOAD_FAILED": "No se pudieron cargar los datos. Verifica la conexión con el servidor."
+      },
+      "MODAL": {
+        "TITLE": "Cierres de Jornada",
+        "LIQUIDATE": "Liquidar",
+        "DETAILS": "Ver Detalle",
+        "DATE": "Fecha",
+        "STATUS": "Estado",
+        "EXPECTED": "Dinero Esperado",
+        "DECLARED": "Efectivo Declarado",
+        "DIFFERENCE": "Diferencia",
+        "RECEIVED": "Efectivo Recibido",
+        "CONFIRM": "Registrar Liquidación",
+        "BACK": "Volver a la lista",
+        "CLOSE": "Cerrar",
+        "NO_CIERRES": "No hay cierres registrados para este vendedor.",
+        "LOCKED_MSG": "Esta jornada ha sido LIQUIDADA por el administrador y está bloqueada."
       }
     }
   },

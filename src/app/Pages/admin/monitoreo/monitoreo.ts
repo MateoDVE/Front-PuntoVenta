@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
@@ -33,7 +34,7 @@ interface ClienteMapaData extends Cliente {
 @Component({
   selector: 'app-monitoreo',
   standalone: true,
-  imports: [CommonModule, AdminNavbar, TranslateModule],
+  imports: [CommonModule, AdminNavbar, TranslateModule, FormsModule],
   templateUrl: './monitoreo.html',
   styleUrls: ['./monitoreo.scss'],
 })
@@ -45,6 +46,24 @@ export class MonitoreoComponent implements OnInit {
   clientesMapa: ClienteMapaData[] = [];
   cargando = false;
   error = '';
+
+  // Control de pestañas
+  activeTab: 'mapa' | 'liquidaciones' = 'mapa';
+  todosCierres: CierreGuardado[] = [];
+  vendedoresNombresMap = new Map<string, string>();
+  searchQuery = '';
+  sortOrder: 'asc' | 'desc' | '' = '';
+
+  // Modal de liquidaciones
+  mostrarModalCierres = false;
+  vendedorSeleccionado: VendedorMonitorData | null = null;
+  cierresVendedor: CierreGuardado[] = [];
+  cargandoCierres = false;
+  cierreActivoDetalle: CierreGuardado | null = null;
+  dineroRecibidoInput: number | null = null;
+  errorLiquidar = '';
+  exitoLiquidar = '';
+  procesandoLiquidacion = false;
 
   private map: any;
   private markers: any[] = [];
@@ -74,7 +93,7 @@ export class MonitoreoComponent implements OnInit {
     this.vendedoresService.getVendedores().pipe(
       switchMap(vendedores => {
         if (vendedores.length === 0) {
-          return of({ vendedoresDatos: [] as VendedorMonitorData[], clientesMapa: [] as ClienteMapaData[] });
+          return of({ vendedoresDatos: [] as VendedorMonitorData[], clientesMapa: [] as ClienteMapaData[], todosCierres: [] as CierreGuardado[] });
         }
 
         const vendedorNombreMap = new Map(vendedores.map(v => [v.id_usuario, v.nombre]));
@@ -98,18 +117,21 @@ export class MonitoreoComponent implements OnInit {
               map(({ inventario, cierreJornada, cierresHistorial, clientes }) => {
                 const stock = inventario
                   .filter((inv: any) => inv.estado_validacion === 'VALIDADO')
-                  .reduce((sum: number, inv: any) => sum + inv.cantidad_inicial, 0);
+                  .reduce((sum: number, inv: any) => sum + (inv.cantidad_actual ?? 0), 0);
 
                 const ventas = cierreJornada?.resumenFinanciero?.ventasRealizadas ?? 0;
                 const ingresos = cierreJornada?.resumenFinanciero?.totalEfectivo ?? 0;
 
-                const jornadaCerradaHoy = (cierresHistorial as CierreGuardado[]).some(
+                const todayCierre = (cierresHistorial as CierreGuardado[]).find(
                   c => c.fecha === this.fechaHoy,
                 );
 
-                const estadoDisplay = jornadaCerradaHoy
-                  ? 'JORNADA_CERRADA'
-                  : (v.estado?.toUpperCase() === 'EN RUTA' ? 'EN_RUTA' : 'ACTIVO');
+                let estadoDisplay = 'ACTIVO';
+                if (todayCierre) {
+                  estadoDisplay = todayCierre.estado === 'LIQUIDADA' ? 'LIQUIDADA' : 'JORNADA_CERRADA';
+                } else if (v.estado?.toUpperCase() === 'EN RUTA') {
+                  estadoDisplay = 'EN_RUTA';
+                }
 
                 return {
                   vendedor: { id: v.id_usuario, nombre: v.nombre, email: v.email, estadoDisplay, stock, ventas, ingresos } as VendedorMonitorData,
@@ -131,9 +153,16 @@ export class MonitoreoComponent implements OnInit {
           catchError(() => of(new Set<string>())),
         );
 
-        return forkJoin({ perVendedor: perVendedor$, atendidos: atendidosHoy$ }).pipe(
-          map(({ perVendedor, atendidos }) => {
+        const allCierres$ = this.apiService.getAllCierres().pipe(
+          catchError(() => of([] as CierreGuardado[])),
+        );
+
+        return forkJoin({ perVendedor: perVendedor$, atendidos: atendidosHoy$, todosCierres: allCierres$ }).pipe(
+          map(({ perVendedor, atendidos, todosCierres }) => {
             const vendedoresDatos = perVendedor.map(r => r.vendedor);
+            
+            // Guardar mapeo de nombres de vendedores
+            this.vendedoresNombresMap = vendedorNombreMap;
 
             const vistas = new Set<string>();
             const clientesMapa: ClienteMapaData[] = [];
@@ -150,31 +179,90 @@ export class MonitoreoComponent implements OnInit {
               }
             }
 
-            return { vendedoresDatos, clientesMapa };
+            return { vendedoresDatos, clientesMapa, todosCierres };
           }),
         );
       }),
       catchError(() => {
         this.error = this.translate.instant('ADMIN.MONITOR.ERROR.LOAD_FAILED');
-        return of({ vendedoresDatos: [] as VendedorMonitorData[], clientesMapa: [] as ClienteMapaData[] });
+        return of({ vendedoresDatos: [] as VendedorMonitorData[], clientesMapa: [] as ClienteMapaData[], todosCierres: [] as CierreGuardado[] });
       }),
-    ).subscribe(({ vendedoresDatos, clientesMapa }) => {
+    ).subscribe(({ vendedoresDatos, clientesMapa, todosCierres }) => {
       this.vendedoresDatos = vendedoresDatos;
       this.clientesMapa = clientesMapa;
+      this.todosCierres = todosCierres || [];
       this.cargando = false;
       this.cdr.detectChanges();
       this.inicializarMapa();
     });
   }
 
+  selectTab(tab: 'mapa' | 'liquidaciones'): void {
+    this.activeTab = tab;
+    if (tab === 'mapa') {
+      setTimeout(() => this.inicializarMapa(), 100);
+    }
+  }
+
+  getVendedorNombre(idVendedor: string): string {
+    return this.vendedoresNombresMap.get(idVendedor) || 'Vendedor Desconocido';
+  }
+
   // ── Getters calculados ────────────────────────────────────────────────────
 
   get totalIngresos(): number {
-    return this.vendedoresDatos.reduce((s, v) => s + v.ingresos, 0);
+    return this.vendedoresDatosFiltrados.reduce((s, v) => s + v.ingresos, 0);
   }
 
   get vendedoresEnRuta(): number {
-    return this.vendedoresDatos.filter(v => this.esEnRuta(v.estadoDisplay)).length;
+    return this.vendedoresDatosFiltrados.filter(v => this.esEnRuta(v.estadoDisplay)).length;
+  }
+
+  get vendedoresDatosFiltrados(): VendedorMonitorData[] {
+    let list = [...this.vendedoresDatos];
+
+    // 1. Filtrar por buscador (nombre del vendedor)
+    if (this.searchQuery && this.searchQuery.trim() !== '') {
+      const query = this.searchQuery.toLowerCase().trim();
+      list = list.filter(v => v.nombre.toLowerCase().includes(query));
+    }
+
+    // 2. Ordenar por ingresos/ventas
+    if (this.sortOrder === 'asc') {
+      list.sort((a, b) => a.ingresos - b.ingresos);
+    } else if (this.sortOrder === 'desc') {
+      list.sort((a, b) => b.ingresos - a.ingresos);
+    }
+
+    return list;
+  }
+
+  get cierresFiltrados(): CierreGuardado[] {
+    let list = [...this.todosCierres];
+
+    // 1. Filtrar por buscador (nombre del vendedor)
+    if (this.searchQuery && this.searchQuery.trim() !== '') {
+      const query = this.searchQuery.toLowerCase().trim();
+      list = list.filter(c => {
+        const vNombre = this.getVendedorNombre(c.id_vendedor).toLowerCase();
+        return vNombre.includes(query);
+      });
+    }
+
+    // 2. Ordenar por monto de ventas (total_efectivo)
+    if (this.sortOrder === 'asc') {
+      list.sort((a, b) => (a.total_efectivo || 0) - (b.total_efectivo || 0));
+    } else if (this.sortOrder === 'desc') {
+      list.sort((a, b) => (b.total_efectivo || 0) - (a.total_efectivo || 0));
+    }
+
+    return list;
+  }
+
+  onSearchOrSortChange(): void {
+    if (this.activeTab === 'mapa') {
+      this.addClienteMarkers();
+    }
   }
 
   getInitials(nombre: string): string {
@@ -186,6 +274,7 @@ export class MonitoreoComponent implements OnInit {
       ACTIVO: 'ADMIN.MONITOR.STATUS.ACTIVE',
       'EN_RUTA': 'ADMIN.MONITOR.STATUS.EN_ROUTE',
       'JORNADA_CERRADA': 'ADMIN.MONITOR.STATUS.CLOSED',
+      'LIQUIDADA': 'ADMIN.MONITOR.STATUS.LIQUIDATED',
     };
     return this.translate.instant(keys[estado] ?? estado);
   }
@@ -196,6 +285,117 @@ export class MonitoreoComponent implements OnInit {
 
   esCerrado(estado: string): boolean {
     return estado === 'JORNADA_CERRADA';
+  }
+
+  esLiquidada(estado: string): boolean {
+    return estado === 'LIQUIDADA';
+  }
+
+  esActivo(estado: string): boolean {
+    return estado === 'ACTIVO';
+  }
+
+  // ── Métodos para Liquidación de Cierres ────────────────────────────────────
+
+  abrirModalCierres(vendedor: VendedorMonitorData): void {
+    this.vendedorSeleccionado = vendedor;
+    this.mostrarModalCierres = true;
+    this.cargandoCierres = true;
+    this.cierreActivoDetalle = null;
+    this.errorLiquidar = '';
+    this.exitoLiquidar = '';
+
+    this.apiService.getCierresVendedor(vendedor.id).subscribe({
+      next: (cierres) => {
+        this.cierresVendedor = cierres;
+        this.cargandoCierres = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.errorLiquidar = 'No se pudieron cargar los cierres del vendedor.';
+        this.cargandoCierres = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  abrirModalLiquidacionDirecta(cierre: CierreGuardado): void {
+    const vNombre = this.getVendedorNombre(cierre.id_vendedor);
+    this.vendedorSeleccionado = {
+      id: cierre.id_vendedor,
+      nombre: vNombre,
+      email: '',
+      estadoDisplay: '',
+      stock: 0,
+      ventas: 0,
+      ingresos: 0
+    };
+    this.mostrarModalCierres = true;
+    this.cargandoCierres = false;
+    this.cierresVendedor = [cierre];
+    this.cierreActivoDetalle = cierre;
+    this.dineroRecibidoInput = cierre.dinero_contado;
+    this.errorLiquidar = '';
+    this.exitoLiquidar = '';
+    this.cdr.detectChanges();
+  }
+
+  cerrarModalCierres(): void {
+    this.mostrarModalCierres = false;
+    this.vendedorSeleccionado = null;
+    this.cierresVendedor = [];
+    this.cierreActivoDetalle = null;
+    this.dineroRecibidoInput = null;
+    this.errorLiquidar = '';
+    this.exitoLiquidar = '';
+  }
+
+  seleccionarCierre(cierre: CierreGuardado): void {
+    this.cierreActivoDetalle = cierre;
+    this.dineroRecibidoInput = cierre.dinero_contado; // pre-rellena con lo declarado por el vendedor
+    this.errorLiquidar = '';
+    this.exitoLiquidar = '';
+  }
+
+  volverAListado(): void {
+    this.cierreActivoDetalle = null;
+    this.dineroRecibidoInput = null;
+    this.errorLiquidar = '';
+    this.exitoLiquidar = '';
+  }
+
+  registrarLiquidacion(): void {
+    if (!this.cierreActivoDetalle || this.dineroRecibidoInput === null || this.dineroRecibidoInput < 0) {
+      this.errorLiquidar = 'Ingresa un monto de efectivo recibido válido.';
+      return;
+    }
+
+    this.procesandoLiquidacion = true;
+    this.errorLiquidar = '';
+    this.exitoLiquidar = '';
+
+    this.apiService.liquidarJornada(this.cierreActivoDetalle.id_cierre, this.dineroRecibidoInput).subscribe({
+      next: (liquidado) => {
+        this.exitoLiquidar = 'Jornada liquidada correctamente.';
+        this.cierreActivoDetalle = liquidado;
+        
+        // Actualizar el cierre en la lista local
+        const index = this.cierresVendedor.findIndex(c => c.id_cierre === liquidado.id_cierre);
+        if (index !== -1) {
+          this.cierresVendedor[index] = liquidado;
+        }
+
+        // Recargar el estado principal de monitoreo para actualizar badges en las tarjetas
+        this.cargar();
+        this.procesandoLiquidacion = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.errorLiquidar = err?.error?.message || 'Error al liquidar la jornada.';
+        this.procesandoLiquidacion = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   // ── Google Maps ───────────────────────────────────────────────────────────
@@ -250,7 +450,15 @@ export class MonitoreoComponent implements OnInit {
     const gm = (window as any).google?.maps;
     if (!gm || !this.map) return;
 
-    this.clientesMapa.forEach(cliente => {
+    let list = [...this.clientesMapa];
+    if (this.searchQuery && this.searchQuery.trim() !== '') {
+      const query = this.searchQuery.toLowerCase().trim();
+      list = list.filter(cliente =>
+        cliente.vendedorNombre.toLowerCase().includes(query)
+      );
+    }
+
+    list.forEach(cliente => {
       if (cliente.latitud == null || cliente.longitud == null) return;
 
       const esActivo = cliente.estado?.toUpperCase() === 'ACTIVO';

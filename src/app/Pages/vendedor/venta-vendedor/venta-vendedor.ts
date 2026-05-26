@@ -93,37 +93,25 @@ export class VentaVendedorComponent implements OnInit {
     this.cargando = true;
 
     forkJoin({
-        inventario: this.apiService.getInventarioVendedor(this.idVendedor),
-      todos: this.productosService.getProductos(),
-      cierre: this.apiService.getCierreJornada(this.idVendedor, this.fechaHoy).pipe(
-        catchError(() => of(null))
-      )
+      inventario: this.apiService.getInventarioVendedor(this.idVendedor),
+      todos: this.productosService.getProductos()
     }).subscribe({
-      next: ({ inventario, todos, cierre }) => {
-        // Suma de cantidad_inicial por producto para cargas VALIDADO
+      next: ({ inventario, todos }) => {
+        // Suma de cantidad_actual por producto para cargas VALIDADO
         const cantidadAsignada = new Map<string, number>();
         for (const carga of inventario) {
           if (carga.estado_validacion !== 'VALIDADO') continue;
           const id = String(carga.id_producto);
-          cantidadAsignada.set(id, (cantidadAsignada.get(id) ?? 0) + carga.cantidad_inicial);
+          cantidadAsignada.set(id, (cantidadAsignada.get(id) ?? 0) + (carga.cantidad_actual ?? 0));
         }
 
-        // Unidades vendidas hoy por producto (desde el cierre)
-        const vendidoHoy = new Map<string, number>();
-        if (cierre) {
-          for (const det of cierre.conciliacionInventario.detalleProductos) {
-            vendidoHoy.set(String(det.idProducto), det.vendido);
-          }
-        }
-
-        // Stock actual del vendedor = asignado − vendido hoy
+        // Stock actual del vendedor = cantidad_actual asignada
         this.productos = todos
           .filter(p => cantidadAsignada.has(String(p.id_producto ?? p.sku)))
           .map(p => {
             const id = String(p.id_producto ?? p.sku);
-            const asignado = cantidadAsignada.get(id) ?? 0;
-            const vendido  = vendidoHoy.get(id) ?? 0;
-            return { ...p, stock_almacen_central: Math.max(0, asignado - vendido) };
+            const stock = cantidadAsignada.get(id) ?? 0;
+            return { ...p, stock_almacen_central: stock };
           });
 
         this.productosFiltrados = [...this.productos];
