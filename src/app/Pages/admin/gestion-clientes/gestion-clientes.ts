@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AdminNavbar } from '../../../components/admin-navbar/admin-navbar';
 import { ClientesService } from '../../../services/clientes.service';
 import { VendedoresService } from '../../../services/vendedores.service';
@@ -29,7 +30,7 @@ interface ClienteForm {
 @Component({
   selector: 'app-gestion-clientes',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminNavbar],
+  imports: [CommonModule, FormsModule, AdminNavbar, TranslateModule],
   templateUrl: './gestion-clientes.html',
   styleUrls: ['./gestion-clientes.scss'],
 })
@@ -42,6 +43,7 @@ export class GestionClientesComponent implements OnInit {
   mostrarModal = false;
   guardando = false;
   errorModal = '';
+  ciNitError = '';
   clienteEditandoId = '';
   formulario: ClienteForm = this.formularioInicial();
 
@@ -49,6 +51,7 @@ export class GestionClientesComponent implements OnInit {
     private clientesService: ClientesService,
     private vendedoresService: VendedoresService,
     private router: Router,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -81,7 +84,7 @@ export class GestionClientesComponent implements OnInit {
         return forkJoin(peticiones);
       }),
       catchError(() => {
-        this.error = 'No se pudieron cargar los datos. Verifica la conexión con el servidor.';
+        this.error = this.translate.instant('ADMIN.CLIENTES.ERROR.LOAD_FAILED');
         return of([] as VendedorRow[]);
       })
     ).subscribe(grupos => {
@@ -119,10 +122,19 @@ export class GestionClientesComponent implements OnInit {
 
   getFrecuenciaLabel(frecuencia: string): string {
     const labels: Record<string, string> = {
-      diaria: 'Diaria', semanal: 'Semanal', quincenal: 'Quincenal', mensual: 'Mensual',
-      DIARIA: 'Diaria', SEMANAL: 'Semanal', QUINCENAL: 'Quincenal', MENSUAL: 'Mensual',
+      diaria: 'VENDEDOR.MAP.FREQUENCY_DAILY', semanal: 'VENDEDOR.MAP.FREQUENCY_WEEKLY', quincenal: 'VENDEDOR.MAP.FREQUENCY_BIWEEKLY', mensual: 'VENDEDOR.MAP.FREQUENCY_MONTHLY',
+      DIARIA: 'VENDEDOR.MAP.FREQUENCY_DAILY', SEMANAL: 'VENDEDOR.MAP.FREQUENCY_WEEKLY', QUINCENAL: 'VENDEDOR.MAP.FREQUENCY_BIWEEKLY', MENSUAL: 'VENDEDOR.MAP.FREQUENCY_MONTHLY',
     };
-    return labels[frecuencia] ?? frecuencia;
+    return this.translate.instant(labels[frecuencia] ?? frecuencia);
+  }
+
+  getEstadoClienteLabel(estado: string | undefined): string {
+    const keys: Record<string, string> = {
+      ACTIVO: 'ADMIN.CLIENTES.STATUS.ACTIVE',
+      INACTIVO: 'ADMIN.CLIENTES.STATUS.INACTIVE',
+      'EN RUTA': 'ADMIN.MONITOR.STATUS.EN_ROUTE',
+    };
+    return this.translate.instant(keys[estado?.toUpperCase() ?? ''] ?? estado ?? '');
   }
 
   esActivo(estado: string | undefined): boolean {
@@ -139,6 +151,7 @@ export class GestionClientesComponent implements OnInit {
       estado: cliente.estado?.toUpperCase() === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO',
     };
     this.errorModal = '';
+    this.ciNitError = '';
     this.mostrarModal = true;
   }
 
@@ -147,12 +160,19 @@ export class GestionClientesComponent implements OnInit {
     this.clienteEditandoId = '';
     this.formulario = this.formularioInicial();
     this.errorModal = '';
+    this.ciNitError = '';
   }
 
   guardarCambios(): void {
     if (!this.clienteEditandoId) return;
     if (!this.formulario.nombreNegocio.trim() || !this.formulario.ciNit.trim()) {
-      this.errorModal = 'El nombre del negocio y el CI/NIT son obligatorios.';
+      this.errorModal = this.translate.instant('ADMIN.CLIENTES.ERROR.REQUIRED_FIELDS');
+      return;
+    }
+
+    if (!this.isCiNitValid(this.formulario.ciNit)) {
+      this.ciNitError = 'Formatos de CI/NIT inválido. Solo se permiten números y extensiones válidas.';
+      this.errorModal = this.ciNitError;
       return;
     }
 
@@ -180,10 +200,30 @@ export class GestionClientesComponent implements OnInit {
         this.cerrarModal();
       },
       error: () => {
-        this.errorModal = 'No se pudo actualizar el cliente. Intenta de nuevo.';
+        this.errorModal = this.translate.instant('ADMIN.CLIENTES.ERROR.UPDATE_FAILED');
         this.guardando = false;
       },
     });
+  }
+
+  onCiNitInput(): void {
+    if (!this.formulario.ciNit || !this.formulario.ciNit.trim()) {
+      this.ciNitError = '';
+      return;
+    }
+
+    if (!this.isCiNitValid(this.formulario.ciNit)) {
+      this.ciNitError = 'Formatos de CI/NIT inválido. Solo se permiten números y extensiones válidas.';
+    } else {
+      this.ciNitError = '';
+    }
+  }
+
+  private isCiNitValid(value: string | undefined): boolean {
+    if (!value) return false;
+    const v = value.trim();
+    const re = /^\d{6,12}(?:-?[A-Za-z0-9]{1,3})?$/;
+    return re.test(v);
   }
 
   toggleEstadoCliente(cliente: Cliente): void {

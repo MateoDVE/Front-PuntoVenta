@@ -77,9 +77,11 @@
           <input
             name="ciNit"
             [(ngModel)]="newCliente.ciNit"
+            (input)="onCiNitInput()"
             placeholder="{{ 'VENDEDOR.MAP.CI_NIT_PLACEHOLDER' | translate }}"
             required
           />
+          <span class="error-message" *ngIf="ciNitError">{{ ciNitError }}</span>
         </label>
 
         <label>

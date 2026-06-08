@@ -8,7 +8,22 @@
     "PLACEHOLDER_PASSWORD": "Ñawiykita qillqay",
     "ERROR_PASSWORD": "Ñawiy 6 qillqamanta astawan kanan tiyan",
     "BOTON_INICIAR": "Yaykuy",
-    "CARGANDO": "Cargando..."
+    "CARGANDO": "Cargando...",
+    "ERROR_INVALID_CREDENTIALS": "Correo utaq ñawiy pantasqa.",
+    "ERROR_CONNECTION": "Servidorwan tinkuyta mana atichikchu. Wakmanta llamk'ay.",
+    "ERROR_GENERIC": "Yaykuyta mana atichikchu. Wakmanta llamk'ay.",
+    "ERROR_ROLE_UNDETERMINED": "Runapa rol-ninta mana riqsichikchu.",
+    "ERROR_TOKEN_MISSING": "Sesion token-ta mana tarisqachu. Wakmanta llamk'ay."
+  },
+  "COMMON": {
+    "ACCEPT": "Chaskiy",
+    "CANCEL": "Cancelar",
+    "CLOSE": "Wichqay",
+    "DELETE": "Pichay",
+    "CONFIRM": "Chaskiy",
+    "SUCCESS": "Allin",
+    "ERROR": "Pantay",
+    "WARNING": "Uyariy"
   },
   "ADMIN": {
     "NAVBAR": {
@@ -82,8 +97,8 @@
         "VENDORS_DETAIL": "{{activeVendors}} kawsachikuchkan",
         "STOCK_TITLE": "Global stock",
         "STOCK_DETAIL": "Valor: Bs. {{totalValue}}",
-        "SALES_PROJECTS_TITLE": "Qhatuy projektokuna",
-        "SALES_PROJECTS_DETAIL": "Mana qhatuy qillqasqachu"
+        "SALES_PROJECTS_TITLE": "Llapanta qhatuykuna",
+        "SALES_PROJECTS_DETAIL": "{{totalSales}} qhatuy qillqasqakuna"
       }
     },
     "CATALOG": {
@@ -164,13 +179,22 @@
         "PROCESS_IMAGE": "Rikchay procesaypi pantay",
         "UPLOAD_IMAGE": "Rikchayta subirpi pantay",
         "DELETE_IMAGE": "Rikchayta pichaypi pantay",
-        "UNKNOWN": "Mana yuyaychay pantay"
+        "UNKNOWN": "Mana yuyaychay pantay",
+        "FIX_FIELDS": "Guardaraymanta ñawpaqmi pantaykunata chiqaspa.",
+        "COMPLETE_REQUIRED_FIELDS": "Munaq campokunata allinta hunt'ay.",
+        "PRODUCT_UPDATED": "Producto actualizaypi pantay.",
+        "PRODUCT_CREATED": "Producto kamaypi pantay.",
+        "PRODUCT_DELETED": "Producto pichaypi pantay."
       },
       "CONFIRM": {
-        "DELETE_IMAGE": "Kay rikchayta pichunkichu?"
+        "DELETE_IMAGE": "Kay rikchayta pichunkichu?",
+        "DELETE_PRODUCT": "Kay producto-ta pichunkichu?"
       },
       "SUCCESS": {
-        "IMAGE_DELETED": "Rikchay allinpuni pichasqa"
+        "IMAGE_DELETED": "Rikchay allinpuni pichasqa",
+        "PRODUCT_UPDATED": "Producto allinpuni actualizasqa.",
+        "PRODUCT_CREATED": "Producto allinpuni kamaqsqa.",
+        "PRODUCT_DELETED": "Producto allinpuni pichasqa."
       }
     },
     "ASIGNACION": {
@@ -276,7 +300,187 @@
         "UPDATE_BUTTON": "Qhatuchikta actualizay",
         "CREATE_BUTTON": "Qhatuchikta kamshiy",
         "EDIT": "Editay",
-        "DELETE": "Pichay"
+        "DELETE": "Pichay",
+        "CONFIRM": {
+          "DELETE_VENDOR": "¿Desea eliminar a {{name}}?"
+        },
+        "SUCCESS": {
+          "DELETED": "Qhatuchik allinpuni pichasqa."
+        },
+        "ERROR": {
+          "DELETE": "Qhatuchikta pichaypi pantay."
+        }
+      }
+    },
+    "CLIENTES": {
+      "TITLE": "Clientesqam qillqay",
+      "SUBTITLE": "Qhatuchikpa clienteskuna qhawariykuy",
+      "BUTTON": {
+        "RELOAD": "Qallarichiy"
+      },
+      "LOADING": "Qhatuchikwan clienteskuna cargarichiy...",
+      "STATS": {
+        "TOTAL": "Clientes total",
+        "ACTIVE": "Kawsachikun",
+        "INACTIVE": "Mana kawsachikun",
+        "SELLERS": "Qhatuchik"
+      },
+      "EMPTY": {
+        "NO_SELLERS": "Mana qhatuchikunqachu kachachun."
+      },
+      "LABEL": {
+        "CLIENT": "cliente",
+        "CLIENTS": "clientes"
+      },
+      "TABLE": {
+        "BUSINESS": "Negocio",
+        "CI_NIT": "CI / NIT",
+        "PHONE": "Celular",
+        "FREQUENCY": "Frecuencia",
+        "STATUS": "Estado",
+        "ACTIONS": "Acciones"
+      },
+      "ACTIONS": {
+        "EDIT": "Editay",
+        "DEACTIVATE": "Mana kawsachiy",
+        "ACTIVATE": "Kawsachiy"
+      },
+      "STATUS": {
+        "ACTIVE": "Kawsachikun",
+        "INACTIVE": "Mana kawsachikun"
+      },
+      "MODAL": {
+        "TITLE": "Cliente editay",
+        "CLOSE": "Formulario serray",
+        "SECTION": {
+          "BUSINESS": "Negocio datos",
+          "VISIT": "Visita config"
+        },
+        "LABEL": {
+          "BUSINESS_NAME": "Negocio sutin",
+          "CI_NIT": "CI / NIT",
+          "PHONE": "Celular",
+          "FREQUENCY": "Visita frecuencia",
+          "STATUS": "Estado"
+        },
+        "PLACEHOLDER": {
+          "BUSINESS": "Ej: Tienda Don Juan",
+          "CI_NIT": "Ej: 12345678",
+          "PHONE": "Ej: 70012345"
+        },
+        "OPTION": {
+          "DAILY": "Diaria",
+          "WEEKLY": "Semanal",
+          "BIWEEKLY": "Quincenal",
+          "MONTHLY": "Mensual"
+        },
+        "BUTTON": {
+          "CANCEL": "Cancelar",
+          "SAVE": "Guardaykuy",
+          "SAVING": "Guardachiy..."
+        }
+      },
+      "ERROR": {
+        "LOAD_FAILED": "Manaqa datoskuna qallarichiychu. Server qillqayta ruraykachun.",
+        "REQUIRED_FIELDS": "Negocio sutinmi kanqa, CI/NITmi kanqa.",
+        "UPDATE_FAILED": "Manaqa cliente qillqayta actualizaychu. Amañanchu chaskiy."
+      }
+    },
+    "REPORTES": {
+      "TITLE": "Reportes y Análisis",
+      "SUBTITLE": "Qhatuy estadísticas wan inventario gestion",
+      "BUTTON": {
+        "RELOAD": "Qallarichiy"
+      },
+      "LOADING": "Reportes cargarichiwankuman...",
+      "KPI": {
+        "TOTAL_SALES": "Total Qhatuykuna",
+        "TOTAL_INCOME": "Total Ingresos",
+        "AVG_TICKET": "Sapa Qhatuy Medio"
+      },
+      "CHART": {
+        "SALES_INCOME": "Qhatuykuna e Ingresos por Qhatuchik",
+        "CATEGORIES": "Productos por Categoría",
+        "STOCK": "Global Stock por Producto",
+        "TREND": "Qhatuy Tendencia",
+        "NO_CATEGORY": "Mana categoríachu",
+        "CATEGORY_PREFIX": "Categoría",
+        "DATASET": {
+          "SALES": "Qhatuykuna",
+          "INCOME": "Ingresos (Bs.)",
+          "STOCK": "Stock"
+        }
+      },
+      "DISCREPANCIAS": {
+        "TITLE": "Inventario Discrepancias Reporte",
+        "EMPTY": "Mana kunan punchaw cierre datoschu.",
+        "EXPECTED": "Stock Esperasqa",
+        "ACTUAL": "Stock Kunan",
+        "DIFFERENCE": "Diferencia",
+        "UNITS": "unidades",
+        "OK": "✓ Allin",
+        "ERR": "⚠ Diferencia"
+      },
+      "ERROR": {
+        "LOAD_FAILED": "Mana reportes datosta cargarita atisqa."
+      }
+    },
+    "MONITOR": {
+      "TITLE": "Real-Time Monitor",
+      "SUBTITLE": "Qhatuchik wan clientes nisqakunata qhawariykuy",
+      "LIVE": "Live",
+      "BUTTON": {
+        "RELOAD": "Qallarichiy"
+      },
+      "LOADING": "Monitor datoskuna cargarichiy...",
+      "EMPTY": {
+        "NO_SELLERS": "Mana qhatuchik qillqasqa."
+      },
+      "CARD": {
+        "STOCK": "Stock",
+        "SALES": "Qhatuykuna",
+        "INCOME": "Ingresos"
+      },
+      "SUMMARY": {
+        "TOTAL_INCOME": "Ingresos totales",
+        "ON_ROUTE_SINGULAR": "qhatuchik nampi",
+        "ON_ROUTE_PLURAL": "qhatuchikkuna nampi"
+      },
+      "MAP": {
+        "TITLE": "Clientes Mapa",
+        "COUNT": "ubicacion qillqasqa",
+        "EMPTY": "Manaqa clienteqa GPS ubicacion qillqasqa."
+      },
+      "LEGEND": {
+        "ATTENDED": "Kunan punchaw atendiy",
+        "PENDING": "Kawsachiy · pending",
+        "INACTIVE": "Mana kawsachikun",
+        "INFO": "Markerpi clicky qhawachiy detailkuna"
+      },
+      "STATUS": {
+        "ACTIVE": "Kawsachikun",
+        "EN_ROUTE": "Nampi",
+        "CLOSED": "Jornada kutiy",
+        "LIQUIDATED": "Liquidada"
+      },
+      "ERROR": {
+        "LOAD_FAILED": "Manaqa datoskuna qallarichiychu. Server qillqayta ruraykachun."
+      },
+      "MODAL": {
+        "TITLE": "Jornada kutiykuna",
+        "LIQUIDATE": "Liquiday",
+        "DETAILS": "Detaynin qhaway",
+        "DATE": "Fecha",
+        "STATUS": "Estado",
+        "EXPECTED": "Quillqay esperasqa",
+        "DECLARED": "Quillqay declarasqa",
+        "DIFFERENCE": "Diferencia",
+        "RECEIVED": "Quillqay chaskisqa",
+        "CONFIRM": "Liquidacionta waqaychay",
+        "BACK": "Listaman kutiy",
+        "CLOSE": "Wichqay",
+        "NO_CIERRES": "Mana closures qillqasqachu kay qhatuchikpaq.",
+        "LOCKED_MSG": "Kay punchawqa LIQUIDADA kachkan administratormanta, wichqasqa."
       }
     }
   },

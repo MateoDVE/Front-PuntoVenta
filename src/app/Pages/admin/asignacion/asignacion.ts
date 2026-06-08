@@ -243,19 +243,32 @@ export class Asignacion implements OnInit {
       });
   }
 
-  private mapStockVendedor(vendedor: VendedorBackend, asignaciones: InventarioAsignacion[]): TransporteStock {
-    const items = asignaciones.map((asignacion) => {
-      const producto = this.productosCatalogo.find(
-        (item) => String(item.id_producto) === String(asignacion.id_producto)
-      );
+  private getFechaHoy(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
 
-      return {
-        idCarga: asignacion.id_carga,
-        nombre: producto?.nombre ?? `Producto ${asignacion.id_producto}`,
-        cantidad: asignacion.cantidad_inicial,
-        estado: (asignacion.estado_validacion ?? '').toUpperCase(),
-      };
-    });
+  private mapStockVendedor(vendedor: VendedorBackend, asignaciones: InventarioAsignacion[]): TransporteStock {
+    const fechaHoy = this.getFechaHoy();
+    const items = asignaciones
+      .filter((asignacion) => asignacion.fecha_asignacion && String(asignacion.fecha_asignacion).substring(0, 10) === fechaHoy)
+      .map((asignacion) => {
+        const producto = this.productosCatalogo.find(
+          (item) => String(item.id_producto) === String(asignacion.id_producto)
+        );
+
+        const estado = (asignacion.estado_validacion ?? '').toUpperCase();
+        // Si está VALIDADO, usamos cantidad_actual; de lo contrario, cantidad_inicial
+        const cantidad = estado === 'VALIDADO' ? (asignacion.cantidad_actual ?? 0) : asignacion.cantidad_inicial;
+
+        return {
+          idCarga: asignacion.id_carga,
+          nombre: producto?.nombre ?? `Producto ${asignacion.id_producto}`,
+          cantidad: cantidad,
+          estado: estado,
+        };
+      })
+      .filter((item) => item.cantidad > 0 || item.estado !== 'VALIDADO');
 
     const totalItems = items.reduce((acc, item) => acc + item.cantidad, 0);
 

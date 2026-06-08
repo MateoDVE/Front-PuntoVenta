@@ -1,0 +1,30 @@
+@if (open) {
+  <div class="modal-overlay" (click)="onBackdropClick()">
+    <section class="modal-shell" [ngClass]="variantClass" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <div>
+          <p class="modal-kicker">{{ variant | titlecase }}</p>
+          <h2>{{ title }}</h2>
+        </div>
+        <button type="button" class="modal-close" (click)="onCancel()" [attr.aria-label]="closeLabel">
+          ✕
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <p>{{ message }}</p>
+      </div>
+
+      <footer class="modal-actions">
+        @if (showCancel) {
+          <button type="button" class="btn btn-secondary" (click)="onCancel()">
+            {{ cancelText }}
+          </button>
+        }
+        <button type="button" class="btn btn-primary" (click)="onConfirm()">
+          {{ confirmText }}
+        </button>
+      </footer>
+    </section>
+  </div>
+}

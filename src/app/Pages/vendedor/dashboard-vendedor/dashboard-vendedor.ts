@@ -113,39 +113,29 @@ export class DashboardVendedor implements OnInit {
   }
 
   get stockTransporte(): ProductoTransporte[] {
-    // Unidades vendidas hoy por producto (desde el cierre del día)
-    const vendidoHoy = new Map<string, number>();
-    if (this.cierreData) {
-      for (const det of this.cierreData.conciliacionInventario.detalleProductos) {
-        vendidoHoy.set(String(det.idProducto), det.vendido);
-      }
-    }
-
-    // Suma de cantidad_inicial para cargas VALIDADO, restando lo vendido hoy
+    // Suma de cantidad_actual para cargas VALIDADO
     const acumulado = new Map<string, ProductoTransporte>();
+    const fechaHoy = this.getFechaHoy();
 
     for (const carga of this.cargas) {
       if (this.normalizarEstado(carga.estado_validacion) !== 'VALIDADO') continue;
+      if (carga.fecha_asignacion && String(carga.fecha_asignacion).substring(0, 10) !== fechaHoy) continue;
 
       const idProducto = String(carga.id_producto);
       const producto = this.productosCatalogo.find(p => String(p.id_producto) === idProducto);
       const existente = acumulado.get(idProducto);
+      const cantidad = carga.cantidad_actual ?? 0;
 
       if (existente) {
-        existente.cantidad += carga.cantidad_inicial;
+        existente.cantidad += cantidad;
       } else {
         acumulado.set(idProducto, {
           idProducto,
           nombre: producto?.nombre ?? `Producto ${idProducto}`,
-          cantidad: carga.cantidad_inicial,
+          cantidad: cantidad,
           precio: producto?.precio_unidad ?? 0,
         });
       }
-    }
-
-    // Restar lo vendido hoy a cada producto
-    for (const [id, item] of acumulado) {
-      item.cantidad = Math.max(0, item.cantidad - (vendidoHoy.get(id) ?? 0));
     }
 
     return [...acumulado.values()];

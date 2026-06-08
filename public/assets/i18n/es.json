@@ -8,7 +8,22 @@
     "PLACEHOLDER_PASSWORD": "Ingresa tu contraseña",
     "ERROR_PASSWORD": "La contraseña debe tener al menos 6 caracteres",
     "BOTON_INICIAR": "Iniciar Sesión",
-    "CARGANDO": "Cargando..."
+    "CARGANDO": "Cargando...",
+    "ERROR_INVALID_CREDENTIALS": "Correo o contraseña incorrectos.",
+    "ERROR_CONNECTION": "No se pudo conectar con el servidor. Intenta nuevamente.",
+    "ERROR_GENERIC": "No se pudo iniciar sesión. Intenta nuevamente.",
+    "ERROR_ROLE_UNDETERMINED": "No se pudo determinar el rol del usuario.",
+    "ERROR_TOKEN_MISSING": "No se pudo obtener el token de sesión. Intenta nuevamente."
+  },
+  "COMMON": {
+    "ACCEPT": "Aceptar",
+    "CANCEL": "Cancelar",
+    "CLOSE": "Cerrar",
+    "DELETE": "Eliminar",
+    "CONFIRM": "Confirmación",
+    "SUCCESS": "Éxito",
+    "ERROR": "Error",
+    "WARNING": "Advertencia"
   },
   "ADMIN": {
     "NAVBAR": {
@@ -82,8 +97,8 @@
         "VENDORS_DETAIL": "{{activeVendors}} activos",
         "STOCK_TITLE": "Stock total",
         "STOCK_DETAIL": "Valor: Bs. {{totalValue}}",
-        "SALES_PROJECTS_TITLE": "Proyectos de venta",
-        "SALES_PROJECTS_DETAIL": "Sin ventas registradas"
+        "SALES_PROJECTS_TITLE": "Ventas totales",
+        "SALES_PROJECTS_DETAIL": "{{totalSales}} ventas registradas"
       }
     },
     "CATALOG": {
@@ -164,13 +179,22 @@
         "PROCESS_IMAGE": "Error al procesar imagen",
         "UPLOAD_IMAGE": "Error al subir imagen",
         "DELETE_IMAGE": "Error al eliminar imagen",
-        "UNKNOWN": "Error desconocido"
+        "UNKNOWN": "Error desconocido",
+        "FIX_FIELDS": "Por favor corrige los errores en los campos antes de guardar.",
+        "COMPLETE_REQUIRED_FIELDS": "Por favor completa todos los campos requeridos correctamente.",
+        "PRODUCT_UPDATED": "Error al actualizar el producto.",
+        "PRODUCT_CREATED": "Error al crear el producto.",
+        "PRODUCT_DELETED": "Error al eliminar el producto."
       },
       "CONFIRM": {
-        "DELETE_IMAGE": "¿Desea eliminar esta imagen?"
+        "DELETE_IMAGE": "¿Desea eliminar esta imagen?",
+        "DELETE_PRODUCT": "¿Desea eliminar este producto?"
       },
       "SUCCESS": {
-        "IMAGE_DELETED": "Imagen eliminada correctamente"
+        "IMAGE_DELETED": "Imagen eliminada correctamente",
+        "PRODUCT_UPDATED": "Producto actualizado correctamente.",
+        "PRODUCT_CREATED": "Producto creado correctamente.",
+        "PRODUCT_DELETED": "Producto eliminado correctamente."
       }
     },
     "ASIGNACION": {
@@ -276,7 +300,187 @@
         "UPDATE_BUTTON": "Actualizar vendedor",
         "CREATE_BUTTON": "Crear vendedor",
         "EDIT": "Editar",
-        "DELETE": "Eliminar"
+        "DELETE": "Eliminar",
+        "CONFIRM": {
+          "DELETE_VENDOR": "¿Desea eliminar a {{name}}?"
+        },
+        "SUCCESS": {
+          "DELETED": "Vendedor eliminado correctamente."
+        },
+        "ERROR": {
+          "DELETE": "Error al eliminar el vendedor."
+        }
+      }
+    },
+    "CLIENTES": {
+      "TITLE": "Gestión de Clientes",
+      "SUBTITLE": "Administra y visualiza los clientes de cada vendedor",
+      "BUTTON": {
+        "RELOAD": "Recargar"
+      },
+      "LOADING": "Cargando vendedores y clientes...",
+      "STATS": {
+        "TOTAL": "Total clientes",
+        "ACTIVE": "Activos",
+        "INACTIVE": "Inactivos",
+        "SELLERS": "Vendedores"
+      },
+      "EMPTY": {
+        "NO_SELLERS": "No hay vendedores registrados aún."
+      },
+      "LABEL": {
+        "CLIENT": "cliente",
+        "CLIENTS": "clientes"
+      },
+      "TABLE": {
+        "BUSINESS": "Negocio",
+        "CI_NIT": "CI / NIT",
+        "PHONE": "Celular",
+        "FREQUENCY": "Frecuencia",
+        "STATUS": "Estado",
+        "ACTIONS": "Acciones"
+      },
+      "ACTIONS": {
+        "EDIT": "Editar",
+        "DEACTIVATE": "Desactivar",
+        "ACTIVATE": "Activar"
+      },
+      "STATUS": {
+        "ACTIVE": "Activo",
+        "INACTIVE": "Inactivo"
+      },
+      "MODAL": {
+        "TITLE": "Editar cliente",
+        "CLOSE": "Cerrar formulario",
+        "SECTION": {
+          "BUSINESS": "Datos del negocio",
+          "VISIT": "Configuración de visita"
+        },
+        "LABEL": {
+          "BUSINESS_NAME": "Nombre del negocio",
+          "CI_NIT": "CI / NIT",
+          "PHONE": "Celular",
+          "FREQUENCY": "Frecuencia de visita",
+          "STATUS": "Estado"
+        },
+        "PLACEHOLDER": {
+          "BUSINESS": "Ej: Tienda Don Juan",
+          "CI_NIT": "Ej: 12345678",
+          "PHONE": "Ej: 70012345"
+        },
+        "OPTION": {
+          "DAILY": "Diaria",
+          "WEEKLY": "Semanal",
+          "BIWEEKLY": "Quincenal",
+          "MONTHLY": "Mensual"
+        },
+        "BUTTON": {
+          "CANCEL": "Cancelar",
+          "SAVE": "Guardar cambios",
+          "SAVING": "Guardando..."
+        }
+      },
+      "ERROR": {
+        "LOAD_FAILED": "No se pudieron cargar los datos. Verifica la conexión con el servidor.",
+        "REQUIRED_FIELDS": "El nombre del negocio y el CI/NIT son obligatorios.",
+        "UPDATE_FAILED": "No se pudo actualizar el cliente. Intenta de nuevo."
+      }
+    },
+    "REPORTES": {
+      "TITLE": "Reportes y Análisis",
+      "SUBTITLE": "Estadísticas de ventas y gestión de inventario",
+      "BUTTON": {
+        "RELOAD": "Recargar"
+      },
+      "LOADING": "Cargando reportes...",
+      "KPI": {
+        "TOTAL_SALES": "Total Ventas",
+        "TOTAL_INCOME": "Ingresos Totales",
+        "AVG_TICKET": "Ticket Promedio"
+      },
+      "CHART": {
+        "SALES_INCOME": "Ventas e Ingresos por Vendedor",
+        "CATEGORIES": "Productos por Categoría",
+        "STOCK": "Stock Global por Producto",
+        "TREND": "Tendencia de Ventas",
+        "NO_CATEGORY": "Sin categoría",
+        "CATEGORY_PREFIX": "Categoría",
+        "DATASET": {
+          "SALES": "Ventas",
+          "INCOME": "Ingresos (Bs.)",
+          "STOCK": "Stock"
+        }
+      },
+      "DISCREPANCIAS": {
+        "TITLE": "Reporte de Discrepancias de Inventario",
+        "EMPTY": "No hay datos de cierre de jornada disponibles para hoy.",
+        "EXPECTED": "Stock Esperado",
+        "ACTUAL": "Stock Actual",
+        "DIFFERENCE": "Diferencia",
+        "UNITS": "unidades",
+        "OK": "✓ Correcto",
+        "ERR": "⚠ Diferencia"
+      },
+      "ERROR": {
+        "LOAD_FAILED": "No se pudieron cargar los datos de reportes."
+      }
+    },
+    "MONITOR": {
+      "TITLE": "Monitor en Tiempo Real",
+      "SUBTITLE": "Seguimiento de vendedores y clientes en atención",
+      "LIVE": "En vivo",
+      "BUTTON": {
+        "RELOAD": "Recargar"
+      },
+      "LOADING": "Cargando datos del monitor...",
+      "EMPTY": {
+        "NO_SELLERS": "Sin vendedores registrados."
+      },
+      "CARD": {
+        "STOCK": "Stock",
+        "SALES": "Ventas",
+        "INCOME": "Ingresos"
+      },
+      "SUMMARY": {
+        "TOTAL_INCOME": "Ingresos totales",
+        "ON_ROUTE_SINGULAR": "vendedor en ruta",
+        "ON_ROUTE_PLURAL": "vendedores en ruta"
+      },
+      "MAP": {
+        "TITLE": "Mapa de Clientes",
+        "COUNT": "con ubicación registrada",
+        "EMPTY": "Ningún cliente tiene ubicación GPS registrada aún."
+      },
+      "LEGEND": {
+        "ATTENDED": "Atendido hoy",
+        "PENDING": "Activo · pendiente",
+        "INACTIVE": "Inactivo",
+        "INFO": "Haz clic en un marcador para ver el detalle"
+      },
+      "STATUS": {
+        "ACTIVE": "Activo",
+        "EN_ROUTE": "En ruta",
+        "CLOSED": "Jornada cerrada",
+        "LIQUIDATED": "Liquidada"
+      },
+      "ERROR": {
+        "LOAD_FAILED": "No se pudieron cargar los datos. Verifica la conexión con el servidor."
+      },
+      "MODAL": {
+        "TITLE": "Cierres de Jornada",
+        "LIQUIDATE": "Liquidar",
+        "DETAILS": "Ver Detalle",
+        "DATE": "Fecha",
+        "STATUS": "Estado",
+        "EXPECTED": "Dinero Esperado",
+        "DECLARED": "Efectivo Declarado",
+        "DIFFERENCE": "Diferencia",
+        "RECEIVED": "Efectivo Recibido",
+        "CONFIRM": "Registrar Liquidación",
+        "BACK": "Volver a la lista",
+        "CLOSE": "Cerrar",
+        "NO_CIERRES": "No hay cierres registrados para este vendedor.",
+        "LOCKED_MSG": "Esta jornada ha sido LIQUIDADA por el administrador y está bloqueada."
       }
     }
   },

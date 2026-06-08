@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { AuthService } from '../../../services/auth.service';
+import { SyncService } from '../../../services/sync.service';
+import { DatabaseService } from '../../../services/database.service';
 import {
   ApiService,
   CierreJornadaResponse,
@@ -25,7 +27,7 @@ import {
   styleUrl: './cierre-vendedor.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class CierreVendedor implements OnInit {
+export class CierreVendedor implements OnInit, OnDestroy {
 
   // Datos del cierre
   cierre: CierreJornadaResponse | null = null;
@@ -53,9 +55,15 @@ export class CierreVendedor implements OnInit {
   // Modal resultado
   mostrarModalResultado: boolean = false;
 
+  hasPendientes: boolean = false;
+  ventasOffline: any[] = [];
+  private syncSub: Subscription | null = null;
+
   constructor(
     private authService: AuthService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private syncService: SyncService,
+    private db: DatabaseService
   ) {}
 
   ngOnInit(): void {
@@ -64,6 +72,31 @@ export class CierreVendedor implements OnInit {
       this.idVendedor = user.id_usuario || '';
     }
     this.cargarCierre();
+    this.syncSub = this.syncService.pendingCount$.subscribe(async count => {
+      this.hasPendientes = count > 0;
+      await this.cargarVentasOffline();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.syncSub?.unsubscribe();
+  }
+
+  async cargarVentasOffline(): Promise<void> {
+    try {
+      this.ventasOffline = await this.db.ventasPendientes.toArray();
+    } catch (e) {
+      this.ventasOffline = [];
+    }
+  }
+
+  async descartarVentaOffline(idLocal: string): Promise<void> {
+    if (confirm('¿Estás seguro de descartar esta venta? Se perderán los datos de la misma.')) {
+      try {
+        await this.db.ventasPendientes.delete(idLocal);
+        await this.cargarVentasOffline();
+      } catch (e) {}
+    }
   }
 
   private getFechaHoy(): string {
@@ -160,6 +193,9 @@ export class CierreVendedor implements OnInit {
         this.jornadaYaCerrada = true;
         this.mostrarModalResultado = true;
         this.enviando = false;
+        try {
+          localStorage.setItem(`cierre_${this.idVendedor}_${this.fechaHoy}`, 'true');
+        } catch (e) {}
       },
       error: (err) => {
         this.errorGuardado = err?.error?.message || 'El cierre fue calculado pero no se pudo guardar';
@@ -176,10 +212,26 @@ export class CierreVendedor implements OnInit {
     this.errorGuardado = '';
   }
 
+  devolverStock(): void {
+    if (!this.idVendedor) return;
+    this.enviando = true;
+    this.error = '';
+    this.apiService.devolverStock(this.idVendedor, this.fechaHoy).subscribe({
+      next: (res) => {
+        this.enviando = false;
+        this.cargarCierre(); // Recargar datos
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Error al devolver el stock';
+        this.enviando = false;
+      }
+    });
+  }
+
   get detallesCorregidos() {
     return (this.cierre?.conciliacionInventario.detalleProductos ?? []).map(det => {
       const asignadoTotal = this.asignaciones
-        .filter(a => a.estado_validacion === 'VALIDADO' && String(a.id_producto) === String(det.idProducto))
+        .filter(a => a.fecha_asignacion && String(a.fecha_asignacion).substring(0, 10) === this.fechaHoy && a.estado_validacion === 'VALIDADO' && String(a.id_producto) === String(det.idProducto))
         .reduce((sum, a) => sum + a.cantidad_inicial, 0);
       const stockInicialCorregido = asignadoTotal > 0 ? asignadoTotal : det.stockInicial;
       const esperadoCorregido = stockInicialCorregido - det.vendido;
@@ -193,6 +245,10 @@ export class CierreVendedor implements OnInit {
 
   get stockFinalTotalCorregido(): number {
     return this.stockInicialTotalCorregido - (this.cierre?.conciliacionInventario.vendidosTotal ?? 0);
+  }
+
+  get stockFinalActualTotal(): number {
+    return (this.cierre?.conciliacionInventario.detalleProductos ?? []).reduce((sum, d) => sum + d.actual, 0);
   }
 
   get estadoConciliacionInventario(): string {

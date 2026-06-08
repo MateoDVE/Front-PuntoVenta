@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, from, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { DatabaseService, VentaPendiente } from './database.service';
 
 export interface ClienteBackend {
   id?: string;
@@ -103,6 +105,7 @@ export interface InventarioAsignacion {
   id_vendedor: string;
   id_producto: string;
   cantidad_inicial: number;
+  cantidad_actual: number;
   estado_validacion: string;
   fecha_asignacion: string;
   mensaje?: string;
@@ -131,7 +134,8 @@ export class ApiService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private db: DatabaseService
   ) {}
 
   // ==================== USUARIOS ====================
@@ -165,8 +169,42 @@ export class ApiService {
   }
 
   // ==================== VENTAS ====================
-  crearVenta(payload: CrearVentaRequest): Observable<VentaResponse> {
+  crearVentaRaw(payload: CrearVentaRequest): Observable<VentaResponse> {
     return this.http.post<VentaResponse>(`${this.apiUrl}/ventas`, payload);
+  }
+
+  crearVenta(payload: CrearVentaRequest): Observable<VentaResponse> {
+    const id = payload.idTransaccionLocal ?? crypto.randomUUID();
+    const fullPayload: CrearVentaRequest = { ...payload, idTransaccionLocal: id };
+
+    return this.crearVentaRaw(fullPayload).pipe(
+      catchError(err => {
+        if (err.status === 0) {
+          const pending: VentaPendiente = {
+            idTransaccionLocal: id,
+            idCliente: fullPayload.idCliente,
+            idVendedor: fullPayload.idVendedor,
+            descuento: fullPayload.descuento,
+            items: fullPayload.items,
+            _savedAt: Date.now()
+          };
+          return from(this.db.ventasPendientes.put(pending)).pipe(
+            map(() => ({
+              idVenta: id,
+              idCliente: fullPayload.idCliente,
+              idVendedor: fullPayload.idVendedor,
+              fechaHora: new Date().toISOString(),
+              subtotal: 0,
+              descuento: fullPayload.descuento,
+              totalEfectivo: 0,
+              estado: 'PENDIENTE_SYNC',
+              detalles: []
+            } as VentaResponse))
+          );
+        }
+        return throwError(() => err);
+      })
+    );
   }
 
   getCierreJornada(idVendedor: string, fecha: string): Observable<CierreJornadaResponse> {
@@ -191,9 +229,42 @@ export class ApiService {
   getCierresVendedor(idVendedor: string): Observable<CierreGuardado[]> {
     return this.http.get<CierreGuardado[]>(`${this.apiUrl}/cierres/vendedor/${idVendedor}`);
   }
+
+  getAllCierres(): Observable<CierreGuardado[]> {
+    return this.http.get<CierreGuardado[]>(`${this.apiUrl}/cierres`);
+  }
+
+  getVentas(): Observable<VentaResumenResponse[]> {
+    return this.http.get<VentaResumenResponse[]>(`${this.apiUrl}/ventas`);
+  }
+
+  getReportesConsolidados(fecha: string): Observable<ReportesResumenResponse> {
+    return this.http.get<ReportesResumenResponse>(`${this.apiUrl}/ventas/reportes`, {
+      params: { fecha }
+    });
+  }
+
+  devolverStock(idVendedor: string, fecha: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/ventas/devolver-stock`, { idVendedor, fecha });
+  }
+
+  liquidarJornada(idCierre: string, dineroRecibido: number): Observable<CierreGuardado> {
+    return this.http.put<CierreGuardado>(`${this.apiUrl}/cierres/${idCierre}/liquidar`, { dineroRecibido });
+  }
 }
 
 // ==================== INTERFACES VENTAS ====================
+export interface VentaResumenResponse {
+  idVenta: string;
+  idCliente: number;
+  idVendedor: string;
+  fechaHora: string;
+  subtotal: number;
+  descuento: number;
+  totalEfectivo: number;
+  estado: string;
+}
+
 export interface ItemVentaRequest {
   idProducto: string;
   cantidad: number;
@@ -201,6 +272,7 @@ export interface ItemVentaRequest {
 }
 
 export interface CrearVentaRequest {
+  idTransaccionLocal?: string;
   idCliente: number;
   idVendedor: string;
   descuento: number;
@@ -229,6 +301,14 @@ export interface VentaResponse {
 }
 
 // ==================== INTERFACES CIERRE DE JORNADA ====================
+export interface ItemVentaCierre {
+  nombreProducto: string;
+  cantidad: number;
+  tipoUnidad: string;
+  precioUnitario: number;
+  subtotal: number;
+}
+
 export interface DetalleVentaCierre {
   idVenta: string;
   fechaHora: string;
@@ -236,6 +316,7 @@ export interface DetalleVentaCierre {
   descuento: number;
   totalEfectivo: number;
   estado: string;
+  items: ItemVentaCierre[];
 }
 
 export interface ResumenFinancieroCierre {
@@ -310,4 +391,20 @@ export interface CierreGuardado {
   estado_efectivo: string;
   estado: string;
   created_at: string;
+  dinero_recibido?: number;
+}
+
+export interface DiscrepanciaVendedorDto {
+  nombre: string;
+  stockEsperado: number;
+  stockActual: number;
+  diferencia: number;
+  correcto: boolean;
+}
+
+export interface ReportesResumenResponse {
+  ventas: VentaResumenResponse[];
+  vendedores: VendedorBackend[];
+  productos: Producto[];
+  discrepancias: DiscrepanciaVendedorDto[];
 }

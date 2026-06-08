@@ -27,8 +27,8 @@ export class AdminNavbar {
     { labelKey: 'ADMIN.NAVBAR.CATALOGO', href: '/admin/catalogo', icon: 'catalogo' },
     { labelKey: 'ADMIN.NAVBAR.ASIGNACION', href: '/admin/asignacion', icon: 'asignacion' },
     { labelKey: 'ADMIN.NAVBAR.CLIENTES', href: '/admin/gestion-clientes', icon: 'clientes' },
-    { labelKey: 'ADMIN.NAVBAR.MONITOR', disabled: true, icon: 'monitor' },
-    { labelKey: 'ADMIN.NAVBAR.REPORTES', disabled: true, icon: 'reportes' },
+    { labelKey: 'ADMIN.NAVBAR.MONITOR', href: '/admin/monitoreo', icon: 'monitor' },
+    { labelKey: 'ADMIN.NAVBAR.REPORTES', href: '/admin/reportes', icon: 'reportes' },
   ];
 
   idiomaActual: string = 'es';
