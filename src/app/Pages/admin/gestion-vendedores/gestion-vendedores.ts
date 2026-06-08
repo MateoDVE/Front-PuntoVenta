@@ -11,6 +11,7 @@ import { AppModalComponent, AppModalVariant } from '../../../components/app-moda
 import { ApiService } from '../../../services/api.service';
 import { VendedoresService } from '../../../services/vendedores.service';
 import { AuthService } from '../../../services/auth.service';
+import { forkJoin } from 'rxjs';
 
 interface VendedorForm {
   nombre: string;
@@ -72,17 +73,25 @@ export class GestionVendedoresComponent implements OnInit {
     this.cargando = true;
     this.errorMensaje = '';
 
-    this.vendedoresService.getVendedores().subscribe({
-      next: (data) => {
-        console.log('Vendedores cargados:', data);
-        this.vendedores = data;
-        this.totalVendedores = data.length;
-        this.enRuta = data.filter((v) => v.estado === 'EN_RUTA').length;
+    forkJoin({
+      vendedores: this.vendedoresService.getVendedores(),
+      ventas: this.apiService.getVentas()
+    }).subscribe({
+      next: ({ vendedores, ventas }) => {
+        console.log('Datos de vendedores y ventas cargados:', { vendedores, ventas });
+        this.vendedores = vendedores;
+        this.totalVendedores = vendedores.length;
+        this.enRuta = vendedores.filter((v) => v.estado === 'EN_RUTA').length;
+
+        // Actualizar monto vendido e ingresos
+        this.ventasTotales = ventas.length;
+        this.ingresos = ventas.reduce((sum, v) => sum + (v.totalEfectivo ?? 0), 0);
+
         this.cargando = false;
       },
       error: (err) => {
-        console.error('Error al cargar vendedores:', err);
-        this.errorMensaje = 'No se pudo cargar la lista de vendedores.';
+        console.error('Error al cargar vendedores/ventas:', err);
+        this.errorMensaje = 'No se pudo cargar la lista de vendedores o las ventas.';
         this.cargando = false;
       },
     });

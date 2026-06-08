@@ -116,7 +116,7 @@ export class MonitoreoComponent implements OnInit {
             }).pipe(
               map(({ inventario, cierreJornada, cierresHistorial, clientes }) => {
                 const stock = inventario
-                  .filter((inv: any) => inv.estado_validacion === 'VALIDADO')
+                  .filter((inv: any) => inv.estado_validacion === 'VALIDADO' && inv.fecha_asignacion && String(inv.fecha_asignacion).substring(0, 10) === this.fechaHoy)
                   .reduce((sum: number, inv: any) => sum + (inv.cantidad_actual ?? 0), 0);
 
                 const ventas = cierreJornada?.resumenFinanciero?.ventasRealizadas ?? 0;
@@ -266,7 +266,8 @@ export class MonitoreoComponent implements OnInit {
   }
 
   getInitials(nombre: string): string {
-    return nombre.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase();
+    if (!nombre || typeof nombre !== 'string') return '';
+    return nombre.split(' ').slice(0, 2).map(n => n ? n[0] : '').join('').toUpperCase();
   }
 
   getEstadoLabel(estado: string): string {

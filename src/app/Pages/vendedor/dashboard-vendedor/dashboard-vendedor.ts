@@ -115,9 +115,11 @@ export class DashboardVendedor implements OnInit {
   get stockTransporte(): ProductoTransporte[] {
     // Suma de cantidad_actual para cargas VALIDADO
     const acumulado = new Map<string, ProductoTransporte>();
+    const fechaHoy = this.getFechaHoy();
 
     for (const carga of this.cargas) {
       if (this.normalizarEstado(carga.estado_validacion) !== 'VALIDADO') continue;
+      if (carga.fecha_asignacion && String(carga.fecha_asignacion).substring(0, 10) !== fechaHoy) continue;
 
       const idProducto = String(carga.id_producto);
       const producto = this.productosCatalogo.find(p => String(p.id_producto) === idProducto);

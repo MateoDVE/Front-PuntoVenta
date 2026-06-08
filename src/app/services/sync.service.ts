@@ -30,6 +30,9 @@ export class SyncService {
   async sincronizar(): Promise<void> {
     const pendientes = await this.db.ventasPendientes.orderBy('_savedAt').toArray();
     for (const venta of pendientes) {
+      if (venta.status === 'failed') {
+        continue;
+      }
       const payload: CrearVentaRequest = {
         idTransaccionLocal: venta.idTransaccionLocal,
         idCliente: venta.idCliente,
@@ -47,8 +50,11 @@ export class SyncService {
           break;
         }
         // Error del cliente (4xx): dato inválido, duplicado, stock insuficiente, etc.
-        // El backend ya rechazó esta venta y no la procesará en el futuro → eliminar de Dexie
-        await this.db.ventasPendientes.delete(venta.idTransaccionLocal);
+        // El backend ya rechazó esta venta y no la procesará en el futuro → registrar como fallida
+        venta.status = 'failed';
+        venta.errorMessage = err?.error?.message || err?.message || 'Error de validación';
+        venta.failedAt = Date.now();
+        await this.db.ventasPendientes.put(venta);
       }
     }
   }

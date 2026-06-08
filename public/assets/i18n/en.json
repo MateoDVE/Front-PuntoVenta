@@ -97,8 +97,8 @@
         "VENDORS_DETAIL": "{{activeVendors}} active",
         "STOCK_TITLE": "Total stock",
         "STOCK_DETAIL": "Value: Bs. {{totalValue}}",
-        "SALES_PROJECTS_TITLE": "Sales projects",
-        "SALES_PROJECTS_DETAIL": "No sales recorded"
+        "SALES_PROJECTS_TITLE": "Total sales",
+        "SALES_PROJECTS_DETAIL": "{{totalSales}} sales registered"
       }
     },
     "CATALOG": {

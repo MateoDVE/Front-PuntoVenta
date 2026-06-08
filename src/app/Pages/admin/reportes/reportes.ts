@@ -9,6 +9,7 @@ import {
   Producto,
   VendedorBackend,
 } from '../../../services/api.service';
+import Chart from 'chart.js/auto';
 
 interface DiscrepanciaVendedor {
   nombre: string;
@@ -93,41 +94,20 @@ export class ReportesComponent implements OnInit, OnDestroy {
   // ── Chart rendering ───────────────────────────────────────────────────────
 
   private renderizarCharts(ventas: VentaResumenResponse[], vendedores: VendedorBackend[], productos: Producto[]): void {
-    this.cargarChartJs().then(() => {
-      this.renderChartVentasIngresos(ventas, vendedores);
-      this.renderChartCategorias(productos);
-      this.renderChartStock(productos);
-      this.renderChartTendencia(ventas, vendedores);
-    }).catch(() => {});
-  }
-
-  private cargarChartJs(): Promise<void> {
-    if ((window as any).Chart) return Promise.resolve();
-    return new Promise((resolve, reject) => {
-      const existing = document.getElementById('chartjs-script');
-      if (existing) {
-        existing.addEventListener('load', () => resolve());
-        existing.addEventListener('error', () => reject());
-        return;
-      }
-      const script = document.createElement('script');
-      script.id = 'chartjs-script';
-      script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
-      script.async = true;
-      script.onload = () => resolve();
-      script.onerror = () => reject();
-      document.head.appendChild(script);
-    });
+    this.renderChartVentasIngresos(ventas, vendedores);
+    this.renderChartCategorias(productos);
+    this.renderChartStock(productos);
+    this.renderChartTendencia(ventas, vendedores);
   }
 
   private renderChartVentasIngresos(ventas: VentaResumenResponse[], vendedores: VendedorBackend[]): void {
     const canvas = this.chartVentasIngresosRef?.nativeElement;
     if (!canvas) return;
-    const Chart = (window as any).Chart;
 
     const ventasPorVendedor = new Map<string, { ventas: number; ingresos: number }>();
     for (const v of vendedores) {
-      ventasPorVendedor.set(v.id_usuario, { ventas: 0, ingresos: 0 });
+      const id = v.id_usuario || (v as any).id;
+      ventasPorVendedor.set(id, { ventas: 0, ingresos: 0 });
     }
     for (const venta of ventas) {
       const entry = ventasPorVendedor.get(venta.idVendedor);
@@ -144,13 +124,13 @@ export class ReportesComponent implements OnInit, OnDestroy {
         datasets: [
           {
             label: this.translate.instant('ADMIN.REPORTES.CHART.DATASET.SALES'),
-            data: vendedores.map(v => ventasPorVendedor.get(v.id_usuario)?.ventas ?? 0),
+            data: vendedores.map(v => ventasPorVendedor.get(v.id_usuario || (v as any).id)?.ventas ?? 0),
             backgroundColor: '#3b82f6',
             borderRadius: 4,
           },
           {
             label: this.translate.instant('ADMIN.REPORTES.CHART.DATASET.INCOME'),
-            data: vendedores.map(v => ventasPorVendedor.get(v.id_usuario)?.ingresos ?? 0),
+            data: vendedores.map(v => ventasPorVendedor.get(v.id_usuario || (v as any).id)?.ingresos ?? 0),
             backgroundColor: '#22c55e',
             borderRadius: 4,
           },
@@ -172,12 +152,12 @@ export class ReportesComponent implements OnInit, OnDestroy {
   private renderChartCategorias(productos: Producto[]): void {
     const canvas = this.chartCategoriasRef?.nativeElement;
     if (!canvas) return;
-    const Chart = (window as any).Chart;
 
     const conteo = new Map<number, number>();
     for (const p of productos) {
-      const cat = p.id_categoria ?? 0;
-      conteo.set(cat, (conteo.get(cat) ?? 0) + 1);
+      const cat = p.id_categoria !== undefined ? p.id_categoria : (p as any).idCategoria;
+      const catKey = cat ?? 0;
+      conteo.set(catKey, (conteo.get(catKey) ?? 0) + 1);
     }
 
     const sinCategoria = this.translate.instant('ADMIN.REPORTES.CHART.NO_CATEGORY');
@@ -210,10 +190,11 @@ export class ReportesComponent implements OnInit, OnDestroy {
   private renderChartStock(productos: Producto[]): void {
     const canvas = this.chartStockRef?.nativeElement;
     if (!canvas) return;
-    const Chart = (window as any).Chart;
+
+    const getStockVal = (p: any) => p.stock_almacen_central !== undefined ? p.stock_almacen_central : p.stockAlmacenCentral;
 
     const top = [...productos]
-      .sort((a, b) => (b.stock_almacen_central ?? 0) - (a.stock_almacen_central ?? 0))
+      .sort((a, b) => (getStockVal(b) ?? 0) - (getStockVal(a) ?? 0))
       .slice(0, 8);
 
     const chart = new Chart(canvas, {
@@ -222,7 +203,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
         labels: top.map(p => p.nombre),
         datasets: [{
           label: this.translate.instant('ADMIN.REPORTES.CHART.DATASET.STOCK'),
-          data: top.map(p => p.stock_almacen_central ?? 0),
+          data: top.map(p => getStockVal(p) ?? 0),
           backgroundColor: '#6366f1',
           borderRadius: 4,
         }],
@@ -244,13 +225,16 @@ export class ReportesComponent implements OnInit, OnDestroy {
   private renderChartTendencia(ventas: VentaResumenResponse[], vendedores: VendedorBackend[]): void {
     const canvas = this.chartTendenciaRef?.nativeElement;
     if (!canvas) return;
-    const Chart = (window as any).Chart;
 
     const ventasPorVendedor = new Map<string, number>();
-    for (const v of vendedores) ventasPorVendedor.set(v.id_usuario, 0);
+    for (const v of vendedores) {
+      const id = v.id_usuario || (v as any).id;
+      ventasPorVendedor.set(id, 0);
+    }
     for (const venta of ventas) {
-      const curr = ventasPorVendedor.get(venta.idVendedor) ?? 0;
-      ventasPorVendedor.set(venta.idVendedor, curr + 1);
+      const sellerId = venta.idVendedor;
+      const curr = ventasPorVendedor.get(sellerId) ?? 0;
+      ventasPorVendedor.set(sellerId, curr + 1);
     }
 
     const chart = new Chart(canvas, {
@@ -259,7 +243,7 @@ export class ReportesComponent implements OnInit, OnDestroy {
         labels: vendedores.map(v => v.nombre),
         datasets: [{
           label: this.translate.instant('ADMIN.REPORTES.CHART.DATASET.SALES'),
-          data: vendedores.map(v => ventasPorVendedor.get(v.id_usuario) ?? 0),
+          data: vendedores.map(v => ventasPorVendedor.get(v.id_usuario || (v as any).id) ?? 0),
           borderColor: '#3b82f6',
           backgroundColor: 'rgba(59,130,246,0.1)',
           tension: 0.3,

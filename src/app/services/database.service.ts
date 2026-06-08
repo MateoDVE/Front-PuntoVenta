@@ -8,6 +8,9 @@ export interface VentaPendiente {
   descuento: number;
   items: Array<{ idProducto: string; cantidad: number; tipoUnidad: string }>;
   _savedAt: number;
+  status?: string;
+  errorMessage?: string;
+  failedAt?: number;
 }
 
 @Injectable({ providedIn: 'root' })
