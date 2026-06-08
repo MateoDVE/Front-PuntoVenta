@@ -72,11 +72,24 @@ export class VentaVendedorComponent implements OnInit {
 
   private verificarJornada(): void {
     if (!this.idVendedor) return;
+
+    try {
+      const localClosed = localStorage.getItem(`cierre_${this.idVendedor}_${this.fechaHoy}`);
+      if (localClosed === 'true') {
+        this.jornadaCerrada = true;
+        return;
+      }
+    } catch (e) {}
+
     this.apiService.getCierresVendedor(this.idVendedor).pipe(
       catchError(() => of([]))
     ).subscribe(cierres => {
       this.jornadaCerrada = cierres.some(c => c.fecha === this.fechaHoy);
-      if (!this.jornadaCerrada) {
+      if (this.jornadaCerrada) {
+        try {
+          localStorage.setItem(`cierre_${this.idVendedor}_${this.fechaHoy}`, 'true');
+        } catch (e) {}
+      } else {
         this.cargarProductos();
         this.cargarClientes();
       }
@@ -101,6 +114,7 @@ export class VentaVendedorComponent implements OnInit {
         const cantidadAsignada = new Map<string, number>();
         for (const carga of inventario) {
           if (carga.estado_validacion !== 'VALIDADO') continue;
+          if (carga.fecha_asignacion && String(carga.fecha_asignacion).substring(0, 10) !== this.fechaHoy) continue;
           const id = String(carga.id_producto);
           cantidadAsignada.set(id, (cantidadAsignada.get(id) ?? 0) + (carga.cantidad_actual ?? 0));
         }

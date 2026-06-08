@@ -243,8 +243,15 @@ export class Asignacion implements OnInit {
       });
   }
 
+  private getFechaHoy(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
   private mapStockVendedor(vendedor: VendedorBackend, asignaciones: InventarioAsignacion[]): TransporteStock {
+    const fechaHoy = this.getFechaHoy();
     const items = asignaciones
+      .filter((asignacion) => asignacion.fecha_asignacion && String(asignacion.fecha_asignacion).substring(0, 10) === fechaHoy)
       .map((asignacion) => {
         const producto = this.productosCatalogo.find(
           (item) => String(item.id_producto) === String(asignacion.id_producto)
