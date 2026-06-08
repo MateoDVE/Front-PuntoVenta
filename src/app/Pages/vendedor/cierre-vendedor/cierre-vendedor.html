@@ -154,6 +154,51 @@
 
   }
 
+  <!-- Ventas offline pendientes/fallidas -->
+  @if (ventasOffline.length > 0) {
+    <div class="section offline-sales-section">
+      <div class="section-title">
+        <ion-icon name="cloud-offline-outline"></ion-icon>
+        <span>Ventas Offline Pendientes</span>
+      </div>
+      <div class="ventas-list">
+        @for (venta of ventasOffline; track venta.idTransaccionLocal) {
+          <div class="venta-item offline-item" [class.failed]="venta.status === 'failed'">
+            <div class="venta-header-row">
+              <div class="venta-info">
+                <span class="venta-id">Venta Local (Offline)</span>
+                <span class="venta-hora">{{ venta._savedAt | date:'dd/MM HH:mm' }}</span>
+              </div>
+              <div class="venta-actions">
+                @if (venta.status === 'failed') {
+                  <span class="badge-error">Fallo de Sincronización</span>
+                } @else {
+                  <span class="badge-pending">Pendiente Sync</span>
+                }
+                <button class="btn-descartar" (click)="descartarVentaOffline(venta.idTransaccionLocal)" title="Descartar Venta">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+            @if (venta.errorMessage) {
+              <div class="error-detalle" style="color: #dc2626; font-size: 0.85em; margin: 4px 0; display: flex; align-items: center; gap: 4px;">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+                <span>Motivo: {{ venta.errorMessage }}</span>
+              </div>
+            }
+            <div class="venta-items">
+              @for (item of venta.items; track item.idProducto) {
+                <div class="venta-item-detalle">
+                  <span>{{ item.cantidad }} {{ item.tipoUnidad }} · Producto ID: {{ item.idProducto }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
   <div class="spacer"></div>
 
 </div>
@@ -170,7 +215,7 @@
     <ion-icon [name]="jornadaYaCerrada ? 'checkmark-circle-outline' : 'clipboard-outline'"></ion-icon>
     {{ jornadaYaCerrada ? ('VENDEDOR.CIERRE.JORNADA_CERRADA' | translate) : ('VENDEDOR.CIERRE.CONFIRM_BUTTON' | translate) }}
   </button>
-  @if (jornadaYaCerrada && stockFinalTotalCorregido > 0) {
+  @if (jornadaYaCerrada && stockFinalActualTotal > 0) {
     <button class="btn-devolver" (click)="devolverStock()" [disabled]="enviando || cargando">
       <ion-icon name="arrow-back-circle-outline"></ion-icon>
       Devolver Stock al Almacén
