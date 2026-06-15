@@ -155,7 +155,8 @@ export class DashboardVendedor implements OnInit {
   }
 
   get ingresos(): number {
-    return this.cierreData?.resumenFinanciero.totalEfectivo ?? 0;
+    const raw = this.cierreData?.resumenFinanciero.totalEfectivo ?? 0;
+    return Math.round(raw * 100) / 100;
   }
 
   getNombreProducto(idProducto: string): string {

@@ -449,7 +449,18 @@
       "MAP": {
         "TITLE": "Clientes Mapa",
         "COUNT": "ubicacion qillqasqa",
-        "EMPTY": "Manaqa clienteqa GPS ubicacion qillqasqa."
+        "EMPTY": "Manaqa clienteqa GPS ubicacion qillqasqa.",
+        "TAB_CLIENTS": "Atencionpi Compradorkuna",
+        "TAB_ROUTE": "Allin Ñan Sugeriska",
+        "ROUTE_INFO": "Ñanpa Resumenin",
+        "TOTAL_DISTANCE": "Monto Karu Kay",
+        "ESTIMATED_TIME": "Qawarisqa Pacha",
+        "DIRECTIONS_ERROR": "Pantay Google Maps ñanta yupaypi.",
+        "ROUTE_ORDER": "Saywanakunap Ñan-ñan",
+        "PRIORITY": "Prioridad",
+        "PRIORITY_ALTA": "Alta",
+        "PRIORITY_MEDIA": "Media",
+        "PRIORITY_BAJA": "Baja"
       },
       "LEGEND": {
         "ATTENDED": "Kunan punchaw atendiy",
@@ -566,6 +577,7 @@
       "GPS_LOCATION_LABEL": "GPS Kaypi kasqan",
       "LAT_LABEL": "Lat:",
       "LNG_LABEL": "Lng:",
+      "CURRENT_LOCATION": "Kaypi kasqay",
       "USE_CURRENT_LOCATION": "Kaypi kasqayta llamkay",
       "LOCATION_DETECTING": "Tarishaniku...",
       "LOCATION_HINT": "Mapapikunata clampiywanpas ubicacionta saywanaykipaq",
@@ -592,7 +604,19 @@
       "CLIENT_REGISTER_ERROR": "Mana compradorta qillqayta atisqa.",
       "CLIENT_UPLOAD_ERROR": "Mana yachakusqa pantay rikchaytan subirpi.",
       "CELULAR_INVALID_START": "Yupay 6 icha 7 nisqapi qallarichinami tiyan",
-      "CELULAR_INVALID_LENGTH": "Yupayka 8 rinkakunapi tiyan"
+      "CELULAR_INVALID_LENGTH": "Yupayka 8 rinkakunapi tiyan",
+      "TAB_CLIENTS": "Qillqasqa Compradorkunan",
+      "TAB_ROUTE": "Allin Ñan",
+      "ROUTE_INFO": "Ñanpa Informacionnin",
+      "TOTAL_DISTANCE": "Qawarisqa Karu Kay",
+      "ESTIMATED_TIME": "Qawarisqa Manejanam Pacha",
+      "DIRECTIONS_ERROR": "Pantay Google Maps: Mana karreterapaq ñanta yupayta atikunchu.",
+      "ROUTE_ORDER": "Riqsichiy Ñan-ñan",
+      "PRIORITY": "Prioridad",
+      "PRIORITY_ALTA": "Alta",
+      "PRIORITY_MEDIA": "Media",
+      "PRIORITY_BAJA": "Baja",
+      "ROUTE_OPTIMIZED_NOTICE": "Kaymi allinchasqa secuencia optimizacion algoritmowan yuparisqa."
     },
     "CIERRE": {
       "TITLE": "Kukama Punchaw",

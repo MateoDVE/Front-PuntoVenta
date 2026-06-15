@@ -384,12 +384,38 @@ $blanco: #ffffff;
       }
     }
 
-    .cantidad-valor {
+    .cantidad-input {
       font-size: 18px;
       font-weight: 700;
       color: #212121;
-      min-width: 46px;
+      width: 60px;
       text-align: center;
+      border: 1px solid $gris-borde;
+      border-radius: 8px;
+      padding: 6px 4px;
+      outline: none;
+      background: $blanco;
+      transition: all 0.15s ease;
+
+      &:focus {
+        border-color: $verde-primary;
+        box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+      }
+
+      &.activo {
+        color: $verde-primary;
+        font-weight: 800;
+        border-color: rgba(46, 125, 50, 0.4);
+      }
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      &[type=number] {
+        -moz-appearance: textfield;
+      }
     }
   }
 }
@@ -497,7 +523,7 @@ $blanco: #ffffff;
   background: linear-gradient(135deg, $blanco 80%, #f1f8e9 100%);
 }
 
-.cantidad-valor.activo {
+.cantidad-input.activo {
   color: $verde-primary;
   font-weight: 800;
 }

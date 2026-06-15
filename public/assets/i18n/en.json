@@ -452,7 +452,18 @@
       "MAP": {
         "TITLE": "Client Map",
         "COUNT": "with registered location",
-        "EMPTY": "No client has a GPS location registered yet."
+        "EMPTY": "No client has a GPS location registered yet.",
+        "TAB_CLIENTS": "Clients in Service",
+        "TAB_ROUTE": "Suggested Optimal Route",
+        "ROUTE_INFO": "Route Summary",
+        "TOTAL_DISTANCE": "Total Distance",
+        "ESTIMATED_TIME": "Estimated Time",
+        "DIRECTIONS_ERROR": "Error calculating route on Google Maps.",
+        "ROUTE_ORDER": "Stop Sequence",
+        "PRIORITY": "Priority",
+        "PRIORITY_ALTA": "High",
+        "PRIORITY_MEDIA": "Medium",
+        "PRIORITY_BAJA": "Low"
       },
       "LEGEND": {
         "ATTENDED": "Attended today",
@@ -569,6 +580,7 @@
       "GPS_LOCATION_LABEL": "GPS Location",
       "LAT_LABEL": "Lat:",
       "LNG_LABEL": "Lng:",
+      "CURRENT_LOCATION": "My current location",
       "USE_CURRENT_LOCATION": "Use my current location",
       "LOCATION_DETECTING": "Detecting...",
       "LOCATION_HINT": "You can also click on the map to mark the location",
@@ -595,7 +607,19 @@
       "CLIENT_REGISTER_ERROR": "Could not register the client.",
       "CLIENT_UPLOAD_ERROR": "Unexpected error while uploading the image.",
       "CELULAR_INVALID_START": "Number must start with 6 or 7",
-"CELULAR_INVALID_LENGTH": "Number must have 8 digits"
+      "CELULAR_INVALID_LENGTH": "Number must have 8 digits",
+      "TAB_CLIENTS": "Registered Clients",
+      "TAB_ROUTE": "Optimal Route",
+      "ROUTE_INFO": "Route Details",
+      "TOTAL_DISTANCE": "Estimated Total Distance",
+      "ESTIMATED_TIME": "Estimated Driving Time",
+      "DIRECTIONS_ERROR": "Google Maps Error: Could not calculate the route by road.",
+      "ROUTE_ORDER": "Sequence of Visits",
+      "PRIORITY": "Priority",
+      "PRIORITY_ALTA": "High",
+      "PRIORITY_MEDIA": "Medium",
+      "PRIORITY_BAJA": "Low",
+      "ROUTE_OPTIMIZED_NOTICE": "This is the optimal sequence calculated by the optimization algorithm."
     },
     "CIERRE": {
       "TITLE": "Day Closure",

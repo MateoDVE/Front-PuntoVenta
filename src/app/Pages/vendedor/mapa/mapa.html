@@ -7,18 +7,42 @@
         <h2>{{ 'VENDEDOR.MAP.TITLE' | translate }}</h2>
         <p>{{ 'VENDEDOR.MAP.SUBTITLE' | translate }}</p>
       </div>
-      <button class="btn-primary" type="button" (click)="openNuevoClienteModal()">{{ 'VENDEDOR.MAP.NEW_CLIENT_BUTTON' | translate }}</button>
+      <button *ngIf="mapView === 'clients'" class="btn-primary" type="button" (click)="openNuevoClienteModal()">{{ 'VENDEDOR.MAP.NEW_CLIENT_BUTTON' | translate }}</button>
     </header>
+
+    <div class="tabs-container">
+      <button type="button" class="tab-button" [class.active]="mapView === 'clients'" (click)="setMapView('clients')">
+        {{ 'VENDEDOR.MAP.TAB_CLIENTS' | translate }}
+      </button>
+      <button type="button" class="tab-button" [class.active]="mapView === 'route'" (click)="setMapView('route')">
+        {{ 'VENDEDOR.MAP.TAB_ROUTE' | translate }}
+      </button>
+    </div>
 
     <section class="mapa-grid">
       <div class="map-container" #mapContainer></div>
 
       <aside class="map-sidebar">
-        <div class="sidebar-card">
+        <!-- Sidebar for Clients View -->
+        <div class="sidebar-card" *ngIf="mapView === 'clients'">
           <h3>{{ 'VENDEDOR.MAP.REGISTERED_CLIENTS_TITLE' | translate }}</h3>
           <p>{{ 'VENDEDOR.MAP.REGISTERED_CLIENTS_SUBTITLE' | translate }}</p>
+
+          <!-- Buscador de Clientes -->
+          <div class="search-box" style="position: relative; margin-bottom: 16px;">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b; pointer-events: none;">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" 
+                   [(ngModel)]="clientSearchQuery" 
+                   (ngModelChange)="onClientSearchChange()"
+                   placeholder="Buscar cliente..." 
+                   style="width: 100%; border: 1px solid #cbd5e1; border-radius: 12px; padding: 10px 12px 10px 38px; font-size: 0.9rem; color: #0f172a; background: #f8fafc; box-sizing: border-box;"
+            />
+          </div>
+
           <ul class="cliente-list">
-            <li *ngFor="let cliente of ubicaciones">
+            <li *ngFor="let cliente of filteredActiveClientes">
               <div class="cliente-item">
                 <div class="cliente-img" *ngIf="cliente.url_foto_fachada">
                   <img [src]="cliente.url_foto_fachada" [alt]="cliente.nombre_negocio" />
@@ -38,12 +62,110 @@
           </ul>
         </div>
 
+        <!-- Sidebar for Route View -->
+        <div class="sidebar-card route-info-card" *ngIf="mapView === 'route'">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="3" width="15" height="13" rx="2" ry="2"/>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+              <circle cx="5.5" cy="18.5" r="2.5"/>
+              <circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+            {{ 'VENDEDOR.MAP.ROUTE_INFO' | translate }}
+          </h3>
+          <div class="metric-row">
+            <div class="metric-box">
+              <span>{{ 'VENDEDOR.MAP.TOTAL_DISTANCE' | translate }}</span>
+              <strong>{{ routeDistance }}</strong>
+            </div>
+            <div class="metric-box">
+              <span>{{ 'VENDEDOR.MAP.ESTIMATED_TIME' | translate }}</span>
+              <strong>{{ routeDuration }}</strong>
+            </div>
+          </div>
+
+          <!-- Starting Point Selector -->
+          <div class="start-point-selector" style="margin-top: 16px; margin-bottom: 16px; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
+            <span style="display: block; font-size: 0.85rem; font-weight: 600; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Punto de Partida de la Ruta</span>
+            <div style="position: relative;">
+              <select 
+                [(ngModel)]="routeStartPointId" 
+                (change)="onStartPointChange()" 
+                style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; color: #334155; background: #ffffff; cursor: pointer; box-sizing: border-box;"
+              >
+                <option value="actual">📍 Mi Ubicación Actual (GPS)</option>
+                <option *ngFor="let s of sucursales" [value]="s.id">
+                  🏢 {{ s.nombre }} {{ s.esPrincipal ? '(Almacén Central)' : '' }}
+                </option>
+              </select>
+            </div>
+            <!-- Geolocation Status/Error Info -->
+            <div *ngIf="routeStartPointId === 'actual' && cargandoUbicacion" style="font-size: 0.75rem; color: #64748b; margin-top: 6px; display: flex; align-items: center; gap: 4px;">
+              <div class="spinner-small" style="width: 12px; height: 12px; border: 2px solid #cbd5e1; border-top-color: #2563eb; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+              Obteniendo GPS...
+            </div>
+            <div *ngIf="routeStartPointId === 'actual' && geoErrorMsg" style="font-size: 0.75rem; color: #dc2626; margin-top: 6px; font-weight: 500;">
+              ⚠️ {{ geoErrorMsg }}
+            </div>
+          </div>
+
+          <p class="location-hint" style="margin-bottom: 12px;">{{ 'VENDEDOR.MAP.ROUTE_OPTIMIZED_NOTICE' | translate }}</p>
+
+          <!-- Outlier Warnings -->
+          <div *ngIf="outlierClients.length > 0" style="margin-top: 12px; margin-bottom: 12px; padding: 10px; background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; color: #b45309; font-size: 0.85rem; line-height: 1.4;">
+            <div style="display: flex; align-items: center; gap: 6px; font-weight: 600; margin-bottom: 4px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              Advertencia: Ubicaciones distantes
+            </div>
+            Los siguientes clientes están a más de 50 km del almacén y han sido excluidos de la ruta para evitar distorsiones:
+            <ul style="margin: 4px 0 0; padding-left: 16px; font-weight: 500;">
+              <li *ngFor="let c of outlierClients">{{ c.nombre_negocio }} (~{{ c.distancia.toFixed(1) }} km)</li>
+            </ul>
+          </div>
+
+          <!-- Client Selection List -->
+          <h4 style="margin: 12px 0 8px; font-size: 0.95rem; font-weight: 600;">Seleccionar Clientes para la Ruta</h4>
+          <ul class="route-selection-checkbox-list" style="list-style: none; padding: 0; margin: 0 0 16px; max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+            <li *ngFor="let cliente of activeClientes" style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #334155;">
+              <input 
+                type="checkbox" 
+                [checked]="selectedClientIds.has(cliente.id_cliente || '')"
+                (change)="toggleClientSelection(cliente.id_cliente || '')"
+                style="width: 16px; height: 16px; cursor: pointer;"
+              />
+              <span style="font-weight: 500;">{{ cliente.nombre_negocio }}</span>
+            </li>
+            <li *ngIf="activeClientes.length === 0" style="font-size: 0.85rem; color: #64748b; font-style: italic;">
+              No hay clientes activos registrados. Usando ruta de prueba (mock).
+            </li>
+          </ul>
+          
+          <h4 style="margin: 16px 0 8px; font-size: 0.95rem; font-weight: 600;">{{ 'VENDEDOR.MAP.ROUTE_ORDER' | translate }}</h4>
+          <ul class="route-sequence-list">
+            <li *ngFor="let punto of rutaPuntos; let i = index">
+              <div class="sequence-item">
+                <span class="seq-badge">{{ i + 1 }}</span>
+                <div class="seq-content">
+                  <strong>{{ punto.cliente }}</strong>
+                  <span [ngClass]="'priority-' + punto.prioridad.toLowerCase()">
+                    {{ 'VENDEDOR.MAP.PRIORITY' | translate }}: {{ ('VENDEDOR.MAP.PRIORITY_' + punto.prioridad) | translate }}
+                  </span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
         <div class="sidebar-card" *ngIf="error">
           <strong>{{ 'VENDEDOR.MAP.ERROR_TITLE' | translate }}</strong>
           <p>{{ error }}</p>
         </div>
 
-        <div class="sidebar-card" *ngIf="loading">
+        <div class="sidebar-card" *ngIf="loading && mapView === 'clients'">
           <strong>{{ 'VENDEDOR.MAP.LOADING_CLIENTS_TITLE' | translate }}</strong>
           <p>{{ 'VENDEDOR.MAP.LOADING_CLIENTS_SUBTITLE' | translate }}</p>
         </div>

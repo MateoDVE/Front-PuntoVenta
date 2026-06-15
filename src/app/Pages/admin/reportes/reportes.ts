@@ -69,8 +69,10 @@ export class ReportesComponent implements OnInit, OnDestroy {
         const { ventas, vendedores, productos, discrepancias } = reporte;
 
         this.totalVentas = ventas.length;
-        this.ingresosTotal = ventas.reduce((s, v) => s + (v.totalEfectivo ?? 0), 0);
-        this.ticketPromedio = this.totalVentas > 0 ? this.ingresosTotal / this.totalVentas : 0;
+        const rawIngresos = ventas.reduce((s, v) => s + (v.totalEfectivo ?? 0), 0);
+        this.ingresosTotal = Math.round(rawIngresos * 100) / 100;
+        const rawTicket = this.totalVentas > 0 ? this.ingresosTotal / this.totalVentas : 0;
+        this.ticketPromedio = Math.round(rawTicket * 100) / 100;
 
         this.discrepancias = discrepancias.map(d => ({
           nombre: d.nombre,
@@ -113,7 +115,8 @@ export class ReportesComponent implements OnInit, OnDestroy {
       const entry = ventasPorVendedor.get(venta.idVendedor);
       if (entry) {
         entry.ventas++;
-        entry.ingresos += venta.totalEfectivo ?? 0;
+        const rawInc = (entry.ingresos ?? 0) + (venta.totalEfectivo ?? 0);
+        entry.ingresos = Math.round(rawInc * 100) / 100;
       }
     }
 
