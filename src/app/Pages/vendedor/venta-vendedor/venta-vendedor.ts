@@ -221,6 +221,32 @@ export class VentaVendedorComponent implements OnInit {
     }
   }
 
+  cambiarCantidad(producto: Producto, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input) return;
+
+    let nueva = parseInt(input.value, 10);
+    if (isNaN(nueva) || nueva < 0) {
+      nueva = 0;
+    }
+
+    if (nueva > producto.stock_almacen_central) {
+      nueva = producto.stock_almacen_central;
+      input.value = String(nueva);
+    }
+
+    const key = this.getKey(producto);
+    this.cantidades.set(key, nueva);
+    this.actualizarCarrito(producto, nueva);
+  }
+
+  seleccionarTexto(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input) {
+      input.select();
+    }
+  }
+
   private actualizarCarrito(producto: Producto, cantidad: number): void {
     const key = this.getKey(producto);
     const idx = this.carrito.findIndex(i => this.getKey(i.producto) === key);

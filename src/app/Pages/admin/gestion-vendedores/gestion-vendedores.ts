@@ -85,7 +85,8 @@ export class GestionVendedoresComponent implements OnInit {
 
         // Actualizar monto vendido e ingresos
         this.ventasTotales = ventas.length;
-        this.ingresos = ventas.reduce((sum, v) => sum + (v.totalEfectivo ?? 0), 0);
+        const rawIngresos = ventas.reduce((sum, v) => sum + (v.totalEfectivo ?? 0), 0);
+        this.ingresos = Math.round(rawIngresos * 100) / 100;
 
         this.cargando = false;
       },

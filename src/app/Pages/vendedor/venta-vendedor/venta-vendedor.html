@@ -133,9 +133,15 @@
             <button class="btn-cantidad btn-minus" (click)="decrementar(producto)">
               <ion-icon name="remove-outline"></ion-icon>
             </button>
-            <span class="cantidad-valor" [class.activo]="getCantidad(producto) > 0">
-              {{ getCantidad(producto) }}
-            </span>
+            <input
+              type="number"
+              class="cantidad-input"
+              [class.activo]="getCantidad(producto) > 0"
+              [value]="getCantidad(producto)"
+              (input)="cambiarCantidad(producto, $event)"
+              (focus)="seleccionarTexto($event)"
+              min="0"
+              [max]="producto.stock_almacen_central" />
             <button
               class="btn-cantidad btn-plus"
               (click)="incrementar(producto)"

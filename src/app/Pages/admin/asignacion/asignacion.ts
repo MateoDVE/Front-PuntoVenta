@@ -251,7 +251,13 @@ export class Asignacion implements OnInit {
   private mapStockVendedor(vendedor: VendedorBackend, asignaciones: InventarioAsignacion[]): TransporteStock {
     const fechaHoy = this.getFechaHoy();
     const items = asignaciones
-      .filter((asignacion) => asignacion.fecha_asignacion && String(asignacion.fecha_asignacion).substring(0, 10) === fechaHoy)
+      .filter((asignacion) => {
+        if (!asignacion.fecha_asignacion) return false;
+        const asignadoHoy = String(asignacion.fecha_asignacion).substring(0, 10) === fechaHoy;
+        const estado = (asignacion.estado_validacion ?? '').toUpperCase();
+        const enProceso = estado === 'PENDIENTE' || estado === 'VALIDADO_ADMIN';
+        return asignadoHoy || enProceso;
+      })
       .map((asignacion) => {
         const producto = this.productosCatalogo.find(
           (item) => String(item.id_producto) === String(asignacion.id_producto)

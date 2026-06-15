@@ -3,9 +3,14 @@
 		<app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
 
 		<main class="dashboard-main">
-			<header class="main-header">
-        <h2>{{ 'ADMIN.DASHBOARD.TITLE' | translate }}</h2>
-        <p>{{ 'ADMIN.DASHBOARD.SUBTITLE' | translate }}</p>
+			<header class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+          <h2>{{ 'ADMIN.DASHBOARD.TITLE' | translate }}</h2>
+          <p>{{ 'ADMIN.DASHBOARD.SUBTITLE' | translate }}</p>
+        </div>
+        <button class="btn btn-primary" type="button" (click)="abrirModalSucursales()" style="padding: 10px 16px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+          🏢 Gestionar Sucursales
+        </button>
       </header>
 
       <!-- Error Message -->
@@ -108,4 +113,138 @@
 			</ng-container>
 		</main>
 	</div>
+</div>
+
+<!-- MODAL 1: Configuración Inicial Almacén Central -->
+<div class="modal-overlay" *ngIf="mostrarModalInicial">
+  <section class="modal-branch-setup" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+    <header class="modal-header-branch">
+      <h3 id="setup-title">🏢 Configuración Inicial del Sistema</h3>
+    </header>
+    
+    <div class="modal-body-branch">
+      <p style="margin: 0 0 16px; color: #475569; font-size: 0.95rem; line-height: 1.5;">
+        Para poder operar las rutas y distribuciones, es necesario definir la ubicación del <strong>Almacén Central</strong> en el mapa.
+      </p>
+
+      <form class="branch-setup-form" (ngSubmit)="$event.preventDefault()">
+        <div class="form-group-branch">
+          <label for="setup-nombre">Nombre de Almacén/Sucursal</label>
+          <input id="setup-nombre" type="text" [(ngModel)]="nuevaSucursal.nombre" name="nombre" placeholder="Ej: Almacén Central" required />
+        </div>
+
+        <div class="form-group-branch">
+          <label>Ubicación Geográfica (Arrastra el pin o haz clic en el mapa)</label>
+          <div #inicialMapContainer class="branch-map-picker"></div>
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button type="button" class="btn-icon-branch success" (click)="obtenerGPSUbicacion()" [disabled]="cargandoUbicacion" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              📍 {{ cargandoUbicacion ? 'Obteniendo GPS...' : 'Usar mi ubicación actual' }}
+            </button>
+          </div>
+          <div *ngIf="geoErrorMsg" style="font-size: 0.8rem; color: #dc2626; margin-top: 4px; font-weight: 500;">
+            ⚠️ {{ geoErrorMsg }}
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; font-size: 0.85rem; color: #475569; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: monospace;">
+          <div><strong>Latitud:</strong> {{ nuevaSucursal.latitud?.toFixed(6) || 'No marcada' }}</div>
+          <div><strong>Longitud:</strong> {{ nuevaSucursal.longitud?.toFixed(6) || 'No marcada' }}</div>
+        </div>
+      </form>
+    </div>
+
+    <footer class="modal-footer-branch">
+      <button type="button" class="btn-icon-branch primary" [disabled]="!nuevaSucursal.nombre || nuevaSucursal.latitud == null" (click)="guardarInicialSetup()" style="padding: 10px 20px;">
+        Guardar y Continuar
+      </button>
+    </footer>
+  </section>
+</div>
+
+<!-- MODAL 2: Gestión y CRUD de Sucursales -->
+<div class="modal-overlay" *ngIf="mostrarModalSucursales">
+  <section class="modal-branch-manager" role="dialog" aria-modal="true" aria-labelledby="manager-title">
+    <header class="modal-header-branch">
+      <h3 id="manager-title">🏢 Gestión de Almacenes y Sucursales</h3>
+      <button type="button" class="btn-close-branch" (click)="cerrarModalSucursales()" aria-label="Cerrar modal">×</button>
+    </header>
+
+    <div class="modal-body-branch">
+      <div class="branch-manager-grid">
+        <!-- Columna Izquierda: Listado de Sucursales -->
+        <div class="branch-manager-list-section">
+          <h4 style="margin: 0; font-size: 1rem; font-weight: 700; color: #0f172a;">Sucursales Registradas ({{ sucursales.length }})</h4>
+          <div class="branch-list-container">
+            <div class="branch-item-card" *ngFor="let s of sucursales">
+              <div class="branch-item-details">
+                <strong>
+                  {{ s.nombre }}
+                  <span class="badge-principal" *ngIf="s.esPrincipal">Almacén Central</span>
+                </strong>
+                <span class="coords" *ngIf="s.latitud != null && s.longitud != null">Lat: {{ s.latitud.toFixed(6) }}, Lng: {{ s.longitud.toFixed(6) }}</span>
+              </div>
+              <div class="branch-item-actions">
+                <button type="button" class="btn-icon-branch success" *ngIf="!s.esPrincipal" (click)="hacerPrincipalBranch(s.id!)" title="Establecer como Almacén Central">
+                  ⭐ Principal
+                </button>
+                <button type="button" class="btn-icon-branch" (click)="editarBranch(s)">
+                  ✏️
+                </button>
+                <button type="button" class="btn-icon-branch danger" [disabled]="s.esPrincipal && sucursales.length > 1" (click)="eliminarBranch(s.id!)">
+                  🗑️
+                </button>
+              </div>
+            </div>
+            <div *ngIf="sucursales.length === 0" style="padding: 24px; text-align: center; color: #64748b; font-style: italic; font-size: 0.9rem;">
+              No hay sucursales registradas.
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Formulario de Registro/Edición -->
+        <div class="branch-form-section">
+          <h4>{{ editandoSucursalId ? '✏️ Editar Sucursal' : '➕ Nueva Sucursal' }}</h4>
+          
+          <form class="branch-setup-form" (ngSubmit)="$event.preventDefault()">
+            <div class="form-group-branch">
+              <label for="sucursal-nombre">Nombre de Sucursal</label>
+              <input id="sucursal-nombre" type="text" [(ngModel)]="nuevaSucursal.nombre" name="nombre" placeholder="Ej: Sucursal Norte" required />
+            </div>
+
+            <div class="form-group-branch">
+              <label>Ubicación en el mapa (Haz clic o arrastra el pin)</label>
+              <div #sucursalMapContainer class="branch-map-picker"></div>
+              <div style="display: flex; gap: 8px; margin-top: 10px;">
+                <button type="button" class="btn-icon-branch success" (click)="obtenerGPSUbicacion()" [disabled]="cargandoUbicacion" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.8rem;">
+                  📍 {{ cargandoUbicacion ? 'Obteniendo GPS...' : 'Usar mi ubicación actual' }}
+                </button>
+              </div>
+              <div *ngIf="geoErrorMsg" style="font-size: 0.75rem; color: #dc2626; margin-top: 4px; font-weight: 500;">
+                ⚠️ {{ geoErrorMsg }}
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #475569; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: monospace;">
+              <div><strong>Lat:</strong> {{ nuevaSucursal.latitud?.toFixed(6) || 'No marcada' }}</div>
+              <div><strong>Lng:</strong> {{ nuevaSucursal.longitud?.toFixed(6) || 'No marcada' }}</div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;" *ngIf="!nuevaSucursal.esPrincipal">
+              <input type="checkbox" id="esPrincipal" name="esPrincipal" [(ngModel)]="nuevaSucursal.esPrincipal" style="cursor: pointer;" />
+              <label for="esPrincipal" style="cursor: pointer; font-weight: 500; color: #1e293b;">Establecer como almacén central principal</label>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 8px;">
+              <button type="button" class="btn-icon-branch primary" [disabled]="!nuevaSucursal.nombre || nuevaSucursal.latitud == null" (click)="guardarBranchForm()" style="flex: 1; padding: 10px;">
+                {{ editandoSucursalId ? 'Guardar Cambios' : 'Agregar Sucursal' }}
+              </button>
+              <button type="button" class="btn-icon-branch" *ngIf="editandoSucursalId" (click)="cancelarEdicionBranch()" style="padding: 10px;">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>

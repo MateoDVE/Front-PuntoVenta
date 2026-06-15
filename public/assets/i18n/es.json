@@ -449,7 +449,18 @@
       "MAP": {
         "TITLE": "Mapa de Clientes",
         "COUNT": "con ubicación registrada",
-        "EMPTY": "Ningún cliente tiene ubicación GPS registrada aún."
+        "EMPTY": "Ningún cliente tiene ubicación GPS registrada aún.",
+        "TAB_CLIENTS": "Clientes en Atención",
+        "TAB_ROUTE": "Ruta Óptima Sugerida",
+        "ROUTE_INFO": "Resumen de la Ruta",
+        "TOTAL_DISTANCE": "Distancia Total",
+        "ESTIMATED_TIME": "Tiempo Estimado",
+        "DIRECTIONS_ERROR": "Error al calcular la ruta en Google Maps.",
+        "ROUTE_ORDER": "Secuencia de Paradas",
+        "PRIORITY": "Prioridad",
+        "PRIORITY_ALTA": "Alta",
+        "PRIORITY_MEDIA": "Media",
+        "PRIORITY_BAJA": "Baja"
       },
       "LEGEND": {
         "ATTENDED": "Atendido hoy",
@@ -566,6 +577,7 @@
       "GPS_LOCATION_LABEL": "Ubicación GPS",
       "LAT_LABEL": "Lat:",
       "LNG_LABEL": "Lng:",
+      "CURRENT_LOCATION": "Mi ubicación actual",
       "USE_CURRENT_LOCATION": "Usar mi ubicación actual",
       "LOCATION_DETECTING": "Detectando...",
       "LOCATION_HINT": "También puedes hacer clic en el mapa para marcar la ubicación",
@@ -592,7 +604,19 @@
       "CLIENT_REGISTER_ERROR": "No se pudo registrar el cliente.",
       "CLIENT_UPLOAD_ERROR": "Error inesperado al subir la imagen.",
       "CELULAR_INVALID_START": "El número debe comenzar con 6 o 7",
-      "CELULAR_INVALID_LENGTH": "El número debe tener 8 dígitos"
+      "CELULAR_INVALID_LENGTH": "El número debe tener 8 dígitos",
+      "TAB_CLIENTS": "Clientes Registrados",
+      "TAB_ROUTE": "Ruta Óptima",
+      "ROUTE_INFO": "Información de la Ruta",
+      "TOTAL_DISTANCE": "Distancia Total Estimada",
+      "ESTIMATED_TIME": "Tiempo de Conducción Estimado",
+      "DIRECTIONS_ERROR": "Error de Google Maps: No se pudo calcular la ruta por carretera.",
+      "ROUTE_ORDER": "Secuencia de Visitas",
+      "PRIORITY": "Prioridad",
+      "PRIORITY_ALTA": "Alta",
+      "PRIORITY_MEDIA": "Media",
+      "PRIORITY_BAJA": "Baja",
+      "ROUTE_OPTIMIZED_NOTICE": "Esta es la secuencia óptima calculada por el algoritmo de optimización."
     },
     "CIERRE": {
       "TITLE": "Cierre de Jornada",
