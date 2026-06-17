@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -45,6 +45,7 @@ export class Mapa implements OnInit {
   directionsRenderer: any;
   directionsService: any;
   fallbackPolyline: any;
+  osrmPolyline: any;
   selectedClientIds = new Set<string>();
   outlierClients: any[] = [];
   clientSearchQuery = '';
@@ -92,7 +93,8 @@ export class Mapa implements OnInit {
     private authService: AuthService,
     private translate: TranslateService,
     private clientesService: ClientesService,
-    private sucursalesService: SucursalesService
+    private sucursalesService: SucursalesService,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit(): void {
@@ -700,6 +702,10 @@ export class Mapa implements OnInit {
         if (this.fallbackPolyline) {
           this.fallbackPolyline.setMap(null);
         }
+        if (this.osrmPolyline) {
+          this.osrmPolyline.setMap(null);
+          this.osrmPolyline = null;
+        }
         this.addExistingMarkers();
         const googleMaps = (window as any).google;
         if (googleMaps?.maps) {
@@ -717,24 +723,6 @@ export class Mapa implements OnInit {
     this.clearMarkers();
     this.error = '';
 
-    if (!this.directionsService) {
-      this.directionsService = new googleMaps.maps.DirectionsService();
-    }
-
-    if (!this.directionsRenderer) {
-      this.directionsRenderer = new googleMaps.maps.DirectionsRenderer({
-        map: this.map,
-        suppressMarkers: true,
-        polylineOptions: {
-          strokeColor: '#2563eb',
-          strokeOpacity: 0.8,
-          strokeWeight: 6,
-        }
-      });
-    } else {
-      this.directionsRenderer.setMap(this.map);
-    }
-
     if (this.rutaPuntos.length < 2) {
       if (this.directionsRenderer) {
         this.directionsRenderer.setMap(null);
@@ -742,59 +730,91 @@ export class Mapa implements OnInit {
       if (this.fallbackPolyline) {
         this.fallbackPolyline.setMap(null);
       }
+      if (this.osrmPolyline) {
+        this.osrmPolyline.setMap(null);
+      }
       this.routeDistance = '0 km';
       this.routeDuration = '0 min';
       this.drawRouteMarkers(googleMaps);
       return;
     }
 
-    const origin = this.rutaPuntos[0].coordenadas;
-    const destination = this.rutaPuntos[this.rutaPuntos.length - 1].coordenadas;
-    const waypoints = this.rutaPuntos.slice(1, -1).map(p => ({
-      location: new googleMaps.maps.LatLng(p.coordenadas.lat, p.coordenadas.lng),
-      stopover: true
-    }));
+    const coordsParam = this.rutaPuntos.map(p => `${p.coordenadas.lng},${p.coordenadas.lat}`).join(';');
+    const url = `https://router.project-osrm.org/trip/v1/driving/${coordsParam}?source=first&destination=any&roundtrip=false&geometries=geojson&overview=full`;
 
-    const request = {
-      origin: new googleMaps.maps.LatLng(origin.lat, origin.lng),
-      destination: new googleMaps.maps.LatLng(destination.lat, destination.lng),
-      waypoints: waypoints,
-      travelMode: googleMaps.maps.TravelMode.DRIVING,
-      optimizeWaypoints: false
-    };
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        this.ngZone.run(() => {
+          if (data.code === 'Ok' && data.trips && data.trips.length > 0) {
+            if (this.directionsRenderer) {
+              this.directionsRenderer.setMap(null);
+            }
+            if (this.fallbackPolyline) {
+              this.fallbackPolyline.setMap(null);
+            }
+            if (this.osrmPolyline) {
+              this.osrmPolyline.setMap(null);
+            }
 
-    this.directionsService.route(request, (result: any, status: any) => {
-      if (status === googleMaps.maps.DirectionsStatus.OK) {
-        this.directionsRenderer.setDirections(result);
-        
-        let totalDistance = 0;
-        let totalDuration = 0;
-        const route = result.routes[0];
-        if (route && route.legs) {
-          route.legs.forEach((leg: any) => {
-            totalDistance += leg.distance.value;
-            totalDuration += leg.duration.value;
-          });
-        }
+            const trip = data.trips[0];
+            const pathCoords = trip.geometry.coordinates.map((coord: [number, number]) => ({
+              lat: coord[1],
+              lng: coord[0]
+            }));
 
-        const distKm = (totalDistance / 1000).toFixed(1);
-        const mins = Math.round(totalDuration / 60);
-        const hrs = Math.floor(mins / 60);
-        const remainingMins = mins % 60;
-        
-        const hrsStr = hrs > 0 ? `${hrs} h ` : '';
-        const minsStr = `${remainingMins} min`;
+            this.osrmPolyline = new googleMaps.maps.Polyline({
+              path: pathCoords,
+              strokeColor: '#2563eb',
+              strokeOpacity: 0.8,
+              strokeWeight: 6,
+              map: this.map
+            });
 
-        this.routeDistance = `${distKm} km`;
-        this.routeDuration = `${hrsStr}${minsStr}`;
+            const bounds = new googleMaps.maps.LatLngBounds();
+            pathCoords.forEach((coord: any) => bounds.extend(coord));
+            this.map.fitBounds(bounds);
 
-        this.drawRouteMarkers(googleMaps);
-      } else {
-        console.warn('Directions API error, drawing straight line fallback:', status);
-        this.error = '';
-        this.drawFallbackRoute(googleMaps);
-      }
-    });
+            if (data.waypoints && data.waypoints.length > 0) {
+              const originalClients = this.rutaPuntos.slice(1);
+              const clientOrders = originalClients.map((client, index) => {
+                const osrmWp = data.waypoints[index + 1];
+                return {
+                  client,
+                  order: osrmWp ? osrmWp.waypoint_index : Infinity
+                };
+              });
+
+              clientOrders.sort((a, b) => a.order - b.order);
+
+              const startPoint = this.rutaPuntos[0];
+              this.rutaPuntos = [startPoint, ...clientOrders.map(co => co.client)];
+            }
+
+            const distKm = (trip.distance / 1000).toFixed(1);
+            const mins = Math.round(trip.duration / 60);
+            const hrs = Math.floor(mins / 60);
+            const remainingMins = mins % 60;
+            
+            const hrsStr = hrs > 0 ? `${hrs} h ` : '';
+            const minsStr = `${remainingMins} min`;
+
+            this.routeDistance = `${distKm} km`;
+            this.routeDuration = `${hrsStr}${minsStr}`;
+
+            this.drawRouteMarkers(googleMaps);
+          } else {
+            console.warn('OSRM Trip API returned non-OK status, calling fallback:', data.code);
+            this.drawFallbackRoute(googleMaps);
+          }
+        });
+      })
+      .catch(err => {
+        this.ngZone.run(() => {
+          console.error('OSRM API request failed, calling fallback:', err);
+          this.drawFallbackRoute(googleMaps);
+        });
+      });
   }
 
   private drawFallbackRoute(googleMaps: any): void {
@@ -803,6 +823,9 @@ export class Mapa implements OnInit {
     }
     if (this.fallbackPolyline) {
       this.fallbackPolyline.setMap(null);
+    }
+    if (this.osrmPolyline) {
+      this.osrmPolyline.setMap(null);
     }
 
     const pathCoordinates = this.rutaPuntos.map(p => ({ lat: p.coordenadas.lat, lng: p.coordenadas.lng }));
