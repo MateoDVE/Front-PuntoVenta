@@ -12,6 +12,8 @@ import { Mapa } from './Pages/vendedor/mapa/mapa';
 import { Asignacion } from './Pages/admin/asignacion/asignacion';
 import { VentaVendedorComponent } from './Pages/vendedor/venta-vendedor/venta-vendedor';
 import { CierreVendedor } from './Pages/vendedor/cierre-vendedor/cierre-vendedor';
+import { ProgramarPedidoComponent } from './Pages/vendedor/programar-pedido/programar-pedido';
+import { PedidosAdminComponent } from './Pages/admin/pedidos/pedidos';
 
 export const routes: Routes = [
 
@@ -66,6 +68,13 @@ export const routes: Routes = [
     data: { roles: ['admin', 'administrador'] }
   },
 
+  {
+    path: 'admin/pedidos',
+    component: PedidosAdminComponent,
+    canActivate: [authGuard],
+    data: { roles: ['admin', 'administrador'] }
+  },
+
   { path: 'vendedor/dashboard', component: DashboardVendedor, canActivate: [authGuard], data: { roles: ['vendedor'] } },
 
   { path: 'vendedor/mapa', component: Mapa, canActivate: [authGuard], data: { roles: ['vendedor'] } },
@@ -73,6 +82,13 @@ export const routes: Routes = [
   { path: 'vendedor/venta', component: VentaVendedorComponent, canActivate: [authGuard], data: { roles: ['vendedor'] } },
 
   { path: 'vendedor/cierre', component: CierreVendedor, canActivate: [authGuard], data: { roles: ['vendedor'] } },
+
+  { 
+    path: 'vendedor/programar-pedido', 
+    component: ProgramarPedidoComponent, 
+    canActivate: [authGuard], 
+    data: { roles: ['vendedor'] } 
+  },
 
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 

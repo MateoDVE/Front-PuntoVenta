@@ -1,0 +1,171 @@
+<div class="pedidos-admin-container dashboard-shell">
+  <div class="dashboard-layout">
+    <app-admin-navbar (signOut)="onSignOut()"></app-admin-navbar>
+
+    <main class="dashboard-main">
+      <header class="main-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+          <h2>{{ 'ADMIN.PEDIDOS.TITLE' | translate }}</h2>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Filtros -->
+        <div class="filtros-section">
+          <div class="filtro-grupo">
+            <label>{{ 'ADMIN.PEDIDOS.FILTER_VENDOR' | translate }}</label>
+            <select 
+              [(ngModel)]="vendedorSeleccionado"
+              (change)="aplicarFiltros()">
+              <option value="">{{ 'COMMON.ALL' | translate }}</option>
+              <option *ngFor="let vendedor of vendedores" [value]="vendedor.id || vendedor.id_usuario">
+                {{ vendedor.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filtro-grupo">
+            <label>{{ 'ADMIN.PEDIDOS.FILTER_STATUS' | translate }}</label>
+            <select 
+              [(ngModel)]="estadoSeleccionado"
+              (change)="aplicarFiltros()">
+              <option value="">{{ 'COMMON.ALL' | translate }}</option>
+              <option value="PENDIENTE">{{ 'STATUS.PENDING' | translate }}</option>
+              <option value="EN_RUTA">{{ 'STATUS.IN_ROUTE' | translate }}</option>
+              <option value="ENTREGADO">{{ 'STATUS.DELIVERED' | translate }}</option>
+              <option value="RECHAZADO">{{ 'STATUS.REJECTED' | translate }}</option>
+            </select>
+          </div>
+
+          <div class="filtro-grupo">
+            <label>{{ 'ADMIN.PEDIDOS.FILTER_DATE' | translate }}</label>
+            <input 
+              type="date"
+              [(ngModel)]="fechaSeleccionada"
+              (change)="aplicarFiltros()">
+          </div>
+
+          <button type="button" (click)="limpiarFiltros()" class="btn-limpiar">
+            {{ 'COMMON.CLEAR' | translate }}
+          </button>
+        </div>
+
+        <!-- Tabla de Pedidos -->
+        <div class="pedidos-tabla">
+          <div class="tabla-header">
+            <div class="col-vendedor">{{ 'ADMIN.PEDIDOS.VENDOR' | translate }}</div>
+            <div class="col-cliente">{{ 'ADMIN.PEDIDOS.CLIENT' | translate }}</div>
+            <div class="col-fecha">{{ 'ADMIN.PEDIDOS.DATE' | translate }}</div>
+            <div class="col-estado">{{ 'ADMIN.PEDIDOS.STATUS' | translate }}</div>
+            <div class="col-prioridad">{{ 'ADMIN.PEDIDOS.PRIORITY' | translate }}</div>
+            <div class="col-productos">{{ 'ADMIN.PEDIDOS.PRODUCTS' | translate }}</div>
+            <div class="col-accion"></div>
+          </div>
+
+          <div *ngIf="cargando" class="loading-state" style="text-align: center; padding: 2rem; color: #666;">
+            {{ 'COMMON.LOADING' | translate }}
+          </div>
+
+          <div *ngIf="!cargando && pedidosFiltrados.length === 0" class="sin-datos">
+            <span style="font-size: 48px; display: block; margin-bottom: 1rem;">📋</span>
+            <p>{{ 'ADMIN.PEDIDOS.NO_ORDERS' | translate }}</p>
+          </div>
+
+          <div *ngFor="let pedido of pedidosFiltrados" class="tabla-fila" [class.expandida]="pedido.expandido">
+            <div class="fila-contenido">
+              <div class="col-vendedor">
+                <span class="valor">{{ pedido.vendedorNombre }}</span>
+              </div>
+              <div class="col-cliente">
+                <span class="valor">{{ pedido.clienteNombre }}</span>
+              </div>
+              <div class="col-fecha">
+                <span class="valor">{{ pedido.fechaProgramada | date:'shortDate' }}</span>
+              </div>
+              <div class="col-estado">
+                <span [ngClass]="'estado ' + pedido.estado.toLowerCase()">
+                  {{ ('STATUS.' + pedido.estado) | translate }}
+                </span>
+              </div>
+              <div class="col-prioridad">
+                <span [ngClass]="'prioridad prioridad-' + pedido.prioridad.toLowerCase()">
+                  {{ ('PRIORITY.' + pedido.prioridad) | translate }}
+                </span>
+              </div>
+              <div class="col-productos">
+                <span class="cantidad">{{ pedido.detalles.length }}</span>
+              </div>
+              <div class="col-accion">
+                <button type="button" (click)="toggleExpander(pedido)" class="btn-expand">
+                  {{ pedido.expandido ? '▼' : '▶' }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Detalles Expandibles -->
+            <div class="fila-expandida" *ngIf="pedido.expandido">
+              <div class="detalles-contenedor">
+                <!-- Observaciones -->
+                <div class="detalle-seccion" *ngIf="pedido.observaciones">
+                  <h4>{{ 'ADMIN.PEDIDOS.OBSERVATIONS' | translate }}</h4>
+                  <p>{{ pedido.observaciones }}</p>
+                </div>
+
+                <!-- Tabla de Productos -->
+                <div class="detalle-seccion">
+                  <h4>{{ 'ADMIN.PEDIDOS.PRODUCTS_DETAIL' | translate }}</h4>
+                  <table class="detalles-tabla">
+                    <thead>
+                      <tr>
+                        <th>{{ 'ADMIN.PEDIDOS.PRODUCT_NAME' | translate }}</th>
+                        <th>{{ 'ADMIN.PEDIDOS.QUANTITY' | translate }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let detalle of pedido.detalles">
+                        <td>{{ detalle.nombre }}</td>
+                        <td class="cantidad">{{ detalle.cantidad }}</td>
+                      </tr>
+                      <tr *ngIf="pedido.detalles.length === 0">
+                        <td colspan="2" style="text-align: center;">{{ 'ADMIN.PEDIDOS.NO_PRODUCTS' | translate }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Metadata -->
+                <div class="detalle-seccion">
+                  <h4>{{ 'ADMIN.PEDIDOS.METADATA' | translate }}</h4>
+                  <p><strong>{{ 'ADMIN.PEDIDOS.CREATED_AT' | translate }}:</strong> {{ pedido.createdAt | date:'short' }}</p>
+                  <p><strong>{{ 'ADMIN.PEDIDOS.STATUS' | translate }}:</strong> {{ ('STATUS.' + pedido.estado) | translate }}</p>
+                </div>
+
+                <!-- Acciones -->
+                <div class="acciones">
+                  <button 
+                    *ngIf="pedido.estado === 'PENDIENTE'"
+                    (click)="cambiarEstado(pedido, 'EN_RUTA')"
+                    class="btn-accion btn-en-ruta">
+                    {{ 'ADMIN.PEDIDOS.SEND_ROUTE' | translate }}
+                  </button>
+                  <button 
+                    *ngIf="pedido.estado === 'EN_RUTA' || pedido.estado === 'PENDIENTE'"
+                    (click)="cambiarEstado(pedido, 'ENTREGADO')"
+                    class="btn-accion btn-entregado">
+                    {{ 'ADMIN.PEDIDOS.MARK_DELIVERED' | translate }}
+                  </button>
+                  <button 
+                    *ngIf="pedido.estado === 'PENDIENTE' || pedido.estado === 'EN_RUTA'"
+                    (click)="cambiarEstado(pedido, 'RECHAZADO')"
+                    class="btn-accion btn-rechazar">
+                    {{ 'ADMIN.PEDIDOS.REJECT' | translate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
