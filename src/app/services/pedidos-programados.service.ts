@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 export interface DetallePedido {
   idProducto: string;
   cantidad: number;
+  cantidadDisplay?: string;
   nombre?: string;
 }
 

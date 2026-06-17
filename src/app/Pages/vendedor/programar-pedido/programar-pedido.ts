@@ -139,10 +139,12 @@ export class ProgramarPedidoComponent implements OnInit {
     
     if (existe) {
       existe.cantidad++;
+      existe.cantidadDisplay = String(existe.cantidad);
     } else {
       this.detallesPedido.push({
         idProducto: pId,
         cantidad: 1,
+        cantidadDisplay: '1',
         nombre: producto.nombre
       });
     }
@@ -154,6 +156,7 @@ export class ProgramarPedidoComponent implements OnInit {
   incrementarCantidad(index: number): void {
     if (index >= 0 && index < this.detallesPedido.length) {
       this.detallesPedido[index].cantidad++;
+      this.detallesPedido[index].cantidadDisplay = String(this.detallesPedido[index].cantidad);
     }
   }
 
@@ -161,7 +164,39 @@ export class ProgramarPedidoComponent implements OnInit {
     if (index >= 0 && index < this.detallesPedido.length) {
       if (this.detallesPedido[index].cantidad > 1) {
         this.detallesPedido[index].cantidad--;
+        this.detallesPedido[index].cantidadDisplay = String(this.detallesPedido[index].cantidad);
       }
+    }
+  }
+
+  onCantidadInput(event: any, index: number): void {
+    const raw = event.target.value;
+    // allow empty while typing
+    this.detallesPedido[index].cantidadDisplay = raw;
+
+    if (!raw) {
+      // don't set cantidad yet; leave it to blur or explicit parse
+      this.detallesPedido[index].cantidad = 0;
+      return;
+    }
+
+    // parse integer and enforce positive
+    const parsed = parseInt(raw, 10);
+    if (!isNaN(parsed) && parsed > 0) {
+      this.detallesPedido[index].cantidad = parsed;
+    }
+  }
+
+  onCantidadBlur(index: number): void {
+    const detalle = this.detallesPedido[index];
+    const raw = detalle.cantidadDisplay ?? '';
+    const parsed = parseInt(String(raw), 10);
+    if (isNaN(parsed) || parsed < 1) {
+      detalle.cantidad = 1;
+      detalle.cantidadDisplay = '1';
+    } else {
+      detalle.cantidad = parsed;
+      detalle.cantidadDisplay = String(parsed);
     }
   }
 
@@ -187,6 +222,13 @@ export class ProgramarPedidoComponent implements OnInit {
   crearPedido(): void {
     if (this.formulario.invalid || this.detallesPedido.length === 0) {
       this.mostrarMensaje('Formulario Inválido', 'Por favor complete todos los campos requeridos y agregue al menos un producto.', 'warning');
+      return;
+    }
+
+    // Validate quantities: all must be positive integers > 0
+    const invalidCantidad = this.detallesPedido.some(d => !d.cantidad || d.cantidad < 1 || !Number.isInteger(d.cantidad));
+    if (invalidCantidad) {
+      this.mostrarMensaje('Cantidad Inválida', 'Por favor asegúrese de que todas las cantidades sean enteros positivos mayores a 0.', 'warning');
       return;
     }
 

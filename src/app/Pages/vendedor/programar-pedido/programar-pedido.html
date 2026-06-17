@@ -96,7 +96,16 @@
             <span class="detalle-nombre">{{ detalle.nombre }}</span>
             <div class="detalle-controles">
               <button type="button" (click)="decrementarCantidad(i)" class="btn-cantidad">−</button>
-              <input type="number" [(ngModel)]="detalle.cantidad" [ngModelOptions]="{standalone: true}" readonly>
+              <input
+                type="number"
+                [(ngModel)]="detalle.cantidadDisplay"
+                [ngModelOptions]="{standalone: true}"
+                (input)="onCantidadInput($event, i)"
+                (blur)="onCantidadBlur(i)"
+                min="1"
+                step="1"
+                aria-label="Cantidad"
+              >
               <button type="button" (click)="incrementarCantidad(i)" class="btn-cantidad">+</button>
               <button type="button" (click)="eliminarProducto(i)" class="btn-eliminar" aria-label="Eliminar">
                 &times;
