@@ -30,7 +30,8 @@
     "STOCK": "Stock",
     "LOADING": "Cargando...",
     "SAVING": "Guardando...",
-    "REQUIRED": "Este campo es obligatorio"
+    "REQUIRED": "Este campo es obligatorio",
+    "QUANTITY": "Cantidad"
   },
   "PRIORITY": {
     "HIGH": "Alta",
@@ -237,6 +238,8 @@
       "SELECT_SELLER_PLACEHOLDER": "Selecciona un vendedor",
       "NO_SELLERS_FOUND": "No se encontraron vendedores",
       "INFO_MESSAGE": "Esta operación reemplazará el stock actual del transporte y actualizará el stock global del almacén.",
+      "PRODUCT_SEARCH_LABEL": "Buscar producto",
+      "PRODUCT_SEARCH_PLACEHOLDER": "Escribe nombre o ID de producto",
       "ASSIGN_PRODUCTS_LABEL": "Asignar productos",
       "PRODUCT_ID": "ID de producto",
       "AVAILABLE": "Disponible",

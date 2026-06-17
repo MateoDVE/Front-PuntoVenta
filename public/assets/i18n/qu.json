@@ -30,7 +30,8 @@
     "STOCK": "Rikch'i",
     "LOADING": "Kargachkaq...",
     "SAVING": "Grabachkaq...",
-    "REQUIRED": "Kayqa munañataq"
+    "REQUIRED": "Kayqa munañataq",
+    "QUANTITY": "Cantidad"
   },
   "PRIORITY": {
     "HIGH": "Ataq",
@@ -234,6 +235,8 @@
       "SELECT_SELLER_PLACEHOLDER": "Qhatuchikta selectay",
       "NO_SELLERS_FOUND": "Mana qhatuchik tarisqa",
       "INFO_MESSAGE": "Kay operacion transportepi current stockta replaceynqa y global almacen stockta actualizaynqa.",
+      "PRODUCT_SEARCH_LABEL": "Productota maskanay",
+      "PRODUCT_SEARCH_PLACEHOLDER": "Sutin o productoid qillqay",
       "ASSIGN_PRODUCTS_LABEL": "Productos asignay",
       "PRODUCT_ID": "Productoid",
       "AVAILABLE": "Disponible",

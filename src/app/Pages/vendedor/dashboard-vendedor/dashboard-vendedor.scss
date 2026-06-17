@@ -191,3 +191,216 @@
   color: gray;
   margin-top: 20px;
 }
+
+/* PEDIDOS HOY / PREVENTAS */
+.preventas-hoy {
+  margin-top: 20px;
+}
+
+.pedidos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left; /* Alineación a la izquierda */
+}
+
+.pedido-card-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.pedido-header {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 4px;
+
+  &.has-border {
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 12px;
+  }
+
+  strong {
+    font-size: 1.05rem;
+    color: #1e293b;
+    font-weight: 600;
+  }
+}
+
+.pedido-status {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pedido-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-align: center;
+}
+
+/* Status Badges */
+.estado {
+  text-transform: capitalize;
+
+  &.pendiente {
+    background-color: #fef3c7;
+    color: #d97706;
+  }
+  &.en_ruta {
+    background-color: #dbeafe;
+    color: #2563eb;
+  }
+  &.entregado {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+  &.rechazado {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+  &.reprogramado {
+    background-color: #f3e8ff;
+    color: #7c3aed;
+  }
+}
+
+/* Priority Badges */
+.prioridad {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+
+  &.alta {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+  }
+  &.media {
+    background-color: #ffedd5;
+    color: #ea580c;
+    border: 1px solid #fed7aa;
+  }
+  &.baja {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+  }
+}
+
+/* Expand Icon */
+.expand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.75rem;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background: #e2e8f0;
+    color: #334155;
+  }
+}
+
+/* Details Section */
+.pedido-detalles {
+  animation: slideDown 0.2s ease-out;
+  padding-top: 14px;
+  font-size: 0.9rem;
+  color: #334155;
+
+  .observaciones-box {
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    background-color: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #78350f;
+  }
+
+  .productos-tabla {
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+
+    .tabla-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      background: #f1f5f9;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #475569;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .tabla-fila {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.88rem;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      span:first-child {
+        color: #1e293b;
+        font-weight: 500;
+      }
+
+      span:last-child {
+        font-weight: 700;
+        color: #1e3c72;
+      }
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

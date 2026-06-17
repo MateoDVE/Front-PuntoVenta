@@ -56,10 +56,21 @@
 					</p>
 
 					<div class="field-group">
+						<label for="producto-search">{{ 'ADMIN.ASIGNACION.PRODUCT_SEARCH_LABEL' | translate }}</label>
+						<input
+							id="producto-search"
+							type="search"
+							[(ngModel)]="busquedaProducto"
+							name="producto_search"
+							placeholder="{{ 'ADMIN.ASIGNACION.PRODUCT_SEARCH_PLACEHOLDER' | translate }}"
+						/>
+					</div>
+
+					<div class="field-group">
 						<label>{{ 'ADMIN.ASIGNACION.ASSIGN_PRODUCTS_LABEL' | translate }}</label>
 
 						<div class="product-list">
-							<article class="product-row" *ngFor="let producto of productos">
+							<article class="product-row" *ngFor="let producto of productosFiltrados">
 								<header>
 									<h4>{{ producto.nombre }}</h4>
 									<span class="badge">{{ 'ADMIN.ASIGNACION.PRODUCT_ID' | translate }} {{ producto.id }}</span>

@@ -30,7 +30,8 @@
     "STOCK": "Stock",
     "LOADING": "Loading...",
     "SAVING": "Saving...",
-    "REQUIRED": "This field is required"
+    "REQUIRED": "This field is required",
+    "QUANTITY": "Quantity"
   },
   "PRIORITY": {
     "HIGH": "High",
@@ -237,6 +238,8 @@
       "SELECT_SELLER_PLACEHOLDER": "Select a seller",
       "NO_SELLERS_FOUND": "No sellers found",
       "INFO_MESSAGE": "This operation will replace the current transport stock and update the warehouse inventory.",
+      "PRODUCT_SEARCH_LABEL": "Search product",
+      "PRODUCT_SEARCH_PLACEHOLDER": "Type a name or product ID",
       "ASSIGN_PRODUCTS_LABEL": "Assign products",
       "PRODUCT_ID": "Product ID",
       "AVAILABLE": "Available",

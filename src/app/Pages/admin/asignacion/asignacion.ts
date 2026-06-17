@@ -47,6 +47,7 @@ export class Asignacion implements OnInit {
   vendedores: VendedorBackend[] = [];
   selectedVendedorId = '';
   busquedaVendedor = '';
+  busquedaProducto = '';
 
   productos: ProductoAsignacion[] = [];
   stockPorTransporte: TransporteStock[] = [];
@@ -90,6 +91,7 @@ export class Asignacion implements OnInit {
         this.vendedores = vendedores;
         this.productosCatalogo = productos;
         this.busquedaVendedor = '';
+        this.busquedaProducto = '';
 
         this.productos = productos.map((producto) => ({
           id: String(producto.id_producto ?? ''),
@@ -150,6 +152,18 @@ export class Asignacion implements OnInit {
     return this.vendedores.filter((vendedor) =>
       vendedor.nombre.toLowerCase().includes(termino) ||
       vendedor.email.toLowerCase().includes(termino)
+    );
+  }
+
+  get productosFiltrados(): ProductoAsignacion[] {
+    const termino = this.busquedaProducto.trim().toLowerCase();
+    if (!termino) {
+      return this.productos;
+    }
+
+    return this.productos.filter((producto) =>
+      producto.nombre.toLowerCase().includes(termino) ||
+      producto.id.toLowerCase().includes(termino)
     );
   }
 

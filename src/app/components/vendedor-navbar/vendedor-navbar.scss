@@ -130,14 +130,43 @@
   }
 }
 
-.cerrar-sesion {
-  color: #dc2626;
-  cursor: pointer;
+.logout-control {
+  position: fixed;
+  left: 16px;
+  bottom: 82px;
+  z-index: 30;
 }
 
-.cerrar-sesion:hover {
-  color: #b91c1c;
-  background-color: rgba(220, 38, 38, 0.08);
+.logout-btn {
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  background: #ffffff;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  transition: transform 220ms ease, border-color 220ms ease, background-color 220ms ease, box-shadow 220ms ease;
+  outline: none;
+
+  .logout-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+  }
+
+  &:hover {
+    border-color: #dc2626;
+    background-color: #fef2f2;
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.12);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 .sync-banner {
