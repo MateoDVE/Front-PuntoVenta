@@ -86,6 +86,21 @@
 
   </div>
 
+  @if (preventaPendiente) {
+    <div class="preventa-alerta-banner" style="background: #eef9ff; border: 1px solid #bce1ff; border-radius: 8px; padding: 12px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ion-icon name="information-circle-outline" style="font-size: 1.8em; color: #108ee9;"></ion-icon>
+        <div>
+          <strong style="color: #0d47a1; font-size: 1em;">{{ 'VENDEDOR.VENTA.PREVENTA_DETECTED' | translate }}</strong>
+          <div style="font-size: 0.85em; color: #555; margin-top: 2px;">{{ 'VENDEDOR.VENTA.PREVENTA_DETECTED_MSG' | translate }}</div>
+        </div>
+      </div>
+      <button type="button" (click)="autocompletarCarrito()" style="background: #108ee9; color: white; border: none; padding: 8px 14px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9em; transition: background 0.2s;">
+        {{ 'VENDEDOR.VENTA.AUTOFILL_CART' | translate }}
+      </button>
+    </div>
+  }
+
   <!-- BUSCADOR -->
   <div class="buscador-section">
     <div class="buscador-input">
@@ -333,3 +348,12 @@
     </div>
   </div>
 }
+
+<app-modal
+  [open]="modalState.open"
+  [title]="modalState.title"
+  [message]="modalState.message"
+  [variant]="modalState.variant"
+  (closed)="cerrarModalMensaje()"
+  (confirmed)="cerrarModalMensaje()">
+</app-modal>

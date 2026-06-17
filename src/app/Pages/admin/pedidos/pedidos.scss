@@ -1,0 +1,390 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.dashboard-shell {
+  min-height: 100vh;
+  background: #e7eaef;
+  color: #111827;
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.dashboard-main {
+  padding: 22px;
+}
+
+.pedidos-admin-container {
+  --padding-bottom: 20px;
+
+  .content {
+    padding: 0;
+  }
+
+  .filtros-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .filtro-grupo {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      label {
+        font-weight: 600;
+        font-size: 14px;
+        color: #333;
+      }
+
+      input,
+      select {
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 14px;
+
+        &:focus {
+          outline: none;
+          border-color: #4CAF50;
+          box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+      }
+    }
+
+    button {
+      align-self: flex-end;
+      padding: 0.75rem 1.5rem;
+      background: #666;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+
+      &:hover {
+        background: #555;
+      }
+    }
+  }
+
+  .pedidos-tabla {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .tabla-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 130px 120px 100px 100px 50px;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: #f0f0f0;
+      font-weight: 600;
+      font-size: 13px;
+      color: #333;
+      border-bottom: 2px solid #ddd;
+
+      > div {
+        padding: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .tabla-fila {
+      border-bottom: 1px solid #eee;
+      background: white;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #f9f9f9;
+      }
+
+      &.expandida {
+        background: #fafafa;
+      }
+
+      .fila-contenido {
+        display: grid;
+        grid-template-columns: 1fr 1fr 130px 120px 100px 100px 50px;
+        gap: 0.5rem;
+        padding: 1rem;
+        align-items: center;
+
+        > div {
+          padding: 0.5rem;
+          font-size: 14px;
+
+          .valor {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .estado {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+
+            &.pendiente {
+              background: #fff3cd;
+              color: #856404;
+            }
+
+            &.en_ruta {
+              background: #cfe2ff;
+              color: #084298;
+            }
+
+            &.entregado {
+              background: #d1e7dd;
+              color: #0f5132;
+            }
+
+            &.rechazado {
+              background: #f8d7da;
+              color: #842029;
+            }
+          }
+
+          .prioridad {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+
+            &.prioridad-alta {
+              background: #ffebee;
+              color: #c62828;
+            }
+
+            &.prioridad-media {
+              background: #fff3e0;
+              color: #e65100;
+            }
+
+            &.prioridad-baja {
+              background: #f3e5f5;
+              color: #4a148c;
+            }
+          }
+
+          .cantidad {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 0.35rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 13px;
+          }
+        }
+      }
+
+      .fila-expandida {
+        padding: 1rem;
+        background: #f5f5f5;
+        border-top: 2px solid #e0e0e0;
+
+        .detalles-contenedor {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 1.5rem;
+
+          .detalle-seccion {
+            h4 {
+              margin: 0 0 0.75rem 0;
+              font-size: 13px;
+              font-weight: 700;
+              color: #333;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            p {
+              margin: 0.5rem 0;
+              font-size: 14px;
+              color: #666;
+              line-height: 1.4;
+            }
+
+            .detalles-tabla {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 13px;
+
+              thead {
+                background: #e8e8e8;
+
+                th {
+                  padding: 0.75rem;
+                  text-align: left;
+                  font-weight: 600;
+                  color: #333;
+                  border-bottom: 2px solid #ddd;
+                }
+              }
+
+              tbody {
+                tr {
+                  border-bottom: 1px solid #eee;
+
+                  &:last-child {
+                    border-bottom: none;
+                  }
+
+                  td {
+                    padding: 0.75rem;
+                    color: #555;
+
+                    &.cantidad {
+                      font-weight: 600;
+                      color: #2e7d32;
+                      text-align: center;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          .acciones {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+
+            .btn-accion {
+              flex: 1;
+              min-width: 150px;
+              padding: 0.75rem 1rem;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              font-weight: 600;
+              font-size: 13px;
+              transition: all 0.3s ease;
+
+              &.btn-en-ruta {
+                background: #cfe2ff;
+                color: #084298;
+
+                &:hover {
+                  background: #b6d4fe;
+                }
+              }
+
+              &.btn-entregado {
+                background: #d1e7dd;
+                color: #0f5132;
+
+                &:hover {
+                  background: #badfbc;
+                }
+              }
+
+              &.btn-rechazar {
+                background: #f8d7da;
+                color: #842029;
+
+                &:hover {
+                  background: #f5c2c7;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .sin-datos {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    ion-icon {
+      font-size: 48px;
+      color: #ccc;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #999;
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .pedidos-admin-container {
+    .pedidos-tabla .tabla-header,
+    .pedidos-tabla .tabla-fila .fila-contenido {
+      grid-template-columns: 1fr 1fr 100px 100px 50px;
+
+      > div:nth-child(5),
+      > div:nth-child(6) {
+        display: none;
+      }
+    }
+
+    .filtros-section {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .pedidos-admin-container {
+    .content {
+      padding: 1rem;
+    }
+
+    .filtros-section {
+      grid-template-columns: 1fr;
+    }
+
+    .pedidos-tabla {
+      .tabla-header,
+      .tabla-fila .fila-contenido {
+        grid-template-columns: 1fr 80px 50px;
+
+        > div {
+          font-size: 12px;
+        }
+
+        .col-cliente,
+        .col-fecha,
+        .col-prioridad,
+        .col-productos {
+          display: none;
+        }
+      }
+
+      .tabla-fila .fila-expandida .detalles-contenedor {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

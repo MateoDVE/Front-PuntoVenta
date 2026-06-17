@@ -4,6 +4,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { VendedorNavbar } from '../../../components/vendedor-navbar/vendedor-navbar';
 import { ApiService, CierreJornadaResponse, InventarioAsignacion, Producto, Usuario } from '../../../services/api.service';
 import { ProductosService } from '../../../services/productos.service';
+import { ClientesService } from '../../../services/clientes.service';
+import { PedidosProgramadosService, PedidoProgramado } from '../../../services/pedidos-programados.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -26,13 +28,21 @@ export class DashboardVendedor implements OnInit {
   productosCatalogo: Producto[] = [];
   cargas: InventarioAsignacion[] = [];
   cierreData: CierreJornadaResponse | null = null;
+  pedidosHoy: any[] = [];
+  clientes: any[] = [];
 
   cargando = false;
   confirmando = '';
   errorMensaje = '';
   exitoMensaje = '';
 
-  constructor(private apiService: ApiService, private translate: TranslateService, private productosService: ProductosService) {
+  constructor(
+    private apiService: ApiService, 
+    private translate: TranslateService, 
+    private productosService: ProductosService,
+    private clientesService: ClientesService,
+    private pedidosService: PedidosProgramadosService
+  ) {
     const idioma = localStorage.getItem('idioma') || 'es';
     this.translate.setDefaultLang('es');
     this.translate.use(idioma);
@@ -57,16 +67,23 @@ export class DashboardVendedor implements OnInit {
         this.perfil = perfil;
 
         forkJoin({
-          productos: this.productosService.getProductos(),
-          cargas: this.apiService.getInventarioVendedor(perfil.id_usuario),
+          productos: this.productosService.getProductos().pipe(catchError(() => of([]))),
+          cargas: this.apiService.getInventarioVendedor(perfil.id_usuario).pipe(catchError(() => of([]))),
           cierre: this.apiService.getCierreJornada(perfil.id_usuario, fechaHoy).pipe(
             catchError(() => of(null))
           ),
+          clientes: this.clientesService.getClientes(perfil.id_usuario).pipe(catchError(() => of([]))),
+          pedidos: this.pedidosService.obtenerPedidos(perfil.id_usuario, fechaHoy).pipe(catchError(() => of([])))
         }).subscribe({
-          next: ({ productos, cargas, cierre }) => {
+          next: ({ productos, cargas, cierre, clientes, pedidos }) => {
             this.productosCatalogo = productos;
             this.cargas = cargas;
             this.cierreData = cierre;
+            this.clientes = Array.isArray(clientes) ? clientes : ((clientes as any).data || []);
+            this.pedidosHoy = (pedidos || []).map((p: any) => ({
+              ...p,
+              expandido: false
+            }));
             this.cargando = false;
           },
           error: (error) => {
@@ -172,5 +189,14 @@ export class DashboardVendedor implements OnInit {
 
   private normalizarEstado(estado: string | null | undefined): string {
     return (estado ?? '').trim().toUpperCase();
+  }
+
+  getClienteNombre(idCliente: number): string {
+    const cliente = this.clientes.find(c => Number(c.id_cliente) === Number(idCliente));
+    return cliente ? cliente.nombre_negocio : 'Cliente desconocido';
+  }
+
+  toggleExpander(pedido: any): void {
+    pedido.expandido = !pedido.expandido;
   }
 }

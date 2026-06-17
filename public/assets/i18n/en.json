@@ -23,7 +23,32 @@
     "CONFIRM": "Confirmation",
     "SUCCESS": "Success",
     "ERROR": "Error",
-    "WARNING": "Warning"
+    "WARNING": "Warning",
+    "SELECT": "Select",
+    "ALL": "All",
+    "CLEAR": "Clear",
+    "STOCK": "Stock",
+    "LOADING": "Loading...",
+    "SAVING": "Saving...",
+    "REQUIRED": "This field is required"
+  },
+  "PRIORITY": {
+    "HIGH": "High",
+    "MEDIUM": "Medium",
+    "LOW": "Low"
+  },
+  "STATUS": {
+    "PENDING": "Pending",
+    "IN_ROUTE": "In route",
+    "DELIVERED": "Delivered",
+    "REJECTED": "Rejected"
+  },
+  "VALIDATION": {
+    "REQUIRED": "This field is required",
+    "INVALID_EMAIL": "Invalid email",
+    "MIN_LENGTH": "Minimum {{min}} characters",
+    "MAX_LENGTH": "Maximum {{max}} characters",
+    "PATTERN": "Invalid format"
   },
   "ADMIN": {
     "NAVBAR": {
@@ -33,6 +58,7 @@
       "VENDEDORES": "Sellers",
       "CATALOGO": "Catalog",
       "ASIGNACION": "Assignment",
+      "PEDIDOS": "Orders",
       "CLIENTES": "Clients",
       "MONITOR": "Monitor",
       "REPORTES": "Reports",
@@ -217,6 +243,8 @@
       "UNITS": "units",
       "UNITS_SHORT": "u.",
       "QUANTITY_PLACEHOLDER": "Quantity",
+      "DELIVERY_DATE_LABEL": "Delivery Date",
+      "PREVENTA_CANTIDAD": "Pre-sale today",
       "ASSIGN_STOCK": "Assign stock",
       "SAVING": "Saving...",
       "CURRENT_STOCK_TITLE": "Current transport stock",
@@ -254,6 +282,31 @@
         "LOAD_VALIDATED": "Load {{idCarga}} validated by administrator.",
         "INITIAL_STOCK_REGISTERED": "Initial load registered successfully."
       }
+    },
+    "PEDIDOS": {
+      "TITLE": "Order Management",
+      "SUBTITLE": "Monitor and manage scheduled orders",
+      "FILTER_VENDOR": "Filter by seller",
+      "FILTER_STATUS": "Filter by status",
+      "FILTER_DATE": "Filter by date",
+      "VENDOR": "Seller",
+      "CLIENT": "Client",
+      "DATE": "Date",
+      "STATUS": "Status",
+      "PRIORITY": "Priority",
+      "PRODUCTS": "Products",
+      "SCHEDULED_ORDERS": "Scheduled orders",
+      "NO_ORDERS": "No orders to display",
+      "OBSERVATIONS": "Observations",
+      "PRODUCTS_DETAIL": "Products detail",
+      "PRODUCT_NAME": "Product name",
+      "QUANTITY": "Quantity",
+      "NO_PRODUCTS": "No products in this order",
+      "METADATA": "Information",
+      "CREATED_AT": "Creation date",
+      "SEND_ROUTE": "Send to route",
+      "MARK_DELIVERED": "Mark as delivered",
+      "REJECT": "Reject order"
     },
     "GESTION": {
       "TITLE": "Seller management",
@@ -503,11 +556,30 @@
       "HOME": "Home",
       "MAP": "Map",
       "SALES": "Sales",
+      "SCHEDULE": "Schedule",
       "CLOSURE": "Closure",
       "LOGOUT": "Log out",
       "LOGOUT_SHORT": "Logout",
       "LANGUAGE": "Language",
       "COMING_SOON": "Coming soon"
+    },
+    "PROGRAMAR_PEDIDO": {
+      "TITLE": "Schedule Order",
+      "CLIENT": "Client",
+      "SELECT_CLIENT": "Select a client",
+      "DELIVERY_DATE": "Delivery date",
+      "PRIORITY": "Priority",
+      "SELECT_PRIORITY": "Select a priority",
+      "OBSERVATIONS": "Observations",
+      "ADD_NOTES": "Add notes about the order",
+      "PRODUCTS": "Products",
+      "SEARCH_PRODUCT": "Search product...",
+      "ADD_PRODUCTS": "Must add at least one product",
+      "ADDED_PRODUCTS": "Added products",
+      "SCHEDULED_ORDERS": "Scheduled orders",
+      "NO_ORDERS": "No orders for this date",
+      "CREATE": "Create order",
+      "SEND": "Send"
     },
     "STATUS": {
     "PENDIENTE": "Pending",
@@ -542,7 +614,9 @@
     "CANNOT_LOAD_DASHBOARD": "Could not load the dashboard.",
     "CANNOT_LOAD_PROFILE": "Could not load the profile.",
     "LOAD_CONFIRMED": "Load {{ idCarga }} confirmed successfully.",
-    "CANNOT_CONFIRM_LOAD": "Could not confirm the load."
+    "CANNOT_CONFIRM_LOAD": "Could not confirm the load.",
+    "PREVENTAS_HOY_TITLE": "Scheduled Orders for Today",
+    "NO_PREVENTAS_HOY": "You have no scheduled orders for today."
   },
 "MAP": {
       "TITLE": "Client map",
@@ -693,12 +767,23 @@
       "SALE_ID": "ID:",
       "PRODUCTS_SOLD": "product(s) sold",
       "NEW_SALE": "New Sale",
-      "PRODUCT": "Product"
+      "PRODUCT": "Product",
+      "PREVENTA_DETECTED": "Pre-sale Detected!",
+      "PREVENTA_DETECTED_MSG": "This client has a scheduled order for today.",
+      "AUTOFILL_CART": "Autofill Cart",
+      "REPROGRAMAR": "Reschedule",
+      "RECHAZAR": "Reject",
+      "REPROGRAMAR_PREVENTA": "Reschedule Pre-sale",
+      "NUEVA_FECHA": "New Delivery Date"
     }
   },
   "STATUS": {
     "ACTIVO": "Active",
     "INACTIVO": "Inactive",
-    "EN_RUTA": "On route"
+    "EN_RUTA": "On route",
+    "PENDIENTE": "Pending",
+    "ENTREGADO": "Delivered",
+    "RECHAZADO": "Rejected",
+    "REPROGRAMADO": "Rescheduled"
   }
 }

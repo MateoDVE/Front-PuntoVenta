@@ -1,0 +1,176 @@
+<app-vendedor-navbar></app-vendedor-navbar>
+
+<div class="programar-pedido-container">
+  <!-- HEADER -->
+  <div class="programar-header">
+    <div class="header-icon">
+      <span>📅</span>
+    </div>
+    <div class="header-text">
+      <h1>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.TITLE' | translate }}</h1>
+      <p>Programa preventas y entregas futuras para tus clientes</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Formulario de Creación -->
+    <form [formGroup]="formulario" (ngSubmit)="crearPedido()" class="pedido-form">
+      <!-- Cliente -->
+      <div class="form-group">
+        <label>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.CLIENT' | translate }} *</label>
+        <select formControlName="idCliente" required>
+          <option value="" disabled selected>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.SELECT_CLIENT' | translate }}</option>
+          <option *ngFor="let cliente of clientes" [value]="cliente.id_cliente">
+            {{ cliente.nombre_negocio }} (CI/NIT: {{ cliente.ci_nit }})
+          </option>
+        </select>
+      </div>
+
+      <!-- Fecha Programada -->
+      <div class="form-group">
+        <label>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.DELIVERY_DATE' | translate }} *</label>
+        <input type="date" formControlName="fechaProgramada" required [min]="hoy">
+      </div>
+
+      <!-- Prioridad -->
+      <div class="form-group">
+        <label>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.PRIORITY' | translate }} *</label>
+        <select formControlName="prioridad" required>
+          <option value="ALTA">{{ 'PRIORITY.HIGH' | translate }}</option>
+          <option value="MEDIA">{{ 'PRIORITY.MEDIUM' | translate }}</option>
+          <option value="BAJA">{{ 'PRIORITY.LOW' | translate }}</option>
+        </select>
+      </div>
+
+      <!-- Observaciones -->
+      <div class="form-group">
+        <label>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.OBSERVATIONS' | translate }}</label>
+        <textarea 
+          formControlName="observaciones"
+          placeholder="{{ 'VENDEDOR.PROGRAMAR_PEDIDO.ADD_NOTES' | translate }}"
+          rows="3">
+        </textarea>
+      </div>
+
+      <!-- Búsqueda y Selección de Productos -->
+      <div class="form-group">
+        <label>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.PRODUCTS' | translate }} *</label>
+        <div class="producto-search">
+          <div style="display: flex; gap: 8px; position: relative;">
+            <input 
+              type="text"
+              [(ngModel)]="buscarProducto"
+              (input)="filtrarProductos()"
+              (focus)="abrirDropdownProductos()"
+              (blur)="cerrarDropdownProductosConDelay()"
+              placeholder="{{ 'VENDEDOR.PROGRAMAR_PEDIDO.SEARCH_PRODUCT' | translate }}"
+              [ngModelOptions]="{standalone: true}"
+              style="flex: 1; padding-right: 40px;">
+            <button 
+              type="button" 
+              (click)="toggleDropdownProductos()" 
+              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; color: #666; font-size: 10px; z-index: 10; margin: 0;">
+              ▼
+            </button>
+          </div>
+          
+          <div *ngIf="mostrarDropdownProductos" class="productos-dropdown" style="display: block;">
+            <div *ngFor="let producto of (buscarProducto ? productosFiltrados : productos)" 
+                 class="producto-item"
+                 (mousedown)="agregarProducto(producto)">
+              <span class="nombre">{{ producto.nombre }}</span>
+              <span class="stock">{{ producto.cantidad_disponible }} {{ 'COMMON.STOCK' | translate }}</span>
+            </div>
+            <div *ngIf="buscarProducto && productosFiltrados.length === 0" class="producto-item" style="color: #999; cursor: default; justify-content: center;">
+              No se encontraron productos
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Productos Agregados -->
+      <div class="detalles-agregados" *ngIf="detallesPedido.length > 0">
+        <h3>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.ADDED_PRODUCTS' | translate }}</h3>
+        <div class="detalles-list">
+          <div *ngFor="let detalle of detallesPedido; let i = index" class="detalle-item">
+            <span class="detalle-nombre">{{ detalle.nombre }}</span>
+            <div class="detalle-controles">
+              <button type="button" (click)="decrementarCantidad(i)" class="btn-cantidad">−</button>
+              <input type="number" [(ngModel)]="detalle.cantidad" [ngModelOptions]="{standalone: true}" readonly>
+              <button type="button" (click)="incrementarCantidad(i)" class="btn-cantidad">+</button>
+              <button type="button" (click)="eliminarProducto(i)" class="btn-eliminar" aria-label="Eliminar">
+                &times;
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="detallesPedido.length === 0" class="error-message" style="margin-top: 10px; margin-bottom: 1.5rem; color: #d32f2f; font-size: 12px;">
+        {{ 'VENDEDOR.PROGRAMAR_PEDIDO.ADD_PRODUCTS' | translate }}
+      </div>
+
+      <!-- Botón Enviar -->
+      <div class="action-buttons">
+        <button 
+          type="submit"
+          [disabled]="!formulario.valid || detallesPedido.length === 0 || guardando"
+          class="btn-primary">
+          <span *ngIf="!guardando">{{ 'VENDEDOR.PROGRAMAR_PEDIDO.CREATE' | translate }}</span>
+          <span *ngIf="guardando">{{ 'COMMON.SAVING' | translate }}</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Listado de Pedidos Programados -->
+    <div class="pedidos-listado">
+      <h2>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.SCHEDULED_ORDERS' | translate }}</h2>
+      
+      <div *ngIf="pedidosProgramados.length === 0" class="no-pedidos">
+        {{ 'VENDEDOR.PROGRAMAR_PEDIDO.NO_ORDERS' | translate }}
+      </div>
+
+      <div class="pedidos-list" *ngIf="pedidosProgramados.length > 0">
+        <div *ngFor="let pedido of pedidosProgramados" class="pedido-item">
+          <div class="pedido-header" (click)="toggleExpander(pedido)">
+            <span class="cliente-nombre">{{ getClienteNombre(pedido.idCliente) }}</span>
+            <div>
+              <span [ngClass]="'estado ' + pedido.estado.toLowerCase()">
+                {{ ('STATUS.' + pedido.estado) | translate }}
+              </span>
+              <span [ngClass]="'prioridad prioridad-' + pedido.prioridad.toLowerCase()">
+                {{ ('PRIORITY.' + pedido.prioridad) | translate }}
+              </span>
+            </div>
+          </div>
+          <div class="pedido-details" *ngIf="pedido.expandido">
+            <p *ngIf="pedido.observaciones">
+              <strong>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.OBSERVATIONS' | translate }}:</strong> {{ pedido.observaciones }}
+            </p>
+            <div class="productos">
+              <strong>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.PRODUCTS' | translate }}:</strong>
+              <ul>
+                <li *ngFor="let detalle of pedido.detalles">
+                  {{ detalle.nombre }} - {{ detalle.cantidad }}
+                </li>
+              </ul>
+            </div>
+            <p class="metadata" style="margin-top: 10px; color: #999; font-size: 12px;">
+              {{ 'ADMIN.PEDIDOS.CREATED_AT' | translate }}: {{ pedido.createdAt | date:'short' }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<app-modal
+  [open]="modalState.open"
+  [title]="modalState.title"
+  [message]="modalState.message"
+  [variant]="modalState.variant"
+  (closed)="cerrarModalMensaje()"
+  (confirmed)="cerrarModalMensaje()">
+</app-modal>

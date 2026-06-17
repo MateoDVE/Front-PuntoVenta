@@ -12,6 +12,7 @@ import {
 import { VendedoresService } from '../../../services/vendedores.service';
 import { ProductosService } from '../../../services/productos.service';
 import { AuthService } from '../../../services/auth.service';
+import { PedidosProgramadosService } from '../../../services/pedidos-programados.service';
 import { catchError, forkJoin, of } from 'rxjs';
 
 interface ProductoAsignacion {
@@ -59,6 +60,8 @@ export class Asignacion implements OnInit {
 
   stockInicialProductoId = '';
   stockInicialCantidad = 0;
+  fechaAsignacion: string = new Date().toISOString().split('T')[0];
+  preventasConsolidadas: Map<string, number> = new Map();
 
   private productosCatalogo: Producto[] = [];
 
@@ -67,7 +70,8 @@ export class Asignacion implements OnInit {
     private apiService: ApiService,
     private translate: TranslateService,
     private vendedoresService: VendedoresService,
-    private productosService: ProductosService
+    private productosService: ProductosService,
+    private pedidosService: PedidosProgramadosService
   ) {}
 
   ngOnInit(): void {
@@ -103,6 +107,7 @@ export class Asignacion implements OnInit {
         }
 
         this.cargarStockPorTransporte();
+        this.cargarPreventas();
       },
       error: (error) => {
         this.errorMensaje = error?.error?.message ?? this.translate.instant('ADMIN.ASIGNACION.ERROR.LOAD_ASSIGNMENT_INFO');
@@ -249,11 +254,11 @@ export class Asignacion implements OnInit {
   }
 
   private mapStockVendedor(vendedor: VendedorBackend, asignaciones: InventarioAsignacion[]): TransporteStock {
-    const fechaHoy = this.getFechaHoy();
+    const fechaFiltro = this.fechaAsignacion || this.getFechaHoy();
     const items = asignaciones
       .filter((asignacion) => {
         if (!asignacion.fecha_asignacion) return false;
-        const asignadoHoy = String(asignacion.fecha_asignacion).substring(0, 10) === fechaHoy;
+        const asignadoHoy = String(asignacion.fecha_asignacion).substring(0, 10) === fechaFiltro;
         const estado = (asignacion.estado_validacion ?? '').toUpperCase();
         const enProceso = estado === 'PENDIENTE' || estado === 'VALIDADO_ADMIN';
         return asignadoHoy || enProceso;
@@ -284,5 +289,43 @@ export class Asignacion implements OnInit {
       totalItems,
       items,
     };
+  }
+
+  cargarPreventas(): void {
+    if (!this.selectedVendedorId || !this.fechaAsignacion) {
+      this.preventasConsolidadas.clear();
+      this.productos.forEach(p => p.cantidadAsignar = 0);
+      return;
+    }
+
+    this.pedidosService.obtenerPedidos(this.selectedVendedorId, this.fechaAsignacion).subscribe({
+      next: (pedidos) => {
+        const consolidadas = new Map<string, number>();
+        for (const p of pedidos || []) {
+          if (p.estado === 'PENDIENTE' || p.estado === 'EN_RUTA') {
+            for (const d of p.detalles || []) {
+              const pId = String(d.idProducto);
+              const prev = consolidadas.get(pId) ?? 0;
+              consolidadas.set(pId, prev + d.cantidad);
+            }
+          }
+        }
+        this.preventasConsolidadas = consolidadas;
+
+        // Auto-llenar las cantidades a asignar con los totales de preventa consolidados
+        for (const producto of this.productos) {
+          producto.cantidadAsignar = consolidadas.get(producto.id) ?? 0;
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar preventas consolidadas:', err);
+        this.preventasConsolidadas.clear();
+        this.productos.forEach(p => p.cantidadAsignar = 0);
+      }
+    });
+  }
+
+  obtenerPreventaCant(productoId: string): number {
+    return this.preventasConsolidadas.get(String(productoId)) ?? 0;
   }
 }

@@ -23,7 +23,32 @@
     "CONFIRM": "Chaskiy",
     "SUCCESS": "Allin",
     "ERROR": "Pantay",
-    "WARNING": "Uyariy"
+    "WARNING": "Uyariy",
+    "SELECT": "Akllay",
+    "ALL": "Llapinchis",
+    "CLEAR": "Qulluy",
+    "STOCK": "Rikch'i",
+    "LOADING": "Kargachkaq...",
+    "SAVING": "Grabachkaq...",
+    "REQUIRED": "Kayqa munañataq"
+  },
+  "PRIORITY": {
+    "HIGH": "Ataq",
+    "MEDIUM": "Chawpi",
+    "LOW": "Ahuq"
+  },
+  "STATUS": {
+    "PENDING": "Atipaychkaq",
+    "IN_ROUTE": "Nanpi",
+    "DELIVERED": "Apachisqa",
+    "REJECTED": "Ama akllasqa"
+  },
+  "VALIDATION": {
+    "REQUIRED": "Kayqa munañataq",
+    "INVALID_EMAIL": "Email mana allinchu",
+    "MIN_LENGTH": "Lliw {{min}} letras",
+    "MAX_LENGTH": "Aswan {{max}} letras",
+    "PATTERN": "Mana allinchu"
   },
   "ADMIN": {
     "NAVBAR": {
@@ -33,6 +58,7 @@
       "VENDEDORES": "Qhatuchik",
       "CATALOGO": "Catalogo",
       "ASIGNACION": "Asignacion",
+      "PEDIDOS": "Pedidukuna",
       "CLIENTES": "Compradores",
       "MONITOR": "Monitor",
       "REPORTES": "Reportes",
@@ -251,6 +277,31 @@
         "LOAD_VALIDATED": "Carga {{idCarga}} administratorpi validasqa.",
         "INITIAL_STOCK_REGISTERED": "Initial stock allinpuni qillqasqa."
       }
+    },
+    "PEDIDOS": {
+      "TITLE": "Pedido Gestionay",
+      "SUBTITLE": "Planifikasqa pedidukuna qhaway kamachiy",
+      "FILTER_VENDOR": "Qhatuchikpi filter",
+      "FILTER_STATUS": "Estadopi filter",
+      "FILTER_DATE": "Punchaupi filter",
+      "VENDOR": "Qhatuchik",
+      "CLIENT": "Rantikuq",
+      "DATE": "Punchau",
+      "STATUS": "Estado",
+      "PRIORITY": "Ataq Watay",
+      "PRODUCTS": "Qatukuna",
+      "SCHEDULED_ORDERS": "Planifikasqa pedidukuna",
+      "NO_ORDERS": "Mana pedidukuna qhaway tiyanchu",
+      "OBSERVATIONS": "Qananchay",
+      "PRODUCTS_DETAIL": "Qatu detallenin",
+      "PRODUCT_NAME": "Qatu suti",
+      "QUANTITY": "Cantidad",
+      "NO_PRODUCTS": "Mana qatukuna kaypi pedidopi",
+      "METADATA": "Información",
+      "CREATED_AT": "Kamayasqa punchau",
+      "SEND_ROUTE": "Nanman achiy",
+      "MARK_DELIVERED": "Apachisqataq markay",
+      "REJECT": "Pedido ama akllasqa"
     },
     "GESTION": {
       "TITLE": "Qhatuchik gestion",
@@ -500,11 +551,30 @@
       "HOME": "Inicio",
       "MAP": "Mapa",
       "SALES": "Qhatuy",
+      "SCHEDULE": "Planificay",
       "CLOSURE": "Cierre",
       "LOGOUT": "Surquy",
       "LOGOUT_SHORT": "Surquy",
       "LANGUAGE": "Rima",
       "COMING_SOON": "Mana yapaychu"
+    },
+    "PROGRAMAR_PEDIDO": {
+      "TITLE": "Pedido Planificay",
+      "CLIENT": "Rantikuq",
+      "SELECT_CLIENT": "Rantikuq akllaykamasunchus",
+      "DELIVERY_DATE": "Apachiy punchau",
+      "PRIORITY": "Ataq Watay",
+      "SELECT_PRIORITY": "Ataq Watay akllaykamasunchus",
+      "OBSERVATIONS": "Qananchay",
+      "ADD_NOTES": "Pedidopi qananchay yapay",
+      "PRODUCTS": "Qatu kuna",
+      "SEARCH_PRODUCT": "Qatu kutiy...",
+      "ADD_PRODUCTS": "Huk qatuminwan aswan yapay tiyan",
+      "ADDED_PRODUCTS": "Yapaykusqa qatukuna",
+      "SCHEDULED_ORDERS": "Planifikasqa pedidukuna",
+      "NO_ORDERS": "Mana pedidukuna kaypunchaupi",
+      "CREATE": "Pedido kamayay",
+      "SEND": "Achiy"
     },
     "STATUS": {
       "PENDIENTE": "Suyukusqa",

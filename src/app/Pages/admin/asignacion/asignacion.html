@@ -30,13 +30,25 @@
 
 					<div class="field-group">
 						<label for="vendedor">{{ 'ADMIN.ASIGNACION.SELECT_SELLER_LABEL' | translate }}</label>
-						<select id="vendedor" name="vendedor" [(ngModel)]="selectedVendedorId">
+						<select id="vendedor" name="vendedor" [(ngModel)]="selectedVendedorId" (change)="cargarPreventas()">
 							<option value="" disabled>{{ 'ADMIN.ASIGNACION.SELECT_SELLER_PLACEHOLDER' | translate }}</option>
 							<option *ngFor="let vendedor of vendedoresFiltrados" [value]="vendedor.id_usuario">
 								{{ vendedor.nombre }} - {{ vendedor.email }}
 							</option>
 							<option *ngIf="vendedoresFiltrados.length === 0" value="" disabled>{{ 'ADMIN.ASIGNACION.NO_SELLERS_FOUND' | translate }}</option>
 						</select>
+					</div>
+
+					<div class="field-group">
+						<label for="fecha-asignacion">{{ 'ADMIN.ASIGNACION.DELIVERY_DATE_LABEL' | translate }}</label>
+						<input
+							id="fecha-asignacion"
+							type="date"
+							[(ngModel)]="fechaAsignacion"
+							name="fecha_asignacion"
+							(change)="cargarPreventas()"
+							style="width: 100%; padding: 8px; border: 1px solid var(--border-color, #ccc); border-radius: 4px;"
+						/>
 					</div>
 
 					<p class="info-message">
@@ -61,6 +73,9 @@
 									[max]="producto.disponible"
 									placeholder="{{ 'ADMIN.ASIGNACION.QUANTITY_PLACEHOLDER' | translate }}"
 								/>
+								<small *ngIf="obtenerPreventaCant(producto.id) > 0" style="display: block; margin-top: 6px; color: #c69500; font-weight: bold; font-size: 0.85em;">
+									⚠️ {{ 'ADMIN.ASIGNACION.PREVENTA_CANTIDAD' | translate }}: {{ obtenerPreventaCant(producto.id) }} {{ 'ADMIN.ASIGNACION.UNITS' | translate }}
+								</small>
 							</article>
 						</div>
 					</div>

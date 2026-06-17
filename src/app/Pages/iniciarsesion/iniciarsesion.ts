@@ -46,18 +46,29 @@ export class Iniciarsesion {
       this.authService.signIn(email, password).subscribe({
         next: (response) => {
           console.log('Inicio de sesión exitoso', response);
-          this.loading = false;
           if (this.authService.isAuthenticated()) {
-            const loginRole = this.authService.extractRoleFromLoginResponse(response);
-            const targetRoute = this.authService.getDashboardRouteByRole(loginRole);
+            this.authService.getCurrentUser().subscribe({
+              next: (profile) => {
+                this.authService.persistCurrentUser(profile);
+                this.loading = false;
+                const loginRole = this.authService.extractRoleFromLoginResponse(response);
+                const targetRoute = this.authService.getDashboardRouteByRole(loginRole);
 
-            if (targetRoute === '/login') {
-              this.errorMessage = this.translate.instant('LOGIN.ERROR_ROLE_UNDETERMINED');
-              return;
-            }
+                if (targetRoute === '/login') {
+                  this.errorMessage = this.translate.instant('LOGIN.ERROR_ROLE_UNDETERMINED');
+                  return;
+                }
 
-            this.router.navigate([targetRoute]);
+                this.router.navigate([targetRoute]);
+              },
+              error: (err) => {
+                console.error('Error al obtener perfil completo', err);
+                this.loading = false;
+                this.errorMessage = 'Error al obtener perfil del usuario.';
+              }
+            });
           } else {
+            this.loading = false;
             this.errorMessage = this.translate.instant('LOGIN.ERROR_TOKEN_MISSING');
           }
         },

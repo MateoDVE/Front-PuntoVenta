@@ -112,4 +112,48 @@
     <p class="empty" *ngIf="ultimasVentas.length === 0">{{ 'VENDEDOR.DASHBOARD.LAST_SALES_EMPTY' | translate }}</p>
   </section>
 
+  <section class="ventas preventas-hoy">
+    <h3>{{ 'VENDEDOR.DASHBOARD.PREVENTAS_HOY_TITLE' | translate }}</h3>
+
+    <ul class="lista" *ngIf="pedidosHoy.length > 0">
+      <li *ngFor="let pedido of pedidosHoy" class="pedido-card-item">
+        <div class="pedido-header" (click)="toggleExpander(pedido)" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color, #eee);">
+          <div>
+            <strong>{{ getClienteNombre(pedido.idCliente) }}</strong>
+            <div style="font-size: 0.85em; color: #666; margin-top: 4px;">
+              {{ 'VENDEDOR.DASHBOARD.STATUS_LABEL' | translate }}: 
+              <span [class]="'badge estado ' + pedido.estado.toLowerCase()">
+                {{ 'STATUS.' + pedido.estado | translate }}
+              </span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span [class]="'badge prioridad ' + pedido.prioridad.toLowerCase()">
+              {{ 'PRIORITY.' + pedido.prioridad | translate }}
+            </span>
+            <span class="expand-icon" style="font-size: 0.8em;">{{ pedido.expandido ? '▼' : '▶' }}</span>
+          </div>
+        </div>
+        
+        <div class="pedido-detalles" *ngIf="pedido.expandido" style="padding: 10px 0; font-size: 0.9em; border-bottom: 1px solid #f9f9f9;">
+          <p *ngIf="pedido.observaciones" style="margin: 0 0 8px 0;">
+            <strong>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.OBSERVATIONS' | translate }}:</strong> {{ pedido.observaciones }}
+          </p>
+          <div style="background: #fdfdfd; padding: 8px; border-radius: 4px; border: 1px solid #f0f0f0;">
+            <div style="display: flex; justify-content: space-between; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 4px;">
+              <span>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.PRODUCTS' | translate }}</span>
+              <span>{{ 'COMMON.QUANTITY' | translate }}</span>
+            </div>
+            <div *ngFor="let detalle of pedido.detalles" style="display: flex; justify-content: space-between; padding: 2px 0;">
+              <span>{{ detalle.nombre || getNombreProducto(detalle.idProducto) }}</span>
+              <span>{{ detalle.cantidad }}</span>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <p class="empty" *ngIf="pedidosHoy.length === 0">{{ 'VENDEDOR.DASHBOARD.NO_PREVENTAS_HOY' | translate }}</p>
+  </section>
+
 </section>

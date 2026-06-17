@@ -23,7 +23,35 @@
     "CONFIRM": "Confirmación",
     "SUCCESS": "Éxito",
     "ERROR": "Error",
-    "WARNING": "Advertencia"
+    "WARNING": "Advertencia",
+    "SELECT": "Seleccionar",
+    "ALL": "Todos",
+    "CLEAR": "Limpiar",
+    "STOCK": "Stock",
+    "LOADING": "Cargando...",
+    "SAVING": "Guardando...",
+    "REQUIRED": "Este campo es obligatorio"
+  },
+  "PRIORITY": {
+    "HIGH": "Alta",
+    "MEDIUM": "Media",
+    "LOW": "Baja",
+    "ALTA": "Alta",
+    "MEDIA": "Media",
+    "BAJA": "Baja"
+  },
+  "STATUS": {
+    "PENDING": "Pendiente",
+    "IN_ROUTE": "En ruta",
+    "DELIVERED": "Entregado",
+    "REJECTED": "Rechazado"
+  },
+  "VALIDATION": {
+    "REQUIRED": "Este campo es obligatorio",
+    "INVALID_EMAIL": "Email inválido",
+    "MIN_LENGTH": "Mínimo {{min}} caracteres",
+    "MAX_LENGTH": "Máximo {{max}} caracteres",
+    "PATTERN": "Formato inválido"
   },
   "ADMIN": {
     "NAVBAR": {
@@ -33,6 +61,7 @@
       "VENDEDORES": "Vendedores",
       "CATALOGO": "Catálogo",
       "ASIGNACION": "Asignación",
+      "PEDIDOS": "Pedidos",
       "CLIENTES": "Clientes",
       "MONITOR": "Monitor",
       "REPORTES": "Reportes",
@@ -214,6 +243,8 @@
       "UNITS": "unidades",
       "UNITS_SHORT": "u.",
       "QUANTITY_PLACEHOLDER": "Cantidad",
+      "DELIVERY_DATE_LABEL": "Fecha de Entrega",
+      "PREVENTA_CANTIDAD": "Preventa hoy",
       "ASSIGN_STOCK": "Asignar stock",
       "SAVING": "Guardando...",
       "CURRENT_STOCK_TITLE": "Stock actual por transporte",
@@ -251,6 +282,31 @@
         "LOAD_VALIDATED": "Carga {{idCarga}} validada por administrador.",
         "INITIAL_STOCK_REGISTERED": "Carga inicial registrada correctamente."
       }
+    },
+    "PEDIDOS": {
+      "TITLE": "Gestión de Pedidos",
+      "SUBTITLE": "Monitorea y gestiona los pedidos programados",
+      "FILTER_VENDOR": "Filtrar por vendedor",
+      "FILTER_STATUS": "Filtrar por estado",
+      "FILTER_DATE": "Filtrar por fecha",
+      "VENDOR": "Vendedor",
+      "CLIENT": "Cliente",
+      "DATE": "Fecha",
+      "STATUS": "Estado",
+      "PRIORITY": "Prioridad",
+      "PRODUCTS": "Productos",
+      "SCHEDULED_ORDERS": "Pedidos programados",
+      "NO_ORDERS": "No hay pedidos para mostrar",
+      "OBSERVATIONS": "Observaciones",
+      "PRODUCTS_DETAIL": "Detalle de productos",
+      "PRODUCT_NAME": "Nombre del producto",
+      "QUANTITY": "Cantidad",
+      "NO_PRODUCTS": "No hay productos en este pedido",
+      "METADATA": "Información",
+      "CREATED_AT": "Fecha de creación",
+      "SEND_ROUTE": "Enviar a ruta",
+      "MARK_DELIVERED": "Marcar entregado",
+      "REJECT": "Rechazar pedido"
     },
     "GESTION": {
       "TITLE": "Gestión de vendedores",
@@ -500,11 +556,30 @@
       "HOME": "Inicio",
       "MAP": "Mapa",
       "SALES": "Venta",
+      "SCHEDULE": "Programar",
       "CLOSURE": "Cierre",
       "LOGOUT": "Cerrar sesión",
       "LOGOUT_SHORT": "Cerrar",
       "LANGUAGE": "Idioma",
       "COMING_SOON": "Próximamente"
+    },
+    "PROGRAMAR_PEDIDO": {
+      "TITLE": "Programar Pedido",
+      "CLIENT": "Cliente",
+      "SELECT_CLIENT": "Selecciona un cliente",
+      "DELIVERY_DATE": "Fecha de entrega",
+      "PRIORITY": "Prioridad",
+      "SELECT_PRIORITY": "Selecciona una prioridad",
+      "OBSERVATIONS": "Observaciones",
+      "ADD_NOTES": "Agrega notas sobre el pedido",
+      "PRODUCTS": "Productos",
+      "SEARCH_PRODUCT": "Buscar producto...",
+      "ADD_PRODUCTS": "Debe agregar al menos un producto",
+      "ADDED_PRODUCTS": "Productos agregados",
+      "SCHEDULED_ORDERS": "Pedidos programados",
+      "NO_ORDERS": "No hay pedidos para esta fecha",
+      "CREATE": "Crear pedido",
+      "SEND": "Enviar"
     },
     "STATUS": {
       "PENDIENTE": "Pendiente",
@@ -539,7 +614,9 @@
       "CANNOT_LOAD_DASHBOARD": "No se pudo cargar el tablero.",
       "CANNOT_LOAD_PROFILE": "No se pudo cargar el perfil.",
       "LOAD_CONFIRMED": "Carga {{ idCarga }} confirmada correctamente.",
-      "CANNOT_CONFIRM_LOAD": "No se pudo confirmar la carga."
+      "CANNOT_CONFIRM_LOAD": "No se pudo confirmar la carga.",
+      "PREVENTAS_HOY_TITLE": "Pedidos Programados para Hoy",
+      "NO_PREVENTAS_HOY": "No tienes pedidos programados para hoy."
     },
 "MAP": {
       "TITLE": "Mapa de clientes",
@@ -690,12 +767,23 @@
       "SALE_ID": "ID:",
       "PRODUCTS_SOLD": "producto(s) vendido(s)",
       "NEW_SALE": "Nueva Venta",
-      "PRODUCT": "Producto"
+      "PRODUCT": "Producto",
+      "PREVENTA_DETECTED": "¡Preventa Detectada!",
+      "PREVENTA_DETECTED_MSG": "Este cliente tiene un pedido programado para el día de hoy.",
+      "AUTOFILL_CART": "Autocompletar Carrito",
+      "REPROGRAMAR": "Reprogramar",
+      "RECHAZAR": "Rechazar",
+      "REPROGRAMAR_PREVENTA": "Reprogramar Preventa",
+      "NUEVA_FECHA": "Nueva Fecha de Entrega"
     }
   },
   "STATUS": {
     "ACTIVO": "Activo",
     "INACTIVO": "Inactivo",
-    "EN_RUTA": "En ruta"
+    "EN_RUTA": "En ruta",
+    "PENDIENTE": "Pendiente",
+    "ENTREGADO": "Entregado",
+    "RECHAZADO": "Rechazado",
+    "REPROGRAMADO": "Reprogramado"
   }
 }
