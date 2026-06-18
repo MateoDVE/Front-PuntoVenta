@@ -31,6 +31,13 @@ export class ProgramarPedidoComponent implements OnInit {
   hoy: string = new Date().toISOString().split('T')[0];
   idVendedor: string = '';
 
+  // Custom search and dropdown properties
+  buscarCliente: string = '';
+  mostrarDropdownClientes: boolean = false;
+  clientesFiltrados: any[] = [];
+  clienteSeleccionado: any = null;
+  mostrarDropdownPrioridades: boolean = false;
+
   modalState = {
     open: false,
     title: '',
@@ -212,6 +219,13 @@ export class ProgramarPedidoComponent implements OnInit {
       (pedidos: PedidoProgramado[]) => {
         this.pedidosProgramados = pedidos.map(p => ({
           ...p,
+          detalles: p.detalles.map(d => {
+            const prod = this.productos.find(pr => String(pr.id_producto ?? pr.sku ?? pr.id) === String(d.idProducto));
+            return {
+              ...d,
+              nombre: prod ? prod.nombre : 'Producto desconocido'
+            };
+          }),
           expandido: false
         }));
       },
@@ -276,10 +290,79 @@ export class ProgramarPedidoComponent implements OnInit {
     return cliente ? cliente.nombre_negocio : 'Cliente desconocido';
   }
 
+  // Client dropdown methods
+  filtrarClientes(): void {
+    const termino = this.buscarCliente.toLowerCase().trim();
+    if (!termino) {
+      this.clientesFiltrados = [...this.clientes];
+      return;
+    }
+    this.clientesFiltrados = this.clientes.filter(c => 
+      c.nombre_negocio.toLowerCase().includes(termino) ||
+      (c.ci_nit && String(c.ci_nit).toLowerCase().includes(termino))
+    );
+  }
+
+  abrirDropdownClientes(): void {
+    this.mostrarDropdownClientes = true;
+    this.filtrarClientes();
+  }
+
+  cerrarDropdownClientesConDelay(): void {
+    setTimeout(() => {
+      this.mostrarDropdownClientes = false;
+    }, 200);
+  }
+
+  toggleDropdownClientes(): void {
+    this.mostrarDropdownClientes = !this.mostrarDropdownClientes;
+    if (this.mostrarDropdownClientes) {
+      this.filtrarClientes();
+    }
+  }
+
+  seleccionarCliente(cliente: any): void {
+    this.clienteSeleccionado = cliente;
+    this.formulario.get('idCliente')?.setValue(cliente.id_cliente);
+    this.buscarCliente = `${cliente.nombre_negocio} (CI/NIT: ${cliente.ci_nit})`;
+    this.mostrarDropdownClientes = false;
+    this.clientesFiltrados = [];
+  }
+
+  limpiarCliente(): void {
+    this.clienteSeleccionado = null;
+    this.formulario.get('idCliente')?.setValue('');
+    this.buscarCliente = '';
+    this.clientesFiltrados = [...this.clientes];
+  }
+
+  // Priority dropdown methods
+  abrirDropdownPrioridades(): void {
+    this.mostrarDropdownPrioridades = true;
+  }
+
+  cerrarDropdownPrioridadesConDelay(): void {
+    setTimeout(() => {
+      this.mostrarDropdownPrioridades = false;
+    }, 200);
+  }
+
+  toggleDropdownPrioridades(): void {
+    this.mostrarDropdownPrioridades = !this.mostrarDropdownPrioridades;
+  }
+
+  seleccionarPrioridad(valor: string): void {
+    this.formulario.get('prioridad')?.setValue(valor);
+    this.mostrarDropdownPrioridades = false;
+  }
+
   limpiarFormulario(): void {
     this.formulario.reset({
       prioridad: 'MEDIA'
     });
+    this.clienteSeleccionado = null;
+    this.buscarCliente = '';
+    this.clientesFiltrados = [];
     this.detallesPedido = [];
     this.buscarProducto = '';
     this.productosFiltrados = [];

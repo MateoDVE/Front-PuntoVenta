@@ -15,6 +15,8 @@ interface PedidoConDetalles extends PedidoProgramado {
   expandido?: boolean;
   clienteNombre?: string;
   vendedorNombre?: string;
+  mostrarFormReprogramar?: boolean;
+  nuevaFechaReprogramar?: string;
 }
 
 @Component({
@@ -33,6 +35,11 @@ export class PedidosAdminComponent implements OnInit {
   estadoSeleccionado: string = '';
   fechaSeleccionada: string = '';
   cargando: boolean = false;
+  hoy: string = new Date().toISOString().split('T')[0];
+
+  // Custom filter dropdown states
+  mostrarDropdownVendedores: boolean = false;
+  mostrarDropdownEstados: boolean = false;
 
   constructor(
     private pedidosService: PedidosProgramadosService,
@@ -109,8 +116,42 @@ export class PedidosAdminComponent implements OnInit {
   }
 
   getVendedorNombre(idVendedor: string): string {
+    if (!idVendedor) return 'Todos';
     const vendedor = this.vendedores.find(v => String(v.id_usuario || v.id) === String(idVendedor));
     return vendedor ? vendedor.nombre : 'Vendedor desconocido';
+  }
+
+  // Custom filter dropdown methods
+  toggleDropdownVendedores(): void {
+    this.mostrarDropdownVendedores = !this.mostrarDropdownVendedores;
+  }
+
+  cerrarDropdownVendedoresConDelay(): void {
+    setTimeout(() => {
+      this.mostrarDropdownVendedores = false;
+    }, 200);
+  }
+
+  seleccionarVendedor(id: string): void {
+    this.vendedorSeleccionado = id;
+    this.mostrarDropdownVendedores = false;
+    this.aplicarFiltros();
+  }
+
+  toggleDropdownEstados(): void {
+    this.mostrarDropdownEstados = !this.mostrarDropdownEstados;
+  }
+
+  cerrarDropdownEstadosConDelay(): void {
+    setTimeout(() => {
+      this.mostrarDropdownEstados = false;
+    }, 200);
+  }
+
+  seleccionarEstado(estado: string): void {
+    this.estadoSeleccionado = estado;
+    this.mostrarDropdownEstados = false;
+    this.aplicarFiltros();
   }
 
   cambiarEstado(pedido: PedidoConDetalles, nuevoEstado: string): void {
@@ -120,6 +161,28 @@ export class PedidosAdminComponent implements OnInit {
         console.log(`Pedido ${pedido.id} actualizado a ${nuevoEstado}`);
       },
       (error: any) => console.error('Error al actualizar estado:', error)
+    );
+  }
+
+  iniciarReprogramar(pedido: PedidoConDetalles): void {
+    pedido.mostrarFormReprogramar = true;
+    pedido.nuevaFechaReprogramar = '';
+  }
+
+  cancelarReprogramar(pedido: PedidoConDetalles): void {
+    pedido.mostrarFormReprogramar = false;
+    pedido.nuevaFechaReprogramar = '';
+  }
+
+  confirmarReprogramar(pedido: PedidoConDetalles): void {
+    if (!pedido.nuevaFechaReprogramar) return;
+    this.pedidosService.actualizarEstado(pedido.id || '', 'REPROGRAMADO', pedido.nuevaFechaReprogramar).subscribe(
+      () => {
+        pedido.mostrarFormReprogramar = false;
+        this.cargarDatos(); // Reload list to reflect the rescheduled date/status
+        console.log(`Pedido ${pedido.id} reprogramado para ${pedido.nuevaFechaReprogramar}`);
+      },
+      (error: any) => console.error('Error al reprogramar pedido:', error)
     );
   }
 
