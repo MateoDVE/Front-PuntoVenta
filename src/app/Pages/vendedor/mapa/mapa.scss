@@ -535,55 +535,118 @@ input.has-error:focus {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    padding: 12px;
-    background: #f8fafc;
+    padding: 14px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     border-radius: 12px;
-    border: 1px solid #f1f5f9;
+    border: 1px solid #e2e8f0;
+    transition: all 200ms ease;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: #cbd5e1;
+    }
 
     .seq-badge {
       display: grid;
       place-items: center;
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: #2563eb;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       color: #ffffff;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 700;
       flex-shrink: 0;
       margin-top: 2px;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
     }
 
     .seq-content {
       flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
 
-      strong {
+      .seq-client-name {
         display: block;
         font-size: 0.95rem;
         color: #0f172a;
+        font-weight: 600;
+        line-height: 1.3;
       }
 
-      span {
-        display: inline-block;
-        font-size: 0.75rem;
-        padding: 2px 6px;
-        border-radius: 4px;
-        margin-top: 4px;
-        font-weight: 600;
+      .priority-badge-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
 
-        &.priority-alta {
-          background: #fee2e2;
-          color: #991b1b;
+        .priority-label {
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
 
-        &.priority-media {
-          background: #fef3c7;
-          color: #92400e;
-        }
+        .priority-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          transition: all 150ms ease;
 
-        &.priority-baja {
-          background: #f0fdf4;
-          color: #166534;
+          // Priority: ALTA (High Priority - Red)
+          &.priority-badge-alta {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            
+            &::before {
+              content: '●';
+              margin-right: 4px;
+              font-size: 0.8rem;
+              color: #dc2626;
+            }
+          }
+
+          // Priority: MEDIA (Medium Priority - Amber/Yellow)
+          &.priority-badge-media {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+            
+            &::before {
+              content: '●';
+              margin-right: 4px;
+              font-size: 0.8rem;
+              color: #f59e0b;
+            }
+          }
+
+          // Priority: BAJA (Low Priority - Green)
+          &.priority-badge-baja {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            
+            &::before {
+              content: '●';
+              margin-right: 4px;
+              font-size: 0.8rem;
+              color: #22c55e;
+            }
+          }
+
+          // Hover effect
+          &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+          }
         }
       }
     }

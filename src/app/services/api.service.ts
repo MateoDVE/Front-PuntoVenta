@@ -265,7 +265,7 @@ export class ApiService {
       },
       {
         id: 'PEDIDO-101',
-        cliente: 'Distribuidora Norte (Visitado 1ro por Prioridad)',
+        cliente: 'Tienda La Caserita',
         prioridad: 'ALTA',
         coordenadas: {
           lat: -17.3750,
@@ -274,11 +274,29 @@ export class ApiService {
       },
       {
         id: 'PEDIDO-102',
-        cliente: 'Vidriería Central (Visitado 2do)',
+        cliente: 'Tienda Jose Jose',
+        prioridad: 'MEDIA',
+        coordenadas: {
+          lat: -17.3900,
+          lng: -66.1480
+        }
+      },
+      {
+        id: 'PEDIDO-103',
+        cliente: 'Tienda Tronco',
         prioridad: 'BAJA',
         coordenadas: {
           lat: -17.3960,
           lng: -66.1550
+        }
+      },
+      {
+        id: 'PEDIDO-104',
+        cliente: 'Distribuidora El Centro',
+        prioridad: 'MEDIA',
+        coordenadas: {
+          lat: -17.3820,
+          lng: -66.1610
         }
       }
     ];

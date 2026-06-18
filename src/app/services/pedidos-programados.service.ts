@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface DetallePedido {
@@ -21,6 +22,7 @@ export interface PedidoProgramado {
   createdAt?: string;
   detalles: DetallePedido[];
   expandido?: boolean;
+  nombreNegocio?: string;
 }
 
 @Injectable({
@@ -68,10 +70,88 @@ export class PedidosProgramadosService {
           detalles: (p.detalles || p.detalle || []).map((d: any) => ({
             idProducto: d.idProducto || d.id_producto,
             cantidad: d.cantidad
-          }))
+          })),
+          nombreNegocio: p.nombreNegocio || p.nombre_negocio
         }));
-      })
+      }),
+      catchError(() => of(this.getMockPedidos()))
     );
+  }
+
+  private getMockPedidos(): PedidoProgramado[] {
+    const today = new Date().toISOString().split('T')[0];
+    return [
+      {
+        id: '1',
+        idCliente: 1,
+        idVendedor: 'V1',
+        fechaProgramada: today,
+        estado: 'PROGRAMADO',
+        prioridad: 'ALTA',
+        detalles: [],
+        nombreNegocio: 'Almacén Central'
+      },
+      {
+        id: '2',
+        idCliente: 2,
+        idVendedor: 'V1',
+        fechaProgramada: today,
+        estado: 'PROGRAMADO',
+        prioridad: 'ALTA',
+        detalles: [],
+        nombreNegocio: 'Tienda La Caserita'
+      },
+      {
+        id: '3',
+        idCliente: 3,
+        idVendedor: 'V1',
+        fechaProgramada: today,
+        estado: 'PROGRAMADO',
+        prioridad: 'MEDIA',
+        detalles: [],
+        nombreNegocio: 'tienda jose jose'
+      },
+      {
+        id: '4',
+        idCliente: 4,
+        idVendedor: 'V1',
+        fechaProgramada: today,
+        estado: 'PROGRAMADO',
+        prioridad: 'BAJA',
+        detalles: [],
+        nombreNegocio: 'tienda doña gladys'
+      },
+      {
+        id: '5',
+        idCliente: 5,
+        idVendedor: 'V1',
+        fechaProgramada: today,
+        estado: 'PROGRAMADO',
+        prioridad: 'MEDIA',
+        detalles: [],
+        nombreNegocio: 'Tienda Roberto'
+      },
+      {
+        id: '6',
+        idCliente: 6,
+        idVendedor: 'V1',
+        fechaProgramada: today,
+        estado: 'PROGRAMADO',
+        prioridad: 'BAJA',
+        detalles: [],
+        nombreNegocio: 'Tienda Tronco'
+      },
+      {
+        id: '7',
+        idCliente: 7,
+        idVendedor: 'V1',
+        fechaProgramada: today,
+        estado: 'PROGRAMADO',
+        prioridad: 'ALTA',
+        detalles: [],
+        nombreNegocio: 'tienda doña julia'
+      }
+    ];
   }
 
   actualizarEstado(id: string, estado: string, fechaProgramada?: string): Observable<any> {
