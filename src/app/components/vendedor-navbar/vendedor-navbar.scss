@@ -135,6 +135,14 @@
   left: 16px;
   bottom: 82px;
   z-index: 30;
+
+  /* En móvil: mover a la esquina superior derecha */
+  @media (max-width: 768px) {
+    left: auto;
+    right: 16px;
+    bottom: auto;
+    top: 8px;
+  }
 }
 
 .logout-btn {
