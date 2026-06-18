@@ -148,12 +148,22 @@
           <ul class="route-sequence-list">
             <li *ngFor="let punto of rutaPuntos; let i = index">
               <div class="sequence-item">
+                <!-- Sequential Badge -->
                 <span class="seq-badge">{{ i + 1 }}</span>
+                
+                <!-- Content Section -->
                 <div class="seq-content">
-                  <strong>{{ punto.cliente }}</strong>
-                  <span [ngClass]="'priority-' + punto.prioridad.toLowerCase()">
-                    {{ 'VENDEDOR.MAP.PRIORITY' | translate }}: {{ ('VENDEDOR.MAP.PRIORITY_' + punto.prioridad) | translate }}
-                  </span>
+                  <strong class="seq-client-name">{{ punto.cliente }}</strong>
+                  
+                  <!-- Dynamic Priority Badge -->
+                  <div class="priority-badge-wrapper">
+                    <span class="priority-label">
+                      {{ 'VENDEDOR.MAP.PRIORITY' | translate }}:
+                    </span>
+                    <span [ngClass]="'priority-badge priority-badge-' + punto.prioridad.toLowerCase()">
+                      {{ ('VENDEDOR.MAP.PRIORITY_' + punto.prioridad) | translate }}
+                    </span>
+                  </div>
                 </div>
               </div>
             </li>

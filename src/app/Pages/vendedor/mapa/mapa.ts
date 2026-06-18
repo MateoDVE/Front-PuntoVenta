@@ -8,6 +8,7 @@ import { ClientesService } from '../../../services/clientes.service';
 import { AuthService, UserProfile } from '../../../services/auth.service';
 import { environment } from '../../../../environments/environment';
 import { Sucursal, SucursalesService } from '../../../services/sucursales.service';
+import { PedidosProgramadosService, PedidoProgramado } from '../../../services/pedidos-programados.service';
 
 @Component({
   selector: 'app-mapa',
@@ -56,6 +57,8 @@ export class Mapa implements OnInit {
   sucursales: Sucursal[] = [];
   almacenCentralCoordenadas = { lat: -17.3935, lng: -66.1570 };
   almacenCentralNombre = 'Almacén Central';
+  pedidosProgramados: PedidoProgramado[] = [];
+  mapaPrioridadesPorCliente: Map<number, string> = new Map();
 
   get activeClientes(): ApiCliente[] {
     return this.ubicaciones.filter(c => c.estado !== 'INACTIVO');
@@ -94,6 +97,7 @@ export class Mapa implements OnInit {
     private translate: TranslateService,
     private clientesService: ClientesService,
     private sucursalesService: SucursalesService,
+    private pedidosProgramadosService: PedidosProgramadosService,
     private ngZone: NgZone
   ) {}
 
@@ -173,12 +177,42 @@ export class Mapa implements OnInit {
         if (this.map) {
           this.addExistingMarkers();
         }
+        this.loadScheduledOrders();
         this.calculateRouteFromSelection();
       },
       error: (err) => {
         console.error('Error al cargar clientes:', err);
         this.error = this.translate.instant('VENDEDOR.MAP.CLIENT_LOAD_ERROR');
         this.loading = false;
+      }
+    });
+  }
+
+  private loadScheduledOrders(): void {
+    if (!this.currentUserId) {
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    this.pedidosProgramadosService.obtenerPedidos(this.currentUserId, today).subscribe({
+      next: (pedidos) => {
+        this.pedidosProgramados = pedidos;
+        this.mapaPrioridadesPorCliente.clear();
+        
+        pedidos.forEach(pedido => {
+          const clientId = pedido.idCliente;
+          const priority = pedido.prioridad;
+          if (clientId && priority) {
+            this.mapaPrioridadesPorCliente.set(clientId, priority);
+          }
+        });
+        
+        console.log('Scheduled orders loaded:', Array.from(this.mapaPrioridadesPorCliente.entries()));
+        this.calculateRouteFromSelection();
+      },
+      error: (err) => {
+        console.warn('Error loading scheduled orders priorities:', err);
+        this.calculateRouteFromSelection();
       }
     });
   }
@@ -595,6 +629,16 @@ export class Mapa implements OnInit {
           };
         })();
 
+    const orderRoutePoints = this.getRoutePointsFromOrders(startPoint);
+    if (orderRoutePoints.length > 0) {
+      const sortedOrders = this.sortNearestNeighbor(startPoint.coordenadas, orderRoutePoints);
+      this.rutaPuntos = [startPoint, ...sortedOrders];
+      if (this.map && this.mapView === 'route') {
+        this.drawRoute();
+      }
+      return;
+    }
+
     if (this.activeClientes.length === 0) {
       this.outlierClients = [];
       this.apiService.getRutaOptima().subscribe({
@@ -648,12 +692,18 @@ export class Mapa implements OnInit {
       return;
     }
 
-    const customerPoints: PuntoRuta[] = activeSelected.map(c => ({
-      id: c.id_cliente || '',
-      cliente: c.nombre_negocio,
-      prioridad: c.frecuencia_visita === 'Diaria' || c.frecuencia_visita === 'Semanal' ? 'ALTA' : 'BAJA',
-      coordenadas: { lat: c.latitud!, lng: c.longitud! }
-    }));
+    const customerPoints: PuntoRuta[] = activeSelected.map(c => {
+      const clientId = parseInt(c.id_cliente || '0', 10);
+      const scheduledPriority = this.mapaPrioridadesPorCliente.get(clientId);
+      const priority = scheduledPriority || (c.frecuencia_visita === 'Diaria' || c.frecuencia_visita === 'Semanal' ? 'ALTA' : 'BAJA');
+      
+      return {
+        id: c.id_cliente || '',
+        cliente: c.nombre_negocio,
+        prioridad: priority,
+        coordenadas: { lat: c.latitud!, lng: c.longitud! }
+      };
+    });
 
     const sortedCustomers = this.sortNearestNeighbor(startPoint.coordenadas, customerPoints);
     this.rutaPuntos = [startPoint, ...sortedCustomers];
@@ -661,6 +711,27 @@ export class Mapa implements OnInit {
     if (this.map && this.mapView === 'route') {
       this.drawRoute();
     }
+  }
+
+  private getRoutePointsFromOrders(startPoint: PuntoRuta): PuntoRuta[] {
+    const today = new Date().toISOString().split('T')[0];
+    return this.pedidosProgramados
+      .filter(pedido => pedido.fechaProgramada === today && pedido.estado === 'PROGRAMADO')
+      .map(pedido => {
+        const cliente = this.ubicaciones.find(c => c.id_cliente === String(pedido.idCliente));
+        const nombreCliente = pedido.nombreNegocio || cliente?.nombre_negocio || `Pedido ${pedido.id}`;
+        const coordenadas = cliente?.latitud != null && cliente?.longitud != null
+          ? { lat: cliente.latitud, lng: cliente.longitud }
+          : null;
+
+        return coordenadas ? {
+          id: pedido.id || '',
+          cliente: nombreCliente,
+          prioridad: pedido.prioridad,
+          coordenadas
+        } : null;
+      })
+      .filter((routePoint): routePoint is PuntoRuta => routePoint !== null);
   }
 
   private sortNearestNeighbor(start: { lat: number; lng: number }, points: PuntoRuta[]): PuntoRuta[] {
@@ -913,14 +984,28 @@ export class Mapa implements OnInit {
             ? this.translate.instant('VENDEDOR.MAP.PRIORITY_MEDIA') 
             : this.translate.instant('VENDEDOR.MAP.PRIORITY_BAJA'));
 
-      const priorityClass = punto.prioridad.toLowerCase();
+      // Priority color mapping - fully supports all 3 levels
+      const priorityColorMap: { [key: string]: { background: string; text: string; border: string } } = {
+        'ALTA': { background: '#fee2e2', text: '#991b1b', border: '#fecaca' },
+        'MEDIA': { background: '#fef3c7', text: '#92400e', border: '#fde68a' },
+        'BAJA': { background: '#dcfce7', text: '#166534', border: '#bbf7d0' }
+      };
+
+      const priorityColors = priorityColorMap[punto.prioridad as keyof typeof priorityColorMap] || priorityColorMap['BAJA'];
 
       const infoContent = `
-        <div style="font-family:sans-serif;font-size:13px;padding:4px;min-width:180px;line-height:1.6">
-          <strong style="font-size:14px;color:#0f172a;">${punto.cliente}</strong><br>
-          <span style="color:#64748b;">${this.translate.instant('VENDEDOR.MAP.ROUTE_ORDER')}:</span> Stop #${index + 1}<br>
-          <span style="color:#64748b;">${this.translate.instant('VENDEDOR.MAP.PRIORITY')}:</span> 
-          <span style="font-weight:600;color:${punto.prioridad === 'ALTA' ? '#b91c1c' : '#15803d'}">${priorityLabel}</span>
+        <div style="font-family:sans-serif;font-size:13px;padding:8px;min-width:200px;line-height:1.6;border-radius:8px;">
+          <strong style="font-size:14px;color:#0f172a;display:block;margin-bottom:6px;">${punto.cliente}</strong>
+          <div style="margin-bottom:4px;">
+            <span style="color:#64748b;font-size:12px;">${this.translate.instant('VENDEDOR.MAP.ROUTE_ORDER')}:</span>
+            <span style="color:#1e293b;font-weight:600;margin-left:4px;">Stop #${index + 1}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+            <span style="color:#64748b;font-size:12px;">${this.translate.instant('VENDEDOR.MAP.PRIORITY')}:</span>
+            <span style="background:${priorityColors.background};color:${priorityColors.text};padding:4px 10px;border-radius:6px;font-weight:700;font-size:12px;border:1px solid ${priorityColors.border};">
+              ${priorityLabel}
+            </span>
+          </div>
         </div>
       `;
 
