@@ -11,10 +11,12 @@ import {
   Cliente,
   CierreGuardado,
   VentaResumenResponse,
+  PuntoRuta,
 } from '../../../services/api.service';
 import { ClientesService } from '../../../services/clientes.service';
 import { VendedoresService } from '../../../services/vendedores.service';
 import { environment } from '../../../../environments/environment';
+import { SucursalesService } from '../../../services/sucursales.service';
 
 interface VendedorMonitorData {
   id: string;
@@ -54,6 +56,8 @@ export class MonitoreoComponent implements OnInit {
   searchQuery = '';
   sortOrder: 'asc' | 'desc' | '' = '';
 
+  // No routing fields needed in admin monitoreo
+
   // Modal de liquidaciones
   mostrarModalCierres = false;
   vendedorSeleccionado: VendedorMonitorData | null = null;
@@ -68,6 +72,7 @@ export class MonitoreoComponent implements OnInit {
   private map: any;
   private markers: any[] = [];
   private fechaHoy = '';
+  almacenCentralCoordenadas = { lat: -17.3935, lng: -66.1570 };
 
   constructor(
     private apiService: ApiService,
@@ -76,11 +81,28 @@ export class MonitoreoComponent implements OnInit {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
+    private sucursalesService: SucursalesService,
   ) {}
 
   ngOnInit(): void {
     this.fechaHoy = this.getFechaHoy();
     this.cargar();
+    this.cargarSucursalPrincipal();
+  }
+
+  cargarSucursalPrincipal(): void {
+    this.sucursalesService.getSucursales().subscribe({
+      next: (data) => {
+        const principal = data.find(s => s.esPrincipal);
+        if (principal) {
+          this.almacenCentralCoordenadas = { lat: principal.latitud, lng: principal.longitud };
+          if (this.map) {
+            this.map.setCenter(this.almacenCentralCoordenadas);
+          }
+        }
+      },
+      error: (err) => console.error('Error al cargar sucursales en monitoreo:', err)
+    });
   }
 
   // ── Carga principal ───────────────────────────────────────────────────────
@@ -120,7 +142,8 @@ export class MonitoreoComponent implements OnInit {
                   .reduce((sum: number, inv: any) => sum + (inv.cantidad_actual ?? 0), 0);
 
                 const ventas = cierreJornada?.resumenFinanciero?.ventasRealizadas ?? 0;
-                const ingresos = cierreJornada?.resumenFinanciero?.totalEfectivo ?? 0;
+                const rawIngresos = cierreJornada?.resumenFinanciero?.totalEfectivo ?? 0;
+                const ingresos = Math.round(rawIngresos * 100) / 100;
 
                 const todayCierre = (cierresHistorial as CierreGuardado[]).find(
                   c => c.fecha === this.fechaHoy,
@@ -211,7 +234,8 @@ export class MonitoreoComponent implements OnInit {
   // ── Getters calculados ────────────────────────────────────────────────────
 
   get totalIngresos(): number {
-    return this.vendedoresDatosFiltrados.reduce((s, v) => s + v.ingresos, 0);
+    const raw = this.vendedoresDatosFiltrados.reduce((s, v) => s + v.ingresos, 0);
+    return Math.round(raw * 100) / 100;
   }
 
   get vendedoresEnRuta(): number {
@@ -437,7 +461,7 @@ export class MonitoreoComponent implements OnInit {
     if (!gm || !this.mapContainer?.nativeElement) return;
 
     this.map = new gm.Map(this.mapContainer.nativeElement, {
-      center: { lat: -17.3935, lng: -66.157 },
+      center: this.almacenCentralCoordenadas,
       zoom: 13,
       streetViewControl: false,
       mapTypeControl: false,
@@ -445,6 +469,8 @@ export class MonitoreoComponent implements OnInit {
 
     this.addClienteMarkers();
   }
+
+
 
   private addClienteMarkers(): void {
     this.limpiarMapa();

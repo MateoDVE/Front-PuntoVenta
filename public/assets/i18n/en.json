@@ -23,7 +23,33 @@
     "CONFIRM": "Confirmation",
     "SUCCESS": "Success",
     "ERROR": "Error",
-    "WARNING": "Warning"
+    "WARNING": "Warning",
+    "SELECT": "Select",
+    "ALL": "All",
+    "CLEAR": "Clear",
+    "STOCK": "Stock",
+    "LOADING": "Loading...",
+    "SAVING": "Saving...",
+    "REQUIRED": "This field is required",
+    "QUANTITY": "Quantity"
+  },
+  "PRIORITY": {
+    "HIGH": "High",
+    "MEDIUM": "Medium",
+    "LOW": "Low"
+  },
+  "STATUS": {
+    "PENDING": "Pending",
+    "IN_ROUTE": "In route",
+    "DELIVERED": "Delivered",
+    "REJECTED": "Rejected"
+  },
+  "VALIDATION": {
+    "REQUIRED": "This field is required",
+    "INVALID_EMAIL": "Invalid email",
+    "MIN_LENGTH": "Minimum {{min}} characters",
+    "MAX_LENGTH": "Maximum {{max}} characters",
+    "PATTERN": "Invalid format"
   },
   "ADMIN": {
     "NAVBAR": {
@@ -33,6 +59,7 @@
       "VENDEDORES": "Sellers",
       "CATALOGO": "Catalog",
       "ASIGNACION": "Assignment",
+      "PEDIDOS": "Orders",
       "CLIENTES": "Clients",
       "MONITOR": "Monitor",
       "REPORTES": "Reports",
@@ -211,12 +238,16 @@
       "SELECT_SELLER_PLACEHOLDER": "Select a seller",
       "NO_SELLERS_FOUND": "No sellers found",
       "INFO_MESSAGE": "This operation will replace the current transport stock and update the warehouse inventory.",
+      "PRODUCT_SEARCH_LABEL": "Search product",
+      "PRODUCT_SEARCH_PLACEHOLDER": "Type a name or product ID",
       "ASSIGN_PRODUCTS_LABEL": "Assign products",
       "PRODUCT_ID": "Product ID",
       "AVAILABLE": "Available",
       "UNITS": "units",
       "UNITS_SHORT": "u.",
       "QUANTITY_PLACEHOLDER": "Quantity",
+      "DELIVERY_DATE_LABEL": "Delivery Date",
+      "PREVENTA_CANTIDAD": "Pre-sale today",
       "ASSIGN_STOCK": "Assign stock",
       "SAVING": "Saving...",
       "CURRENT_STOCK_TITLE": "Current transport stock",
@@ -254,6 +285,31 @@
         "LOAD_VALIDATED": "Load {{idCarga}} validated by administrator.",
         "INITIAL_STOCK_REGISTERED": "Initial load registered successfully."
       }
+    },
+    "PEDIDOS": {
+      "TITLE": "Order Management",
+      "SUBTITLE": "Monitor and manage scheduled orders",
+      "FILTER_VENDOR": "Filter by seller",
+      "FILTER_STATUS": "Filter by status",
+      "FILTER_DATE": "Filter by date",
+      "VENDOR": "Seller",
+      "CLIENT": "Client",
+      "DATE": "Date",
+      "STATUS": "Status",
+      "PRIORITY": "Priority",
+      "PRODUCTS": "Products",
+      "SCHEDULED_ORDERS": "Scheduled orders",
+      "NO_ORDERS": "No orders to display",
+      "OBSERVATIONS": "Observations",
+      "PRODUCTS_DETAIL": "Products detail",
+      "PRODUCT_NAME": "Product name",
+      "QUANTITY": "Quantity",
+      "NO_PRODUCTS": "No products in this order",
+      "METADATA": "Information",
+      "CREATED_AT": "Creation date",
+      "SEND_ROUTE": "Send to route",
+      "MARK_DELIVERED": "Mark as delivered",
+      "REJECT": "Reject order"
     },
     "GESTION": {
       "TITLE": "Seller management",
@@ -452,7 +508,18 @@
       "MAP": {
         "TITLE": "Client Map",
         "COUNT": "with registered location",
-        "EMPTY": "No client has a GPS location registered yet."
+        "EMPTY": "No client has a GPS location registered yet.",
+        "TAB_CLIENTS": "Clients in Service",
+        "TAB_ROUTE": "Suggested Optimal Route",
+        "ROUTE_INFO": "Route Summary",
+        "TOTAL_DISTANCE": "Total Distance",
+        "ESTIMATED_TIME": "Estimated Time",
+        "DIRECTIONS_ERROR": "Error calculating route on Google Maps.",
+        "ROUTE_ORDER": "Stop Sequence",
+        "PRIORITY": "Priority",
+        "PRIORITY_ALTA": "High",
+        "PRIORITY_MEDIA": "Medium",
+        "PRIORITY_BAJA": "Low"
       },
       "LEGEND": {
         "ATTENDED": "Attended today",
@@ -492,11 +559,30 @@
       "HOME": "Home",
       "MAP": "Map",
       "SALES": "Sales",
+      "SCHEDULE": "Schedule",
       "CLOSURE": "Closure",
       "LOGOUT": "Log out",
       "LOGOUT_SHORT": "Logout",
       "LANGUAGE": "Language",
       "COMING_SOON": "Coming soon"
+    },
+    "PROGRAMAR_PEDIDO": {
+      "TITLE": "Schedule Order",
+      "CLIENT": "Client",
+      "SELECT_CLIENT": "Select a client",
+      "DELIVERY_DATE": "Delivery date",
+      "PRIORITY": "Priority",
+      "SELECT_PRIORITY": "Select a priority",
+      "OBSERVATIONS": "Observations",
+      "ADD_NOTES": "Add notes about the order",
+      "PRODUCTS": "Products",
+      "SEARCH_PRODUCT": "Search product...",
+      "ADD_PRODUCTS": "Must add at least one product",
+      "ADDED_PRODUCTS": "Added products",
+      "SCHEDULED_ORDERS": "Scheduled orders",
+      "NO_ORDERS": "No orders for this date",
+      "CREATE": "Create order",
+      "SEND": "Send"
     },
     "STATUS": {
     "PENDIENTE": "Pending",
@@ -531,7 +617,9 @@
     "CANNOT_LOAD_DASHBOARD": "Could not load the dashboard.",
     "CANNOT_LOAD_PROFILE": "Could not load the profile.",
     "LOAD_CONFIRMED": "Load {{ idCarga }} confirmed successfully.",
-    "CANNOT_CONFIRM_LOAD": "Could not confirm the load."
+    "CANNOT_CONFIRM_LOAD": "Could not confirm the load.",
+    "PREVENTAS_HOY_TITLE": "Scheduled Orders for Today",
+    "NO_PREVENTAS_HOY": "You have no scheduled orders for today."
   },
 "MAP": {
       "TITLE": "Client map",
@@ -569,6 +657,7 @@
       "GPS_LOCATION_LABEL": "GPS Location",
       "LAT_LABEL": "Lat:",
       "LNG_LABEL": "Lng:",
+      "CURRENT_LOCATION": "My current location",
       "USE_CURRENT_LOCATION": "Use my current location",
       "LOCATION_DETECTING": "Detecting...",
       "LOCATION_HINT": "You can also click on the map to mark the location",
@@ -595,7 +684,19 @@
       "CLIENT_REGISTER_ERROR": "Could not register the client.",
       "CLIENT_UPLOAD_ERROR": "Unexpected error while uploading the image.",
       "CELULAR_INVALID_START": "Number must start with 6 or 7",
-"CELULAR_INVALID_LENGTH": "Number must have 8 digits"
+      "CELULAR_INVALID_LENGTH": "Number must have 8 digits",
+      "TAB_CLIENTS": "Registered Clients",
+      "TAB_ROUTE": "Optimal Route",
+      "ROUTE_INFO": "Route Details",
+      "TOTAL_DISTANCE": "Estimated Total Distance",
+      "ESTIMATED_TIME": "Estimated Driving Time",
+      "DIRECTIONS_ERROR": "Google Maps Error: Could not calculate the route by road.",
+      "ROUTE_ORDER": "Sequence of Visits",
+      "PRIORITY": "Priority",
+      "PRIORITY_ALTA": "High",
+      "PRIORITY_MEDIA": "Medium",
+      "PRIORITY_BAJA": "Low",
+      "ROUTE_OPTIMIZED_NOTICE": "This is the optimal sequence calculated by the optimization algorithm."
     },
     "CIERRE": {
       "TITLE": "Day Closure",
@@ -669,12 +770,23 @@
       "SALE_ID": "ID:",
       "PRODUCTS_SOLD": "product(s) sold",
       "NEW_SALE": "New Sale",
-      "PRODUCT": "Product"
+      "PRODUCT": "Product",
+      "PREVENTA_DETECTED": "Pre-sale Detected!",
+      "PREVENTA_DETECTED_MSG": "This client has a scheduled order for today.",
+      "AUTOFILL_CART": "Autofill Cart",
+      "REPROGRAMAR": "Reschedule",
+      "RECHAZAR": "Reject",
+      "REPROGRAMAR_PREVENTA": "Reschedule Pre-sale",
+      "NUEVA_FECHA": "New Delivery Date"
     }
   },
   "STATUS": {
     "ACTIVO": "Active",
     "INACTIVO": "Inactive",
-    "EN_RUTA": "On route"
+    "EN_RUTA": "On route",
+    "PENDIENTE": "Pending",
+    "ENTREGADO": "Delivered",
+    "RECHAZADO": "Rejected",
+    "REPROGRAMADO": "Rescheduled"
   }
 }

@@ -1,0 +1,261 @@
+<app-vendedor-navbar></app-vendedor-navbar>
+
+<div class="programar-pedido-container">
+  <!-- HEADER -->
+  <div class="programar-header">
+    <div class="header-icon">
+      <span>📅</span>
+    </div>
+    <div class="header-text">
+      <h1>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.TITLE' | translate }}</h1>
+      <p>Programa preventas y entregas futuras para tus clientes</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Formulario de Creación -->
+    <form [formGroup]="formulario" (ngSubmit)="crearPedido()" class="pedido-form">
+      <!-- Cliente -->
+      <div class="form-group">
+        <label>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.CLIENT' | translate }} *</label>
+        <div class="cliente-search-container">
+          <div *ngIf="clienteSeleccionado" class="cliente-seleccionado-chip">
+            <span class="cliente-icon">🏢</span>
+            <div class="cliente-info-chip">
+              <span class="nombre-negocio">{{ clienteSeleccionado.nombre_negocio }}</span>
+              <span class="ci-nit">CI/NIT: {{ clienteSeleccionado.ci_nit }}</span>
+            </div>
+            <button type="button" class="btn-clear-cliente" (click)="limpiarCliente()" aria-label="Limpiar cliente">&times;</button>
+          </div>
+          
+          <div *ngIf="!clienteSeleccionado" class="cliente-search-input-wrapper">
+            <input 
+              type="text"
+              [(ngModel)]="buscarCliente"
+              (input)="filtrarClientes()"
+              (focus)="abrirDropdownClientes()"
+              (blur)="cerrarDropdownClientesConDelay()"
+              placeholder="{{ 'VENDEDOR.PROGRAMAR_PEDIDO.SELECT_CLIENT' | translate }}"
+              [ngModelOptions]="{standalone: true}"
+              class="search-input">
+            <button 
+              type="button" 
+              (click)="toggleDropdownClientes()" 
+              class="dropdown-toggle-btn">
+              ▼
+            </button>
+            
+            <div *ngIf="mostrarDropdownClientes" class="clientes-dropdown-custom">
+              <div *ngFor="let cliente of (buscarCliente ? clientesFiltrados : clientes)" 
+                   class="cliente-dropdown-item"
+                   (mousedown)="seleccionarCliente(cliente)">
+                <span class="nombre-negocio">{{ cliente.nombre_negocio }}</span>
+                <span class="ci-nit">CI/NIT: {{ cliente.ci_nit }}</span>
+              </div>
+              <div *ngIf="buscarCliente && clientesFiltrados.length === 0" class="no-results-item">
+                No se encontraron clientes
+              </div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" formControlName="idCliente">
+      </div>
+
+      <!-- Fecha Programada -->
+      <div class="form-group">
+        <label>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.DELIVERY_DATE' | translate }} *</label>
+        <div class="fecha-picker-wrapper">
+          <input type="date" formControlName="fechaProgramada" required [min]="hoy" class="fecha-picker-input">
+          <span class="calendar-icon">📅</span>
+        </div>
+      </div>
+
+      <!-- Prioridad -->
+      <div class="form-group">
+        <label>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.PRIORITY' | translate }} *</label>
+        <div class="prioridad-search-container">
+          <div class="prioridad-dropdown-wrapper">
+            <div 
+              class="prioridad-trigger" 
+              (click)="toggleDropdownPrioridades()"
+              (blur)="cerrarDropdownPrioridadesConDelay()">
+              <span [ngClass]="'prioridad-pill prioridad-' + formulario.get('prioridad')?.value.toLowerCase()">
+                {{ ('PRIORITY.' + formulario.get('prioridad')?.value) | translate }}
+              </span>
+              <span class="chevron-arrow">▼</span>
+            </div>
+            
+            <div *ngIf="mostrarDropdownPrioridades" class="prioridades-dropdown-custom">
+              <div class="prioridad-dropdown-item" (mousedown)="seleccionarPrioridad('ALTA')">
+                <span class="prioridad-pill prioridad-alta">{{ 'PRIORITY.HIGH' | translate }}</span>
+              </div>
+              <div class="prioridad-dropdown-item" (mousedown)="seleccionarPrioridad('MEDIA')">
+                <span class="prioridad-pill prioridad-media">{{ 'PRIORITY.MEDIUM' | translate }}</span>
+              </div>
+              <div class="prioridad-dropdown-item" (mousedown)="seleccionarPrioridad('BAJA')">
+                <span class="prioridad-pill prioridad-baja">{{ 'PRIORITY.LOW' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Observaciones -->
+      <div class="form-group">
+        <label>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.OBSERVATIONS' | translate }}</label>
+        <textarea 
+          formControlName="observaciones"
+          placeholder="{{ 'VENDEDOR.PROGRAMAR_PEDIDO.ADD_NOTES' | translate }}"
+          rows="3">
+        </textarea>
+      </div>
+
+      <!-- Búsqueda y Selección de Productos -->
+      <div class="form-group">
+        <label>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.PRODUCTS' | translate }} *</label>
+        <div class="producto-search">
+          <div style="display: flex; gap: 8px; position: relative;">
+            <input 
+              type="text"
+              [(ngModel)]="buscarProducto"
+              (input)="filtrarProductos()"
+              (focus)="abrirDropdownProductos()"
+              (blur)="cerrarDropdownProductosConDelay()"
+              placeholder="{{ 'VENDEDOR.PROGRAMAR_PEDIDO.SEARCH_PRODUCT' | translate }}"
+              [ngModelOptions]="{standalone: true}"
+              style="flex: 1; padding-right: 40px;">
+            <button 
+              type="button" 
+              (click)="toggleDropdownProductos()" 
+              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; color: #666; font-size: 10px; z-index: 10; margin: 0;">
+              ▼
+            </button>
+          </div>
+          
+          <div *ngIf="mostrarDropdownProductos" class="productos-dropdown" style="display: block;">
+            <div *ngFor="let producto of (buscarProducto ? productosFiltrados : productos)" 
+                 class="producto-item"
+                 (mousedown)="agregarProducto(producto)">
+              <span class="nombre">{{ producto.nombre }}</span>
+              <span class="stock">{{ producto.cantidad_disponible }} {{ 'COMMON.STOCK' | translate }}</span>
+            </div>
+            <div *ngIf="buscarProducto && productosFiltrados.length === 0" class="producto-item" style="color: #999; cursor: default; justify-content: center;">
+              No se encontraron productos
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Productos Agregados -->
+      <div class="detalles-agregados" *ngIf="detallesPedido.length > 0">
+        <h3>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.ADDED_PRODUCTS' | translate }}</h3>
+        <div class="detalles-list">
+          <div *ngFor="let detalle of detallesPedido; let i = index" class="detalle-item">
+            <span class="detalle-nombre">{{ detalle.nombre }}</span>
+            <div class="detalle-controles">
+              <button type="button" (click)="decrementarCantidad(i)" class="btn-cantidad">−</button>
+              <input
+                type="number"
+                [(ngModel)]="detalle.cantidadDisplay"
+                [ngModelOptions]="{standalone: true}"
+                (input)="onCantidadInput($event, i)"
+                (blur)="onCantidadBlur(i)"
+                min="1"
+                step="1"
+                aria-label="Cantidad"
+              >
+              <button type="button" (click)="incrementarCantidad(i)" class="btn-cantidad">+</button>
+              <button type="button" (click)="eliminarProducto(i)" class="btn-eliminar" aria-label="Eliminar">
+                &times;
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="detallesPedido.length === 0" class="error-message" style="margin-top: 10px; margin-bottom: 1.5rem; color: #d32f2f; font-size: 12px;">
+        {{ 'VENDEDOR.PROGRAMAR_PEDIDO.ADD_PRODUCTS' | translate }}
+      </div>
+
+      <!-- Botón Enviar -->
+      <div class="action-buttons">
+        <button 
+          type="submit"
+          [disabled]="!formulario.valid || detallesPedido.length === 0 || guardando"
+          class="btn-primary">
+          <span *ngIf="!guardando">{{ 'VENDEDOR.PROGRAMAR_PEDIDO.CREATE' | translate }}</span>
+          <span *ngIf="guardando">{{ 'COMMON.SAVING' | translate }}</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Listado de Pedidos Programados -->
+    <div class="pedidos-listado">
+      <h2>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.SCHEDULED_ORDERS' | translate }}</h2>
+      
+      <div *ngIf="pedidosProgramados.length === 0" class="no-pedidos">
+        {{ 'VENDEDOR.PROGRAMAR_PEDIDO.NO_ORDERS' | translate }}
+      </div>
+
+      <div class="pedidos-list" *ngIf="pedidosProgramados.length > 0">
+        <div *ngFor="let pedido of pedidosProgramados" class="pedido-item" [class.expanded]="pedido.expandido">
+          <div class="pedido-header" (click)="toggleExpander(pedido)">
+            <div class="pedido-header-info">
+              <span class="cliente-nombre">{{ getClienteNombre(pedido.idCliente) }}</span>
+            </div>
+            <div class="pedido-header-badges">
+              <span [ngClass]="'estado ' + pedido.estado.toLowerCase()">
+                {{ ('STATUS.' + pedido.estado) | translate }}
+              </span>
+              <span [ngClass]="'prioridad prioridad-' + pedido.prioridad.toLowerCase()">
+                {{ ('PRIORITY.' + pedido.prioridad) | translate }}
+              </span>
+              <span class="expand-icon" [class.rotated]="pedido.expandido">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="chevron-svg"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </div>
+          </div>
+          <div class="pedido-details" *ngIf="pedido.expandido">
+            <div class="detalles-inner">
+              <p class="observaciones" *ngIf="pedido.observaciones">
+                <strong>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.OBSERVATIONS' | translate }}:</strong>
+                <span class="observaciones-texto">{{ pedido.observaciones }}</span>
+              </p>
+              <div class="productos">
+                <span class="productos-titulo">{{ 'VENDEDOR.PROGRAMAR_PEDIDO.PRODUCTS' | translate }}</span>
+                <table class="detalles-tabla-vendedor">
+                  <thead>
+                    <tr>
+                      <th>{{ 'ADMIN.PEDIDOS.PRODUCT_NAME' | translate }}</th>
+                      <th class="col-cantidad">{{ 'COMMON.QUANTITY' | translate }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let detalle of pedido.detalles">
+                      <td class="col-nombre">{{ detalle.nombre }}</td>
+                      <td class="col-cantidad cantidad-valor">{{ detalle.cantidad }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="metadata">
+                <span class="meta-label">{{ 'ADMIN.PEDIDOS.CREATED_AT' | translate }}:</span>
+                <span class="meta-valor">{{ pedido.createdAt | date:'medium' }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<app-modal
+  [open]="modalState.open"
+  [title]="modalState.title"
+  [message]="modalState.message"
+  [variant]="modalState.variant"
+  (closed)="cerrarModalMensaje()"
+  (confirmed)="cerrarModalMensaje()">
+</app-modal>

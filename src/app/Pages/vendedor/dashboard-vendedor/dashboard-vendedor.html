@@ -68,7 +68,7 @@
 
     <article>
       <span>{{ 'VENDEDOR.DASHBOARD.SUMMARY_INCOME' | translate }}</span>
-      <h3>{{ ingresos | number : '1.0-0' }}</h3>
+      <h3>{{ ingresos | number : '1.2-2' }}</h3>
       <p>{{ 'VENDEDOR.DASHBOARD.SUMMARY_INCOME_DETAIL' | translate }}</p>
     </article>
   </section>
@@ -110,6 +110,50 @@
     </ul>
 
     <p class="empty" *ngIf="ultimasVentas.length === 0">{{ 'VENDEDOR.DASHBOARD.LAST_SALES_EMPTY' | translate }}</p>
+  </section>
+
+  <section class="ventas preventas-hoy">
+    <h3>{{ 'VENDEDOR.DASHBOARD.PREVENTAS_HOY_TITLE' | translate }}</h3>
+
+    <ul class="pedidos-lista" *ngIf="pedidosHoy.length > 0">
+      <li *ngFor="let pedido of pedidosHoy" class="pedido-card-item">
+        <div class="pedido-header" (click)="toggleExpander(pedido)" [class.has-border]="pedido.expandido">
+          <div>
+            <strong>{{ getClienteNombre(pedido.idCliente) }}</strong>
+            <div class="pedido-status">
+              {{ 'VENDEDOR.DASHBOARD.STATUS_LABEL' | translate }}: 
+              <span [class]="'badge estado ' + pedido.estado.toLowerCase()">
+                {{ 'STATUS.' + pedido.estado | translate }}
+              </span>
+            </div>
+          </div>
+          <div class="pedido-header-right">
+            <span [class]="'badge prioridad ' + pedido.prioridad.toLowerCase()">
+              {{ 'PRIORITY.' + pedido.prioridad | translate }}
+            </span>
+            <span class="expand-icon">{{ pedido.expandido ? '▼' : '▶' }}</span>
+          </div>
+        </div>
+        
+        <div class="pedido-detalles" *ngIf="pedido.expandido">
+          <div *ngIf="pedido.observaciones" class="observaciones-box">
+            <strong>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.OBSERVATIONS' | translate }}:</strong> {{ pedido.observaciones }}
+          </div>
+          <div class="productos-tabla">
+            <div class="tabla-header">
+              <span>{{ 'VENDEDOR.PROGRAMAR_PEDIDO.PRODUCTS' | translate }}</span>
+              <span>{{ 'COMMON.QUANTITY' | translate }}</span>
+            </div>
+            <div *ngFor="let detalle of pedido.detalles" class="tabla-fila">
+              <span>{{ detalle.nombre || getNombreProducto(detalle.idProducto) }}</span>
+              <span>{{ detalle.cantidad }}</span>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <p class="empty" *ngIf="pedidosHoy.length === 0">{{ 'VENDEDOR.DASHBOARD.NO_PREVENTAS_HOY' | translate }}</p>
   </section>
 
 </section>

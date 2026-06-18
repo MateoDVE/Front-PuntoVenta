@@ -23,7 +23,36 @@
     "CONFIRM": "Confirmación",
     "SUCCESS": "Éxito",
     "ERROR": "Error",
-    "WARNING": "Advertencia"
+    "WARNING": "Advertencia",
+    "SELECT": "Seleccionar",
+    "ALL": "Todos",
+    "CLEAR": "Limpiar",
+    "STOCK": "Stock",
+    "LOADING": "Cargando...",
+    "SAVING": "Guardando...",
+    "REQUIRED": "Este campo es obligatorio",
+    "QUANTITY": "Cantidad"
+  },
+  "PRIORITY": {
+    "HIGH": "Alta",
+    "MEDIUM": "Media",
+    "LOW": "Baja",
+    "ALTA": "Alta",
+    "MEDIA": "Media",
+    "BAJA": "Baja"
+  },
+  "STATUS": {
+    "PENDING": "Pendiente",
+    "IN_ROUTE": "En ruta",
+    "DELIVERED": "Entregado",
+    "REJECTED": "Rechazado"
+  },
+  "VALIDATION": {
+    "REQUIRED": "Este campo es obligatorio",
+    "INVALID_EMAIL": "Email inválido",
+    "MIN_LENGTH": "Mínimo {{min}} caracteres",
+    "MAX_LENGTH": "Máximo {{max}} caracteres",
+    "PATTERN": "Formato inválido"
   },
   "ADMIN": {
     "NAVBAR": {
@@ -33,6 +62,7 @@
       "VENDEDORES": "Vendedores",
       "CATALOGO": "Catálogo",
       "ASIGNACION": "Asignación",
+      "PEDIDOS": "Pedidos",
       "CLIENTES": "Clientes",
       "MONITOR": "Monitor",
       "REPORTES": "Reportes",
@@ -208,12 +238,16 @@
       "SELECT_SELLER_PLACEHOLDER": "Selecciona un vendedor",
       "NO_SELLERS_FOUND": "No se encontraron vendedores",
       "INFO_MESSAGE": "Esta operación reemplazará el stock actual del transporte y actualizará el stock global del almacén.",
+      "PRODUCT_SEARCH_LABEL": "Buscar producto",
+      "PRODUCT_SEARCH_PLACEHOLDER": "Escribe nombre o ID de producto",
       "ASSIGN_PRODUCTS_LABEL": "Asignar productos",
       "PRODUCT_ID": "ID de producto",
       "AVAILABLE": "Disponible",
       "UNITS": "unidades",
       "UNITS_SHORT": "u.",
       "QUANTITY_PLACEHOLDER": "Cantidad",
+      "DELIVERY_DATE_LABEL": "Fecha de Entrega",
+      "PREVENTA_CANTIDAD": "Preventa hoy",
       "ASSIGN_STOCK": "Asignar stock",
       "SAVING": "Guardando...",
       "CURRENT_STOCK_TITLE": "Stock actual por transporte",
@@ -251,6 +285,31 @@
         "LOAD_VALIDATED": "Carga {{idCarga}} validada por administrador.",
         "INITIAL_STOCK_REGISTERED": "Carga inicial registrada correctamente."
       }
+    },
+    "PEDIDOS": {
+      "TITLE": "Gestión de Pedidos",
+      "SUBTITLE": "Monitorea y gestiona los pedidos programados",
+      "FILTER_VENDOR": "Filtrar por vendedor",
+      "FILTER_STATUS": "Filtrar por estado",
+      "FILTER_DATE": "Filtrar por fecha",
+      "VENDOR": "Vendedor",
+      "CLIENT": "Cliente",
+      "DATE": "Fecha",
+      "STATUS": "Estado",
+      "PRIORITY": "Prioridad",
+      "PRODUCTS": "Productos",
+      "SCHEDULED_ORDERS": "Pedidos programados",
+      "NO_ORDERS": "No hay pedidos para mostrar",
+      "OBSERVATIONS": "Observaciones",
+      "PRODUCTS_DETAIL": "Detalle de productos",
+      "PRODUCT_NAME": "Nombre del producto",
+      "QUANTITY": "Cantidad",
+      "NO_PRODUCTS": "No hay productos en este pedido",
+      "METADATA": "Información",
+      "CREATED_AT": "Fecha de creación",
+      "SEND_ROUTE": "Enviar a ruta",
+      "MARK_DELIVERED": "Marcar entregado",
+      "REJECT": "Rechazar pedido"
     },
     "GESTION": {
       "TITLE": "Gestión de vendedores",
@@ -449,7 +508,18 @@
       "MAP": {
         "TITLE": "Mapa de Clientes",
         "COUNT": "con ubicación registrada",
-        "EMPTY": "Ningún cliente tiene ubicación GPS registrada aún."
+        "EMPTY": "Ningún cliente tiene ubicación GPS registrada aún.",
+        "TAB_CLIENTS": "Clientes en Atención",
+        "TAB_ROUTE": "Ruta Óptima Sugerida",
+        "ROUTE_INFO": "Resumen de la Ruta",
+        "TOTAL_DISTANCE": "Distancia Total",
+        "ESTIMATED_TIME": "Tiempo Estimado",
+        "DIRECTIONS_ERROR": "Error al calcular la ruta en Google Maps.",
+        "ROUTE_ORDER": "Secuencia de Paradas",
+        "PRIORITY": "Prioridad",
+        "PRIORITY_ALTA": "Alta",
+        "PRIORITY_MEDIA": "Media",
+        "PRIORITY_BAJA": "Baja"
       },
       "LEGEND": {
         "ATTENDED": "Atendido hoy",
@@ -489,11 +559,30 @@
       "HOME": "Inicio",
       "MAP": "Mapa",
       "SALES": "Venta",
+      "SCHEDULE": "Programar",
       "CLOSURE": "Cierre",
       "LOGOUT": "Cerrar sesión",
       "LOGOUT_SHORT": "Cerrar",
       "LANGUAGE": "Idioma",
       "COMING_SOON": "Próximamente"
+    },
+    "PROGRAMAR_PEDIDO": {
+      "TITLE": "Programar Pedido",
+      "CLIENT": "Cliente",
+      "SELECT_CLIENT": "Selecciona un cliente",
+      "DELIVERY_DATE": "Fecha de entrega",
+      "PRIORITY": "Prioridad",
+      "SELECT_PRIORITY": "Selecciona una prioridad",
+      "OBSERVATIONS": "Observaciones",
+      "ADD_NOTES": "Agrega notas sobre el pedido",
+      "PRODUCTS": "Productos",
+      "SEARCH_PRODUCT": "Buscar producto...",
+      "ADD_PRODUCTS": "Debe agregar al menos un producto",
+      "ADDED_PRODUCTS": "Productos agregados",
+      "SCHEDULED_ORDERS": "Pedidos programados",
+      "NO_ORDERS": "No hay pedidos para esta fecha",
+      "CREATE": "Crear pedido",
+      "SEND": "Enviar"
     },
     "STATUS": {
       "PENDIENTE": "Pendiente",
@@ -528,7 +617,9 @@
       "CANNOT_LOAD_DASHBOARD": "No se pudo cargar el tablero.",
       "CANNOT_LOAD_PROFILE": "No se pudo cargar el perfil.",
       "LOAD_CONFIRMED": "Carga {{ idCarga }} confirmada correctamente.",
-      "CANNOT_CONFIRM_LOAD": "No se pudo confirmar la carga."
+      "CANNOT_CONFIRM_LOAD": "No se pudo confirmar la carga.",
+      "PREVENTAS_HOY_TITLE": "Pedidos Programados para Hoy",
+      "NO_PREVENTAS_HOY": "No tienes pedidos programados para hoy."
     },
 "MAP": {
       "TITLE": "Mapa de clientes",
@@ -566,6 +657,7 @@
       "GPS_LOCATION_LABEL": "Ubicación GPS",
       "LAT_LABEL": "Lat:",
       "LNG_LABEL": "Lng:",
+      "CURRENT_LOCATION": "Mi ubicación actual",
       "USE_CURRENT_LOCATION": "Usar mi ubicación actual",
       "LOCATION_DETECTING": "Detectando...",
       "LOCATION_HINT": "También puedes hacer clic en el mapa para marcar la ubicación",
@@ -592,7 +684,19 @@
       "CLIENT_REGISTER_ERROR": "No se pudo registrar el cliente.",
       "CLIENT_UPLOAD_ERROR": "Error inesperado al subir la imagen.",
       "CELULAR_INVALID_START": "El número debe comenzar con 6 o 7",
-      "CELULAR_INVALID_LENGTH": "El número debe tener 8 dígitos"
+      "CELULAR_INVALID_LENGTH": "El número debe tener 8 dígitos",
+      "TAB_CLIENTS": "Clientes Registrados",
+      "TAB_ROUTE": "Ruta Óptima",
+      "ROUTE_INFO": "Información de la Ruta",
+      "TOTAL_DISTANCE": "Distancia Total Estimada",
+      "ESTIMATED_TIME": "Tiempo de Conducción Estimado",
+      "DIRECTIONS_ERROR": "Error de Google Maps: No se pudo calcular la ruta por carretera.",
+      "ROUTE_ORDER": "Secuencia de Visitas",
+      "PRIORITY": "Prioridad",
+      "PRIORITY_ALTA": "Alta",
+      "PRIORITY_MEDIA": "Media",
+      "PRIORITY_BAJA": "Baja",
+      "ROUTE_OPTIMIZED_NOTICE": "Esta es la secuencia óptima calculada por el algoritmo de optimización."
     },
     "CIERRE": {
       "TITLE": "Cierre de Jornada",
@@ -666,12 +770,23 @@
       "SALE_ID": "ID:",
       "PRODUCTS_SOLD": "producto(s) vendido(s)",
       "NEW_SALE": "Nueva Venta",
-      "PRODUCT": "Producto"
+      "PRODUCT": "Producto",
+      "PREVENTA_DETECTED": "¡Preventa Detectada!",
+      "PREVENTA_DETECTED_MSG": "Este cliente tiene un pedido programado para el día de hoy.",
+      "AUTOFILL_CART": "Autocompletar Carrito",
+      "REPROGRAMAR": "Reprogramar",
+      "RECHAZAR": "Rechazar",
+      "REPROGRAMAR_PREVENTA": "Reprogramar Preventa",
+      "NUEVA_FECHA": "Nueva Fecha de Entrega"
     }
   },
   "STATUS": {
     "ACTIVO": "Activo",
     "INACTIVO": "Inactivo",
-    "EN_RUTA": "En ruta"
+    "EN_RUTA": "En ruta",
+    "PENDIENTE": "Pendiente",
+    "ENTREGADO": "Entregado",
+    "RECHAZADO": "Rechazado",
+    "REPROGRAMADO": "Reprogramado"
   }
 }

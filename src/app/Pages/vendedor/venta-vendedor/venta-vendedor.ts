@@ -10,6 +10,8 @@ import { ApiService, Producto, Cliente, CrearVentaRequest, VentaResponse } from 
 import { ClientesService } from '../../../services/clientes.service';
 import { ProductosService } from '../../../services/productos.service';
 import { AuthService } from '../../../services/auth.service';
+import { PedidosProgramadosService, PedidoProgramado } from '../../../services/pedidos-programados.service';
+import { AppModalComponent, AppModalVariant } from '../../../components/app-modal/app-modal.component';
 
 interface ItemCarrito {
   producto: Producto;
@@ -20,12 +22,32 @@ interface ItemCarrito {
 @Component({
   selector: 'app-venta-vendedor',
   standalone: true,
-  imports: [CommonModule, FormsModule, VendedorNavbar, TranslateModule],
+  imports: [CommonModule, FormsModule, VendedorNavbar, TranslateModule, AppModalComponent],
   templateUrl: './venta-vendedor.html',
   styleUrls: ['./venta-vendedor.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class VentaVendedorComponent implements OnInit {
+
+  modalState = {
+    open: false,
+    title: '',
+    message: '',
+    variant: 'info' as AppModalVariant
+  };
+
+  mostrarMensaje(title: string, message: string, variant: AppModalVariant = 'info'): void {
+    this.modalState = {
+      open: true,
+      title,
+      message,
+      variant
+    };
+  }
+
+  cerrarModalMensaje(): void {
+    this.modalState.open = false;
+  }
 
   productos: Producto[] = [];
   productosFiltrados: Producto[] = [];
@@ -55,17 +77,25 @@ export class VentaVendedorComponent implements OnInit {
   idVendedor: string = '';
   readonly fechaHoy: string = this.getFechaHoy();
 
+  pedidosHoy: PedidoProgramado[] = [];
+  preventaPendiente: PedidoProgramado | null = null;
+  pedidoActivo: PedidoProgramado | null = null;
+  mostrarModalReprogramar: boolean = false;
+  nuevaFechaReprogramacion: string = '';
+  hoy: string = new Date().toISOString().split('T')[0];
+
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
     private clientesService: ClientesService,
-    private productosService: ProductosService
+    private productosService: ProductosService,
+    private pedidosService: PedidosProgramadosService
   ) {}
 
   ngOnInit(): void {
     const user = this.authService.getStoredUser();
     if (user) {
-      this.idVendedor = user.id_usuario || '';
+      this.idVendedor = user.id_usuario || (user as any).id || '';
     }
     this.verificarJornada();
   }
@@ -92,6 +122,7 @@ export class VentaVendedorComponent implements OnInit {
       } else {
         this.cargarProductos();
         this.cargarClientes();
+        this.cargarPreventasHoy();
       }
     });
   }
@@ -173,10 +204,15 @@ export class VentaVendedorComponent implements OnInit {
 
   seleccionarCliente(cliente: Cliente): void {
     this.clienteSeleccionado = cliente;
-    this.clienteSeleccionadoId = cliente.id_cliente || '';
+    this.clienteSeleccionadoId = cliente.id_cliente || (cliente as any).id || '';
     this.busquedaCliente = cliente.nombre_negocio;
     this.mostrarDropdownClientes = false;
     this.clientesFiltrados = [];
+
+    const idCliNum = Number(this.clienteSeleccionadoId);
+    this.preventaPendiente = this.pedidosHoy.find(
+      p => Number(p.idCliente || (p as any).id_cliente) === idCliNum && (p.estado === 'PENDIENTE' || p.estado === 'EN_RUTA')
+    ) || null;
   }
 
   cerrarDropdownClientes(): void {
@@ -189,6 +225,9 @@ export class VentaVendedorComponent implements OnInit {
     this.busquedaCliente = '';
     this.clientesFiltrados = [];
     this.mostrarDropdownClientes = false;
+    this.preventaPendiente = null;
+    this.pedidoActivo = null;
+    this.limpiarCarrito();
   }
 
   buscarProductos(): void {
@@ -218,6 +257,32 @@ export class VentaVendedorComponent implements OnInit {
       const nueva = actual - 1;
       this.cantidades.set(key, nueva);
       this.actualizarCarrito(producto, nueva);
+    }
+  }
+
+  cambiarCantidad(producto: Producto, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input) return;
+
+    let nueva = parseInt(input.value, 10);
+    if (isNaN(nueva) || nueva < 0) {
+      nueva = 0;
+    }
+
+    if (nueva > producto.stock_almacen_central) {
+      nueva = producto.stock_almacen_central;
+      input.value = String(nueva);
+    }
+
+    const key = this.getKey(producto);
+    this.cantidades.set(key, nueva);
+    this.actualizarCarrito(producto, nueva);
+  }
+
+  seleccionarTexto(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input) {
+      input.select();
     }
   }
 
@@ -287,6 +352,20 @@ export class VentaVendedorComponent implements OnInit {
         this.ventaConfirmada = venta;
         this.mostrarModalCarrito = false;
         this.mostrarModalExito = true;
+
+        if (this.pedidoActivo) {
+          const pedidoId = this.pedidoActivo.id || (this.pedidoActivo as any).id_pedido_programado || '';
+          this.pedidosService.actualizarEstado(pedidoId, 'ENTREGADO').subscribe({
+            next: () => {
+              console.log('Preventa marcada como ENTREGADA exitosamente');
+              this.pedidoActivo = null;
+              this.preventaPendiente = null;
+              this.cargarPreventasHoy();
+            },
+            error: (err) => console.error('Error al marcar preventa como entregada:', err)
+          });
+        }
+
         this.limpiarCarrito();
         this.enviandoVenta = false;
       },
@@ -312,5 +391,118 @@ export class VentaVendedorComponent implements OnInit {
 
   trackByKey(_: number, producto: Producto): string {
     return this.getKey(producto);
+  }
+
+  cargarPreventasHoy(): void {
+    if (!this.idVendedor) return;
+    this.pedidosService.obtenerPedidos(this.idVendedor, this.fechaHoy).subscribe({
+      next: (pedidos) => {
+        this.pedidosHoy = pedidos || [];
+        // Evitar race condition: si el cliente fue seleccionado antes de que cargaran los pedidos
+        const activeClientId = this.clienteSeleccionadoId || this.clienteSeleccionado?.id_cliente || (this.clienteSeleccionado as any)?.id;
+        if (activeClientId) {
+          const idCliNum = Number(activeClientId);
+          this.preventaPendiente = this.pedidosHoy.find(
+            p => Number(p.idCliente || (p as any).id_cliente) === idCliNum && 
+                 (p.estado === 'PENDIENTE' || p.estado === 'EN_RUTA')
+          ) || null;
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar preventas de hoy:', err);
+      }
+    });
+  }
+
+  autocompletarCarrito(): void {
+    if (!this.preventaPendiente) return;
+    this.limpiarCarrito();
+    this.pedidoActivo = this.preventaPendiente;
+
+    const detalles = this.pedidoActivo.detalles || (this.pedidoActivo as any).detalle || [];
+    let agregados = 0;
+    let sinStockNombres: string[] = [];
+    let noCargadoNombres: string[] = [];
+
+    for (const det of detalles) {
+      const targetId = String(det.idProducto || (det as any).id_producto);
+      const prod = this.productos.find(p => String(p.id_producto ?? p.sku) === targetId);
+      if (prod) {
+        const cant = Math.min(det.cantidad, prod.stock_almacen_central);
+        if (cant > 0) {
+          this.cantidades.set(this.getKey(prod), cant);
+          this.actualizarCarrito(prod, cant);
+          agregados++;
+        } else {
+          sinStockNombres.push(prod.nombre);
+        }
+      } else {
+        noCargadoNombres.push(targetId);
+      }
+    }
+
+    if (agregados > 0) {
+      this.mostrarModalCarrito = true;
+      this.error = '';
+      if (sinStockNombres.length > 0 || noCargadoNombres.length > 0) {
+        this.mostrarMensaje(
+          'Autocompletado Parcial',
+          'Algunos productos de la preventa no se agregaron o se agregaron parcialmente por falta de stock disponible en el camión.',
+          'warning'
+        );
+      }
+    } else {
+      this.mostrarMensaje(
+        'Sin Stock en Camión',
+        'No se pudo autocompletar el carrito. Los productos de la preventa no están cargados en el inventario de tu camión o tienen stock 0.',
+        'error'
+      );
+    }
+  }
+
+  reprogramarPreventa(): void {
+    this.nuevaFechaReprogramacion = '';
+    this.mostrarModalReprogramar = true;
+  }
+
+  confirmarReprogramar(): void {
+    if (!this.pedidoActivo || !this.nuevaFechaReprogramacion) return;
+
+    const pedidoId = this.pedidoActivo.id || (this.pedidoActivo as any).id_pedido_programado || '';
+    this.pedidosService.actualizarEstado(pedidoId, 'REPROGRAMADO', this.nuevaFechaReprogramacion).subscribe({
+      next: () => {
+        console.log('Pedido reprogramado con éxito');
+        this.mostrarModalReprogramar = false;
+        this.mostrarModalCarrito = false;
+        this.limpiarCarrito();
+        this.pedidoActivo = null;
+        this.preventaPendiente = null;
+        this.cargarPreventasHoy();
+      },
+      error: (err) => {
+        this.error = 'Error al reprogramar pedido: ' + (err?.error?.message || err?.message);
+      }
+    });
+  }
+
+  rechazarPreventa(): void {
+    if (!this.pedidoActivo) return;
+
+    if (confirm('¿Está seguro de que desea rechazar esta preventa?')) {
+      const pedidoId = this.pedidoActivo.id || (this.pedidoActivo as any).id_pedido_programado || '';
+      this.pedidosService.actualizarEstado(pedidoId, 'RECHAZADO').subscribe({
+        next: () => {
+          console.log('Pedido rechazado con éxito');
+          this.mostrarModalCarrito = false;
+          this.limpiarCarrito();
+          this.pedidoActivo = null;
+          this.preventaPendiente = null;
+          this.cargarPreventasHoy();
+        },
+        error: (err) => {
+          this.error = 'Error al rechazar pedido: ' + (err?.error?.message || err?.message);
+        }
+      });
+    }
   }
 }

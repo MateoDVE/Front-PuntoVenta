@@ -23,7 +23,33 @@
     "CONFIRM": "Chaskiy",
     "SUCCESS": "Allin",
     "ERROR": "Pantay",
-    "WARNING": "Uyariy"
+    "WARNING": "Uyariy",
+    "SELECT": "Akllay",
+    "ALL": "Llapinchis",
+    "CLEAR": "Qulluy",
+    "STOCK": "Rikch'i",
+    "LOADING": "Kargachkaq...",
+    "SAVING": "Grabachkaq...",
+    "REQUIRED": "Kayqa munañataq",
+    "QUANTITY": "Cantidad"
+  },
+  "PRIORITY": {
+    "HIGH": "Ataq",
+    "MEDIUM": "Chawpi",
+    "LOW": "Ahuq"
+  },
+  "STATUS": {
+    "PENDING": "Atipaychkaq",
+    "IN_ROUTE": "Nanpi",
+    "DELIVERED": "Apachisqa",
+    "REJECTED": "Ama akllasqa"
+  },
+  "VALIDATION": {
+    "REQUIRED": "Kayqa munañataq",
+    "INVALID_EMAIL": "Email mana allinchu",
+    "MIN_LENGTH": "Lliw {{min}} letras",
+    "MAX_LENGTH": "Aswan {{max}} letras",
+    "PATTERN": "Mana allinchu"
   },
   "ADMIN": {
     "NAVBAR": {
@@ -33,6 +59,7 @@
       "VENDEDORES": "Qhatuchik",
       "CATALOGO": "Catalogo",
       "ASIGNACION": "Asignacion",
+      "PEDIDOS": "Pedidukuna",
       "CLIENTES": "Compradores",
       "MONITOR": "Monitor",
       "REPORTES": "Reportes",
@@ -208,6 +235,8 @@
       "SELECT_SELLER_PLACEHOLDER": "Qhatuchikta selectay",
       "NO_SELLERS_FOUND": "Mana qhatuchik tarisqa",
       "INFO_MESSAGE": "Kay operacion transportepi current stockta replaceynqa y global almacen stockta actualizaynqa.",
+      "PRODUCT_SEARCH_LABEL": "Productota maskanay",
+      "PRODUCT_SEARCH_PLACEHOLDER": "Sutin o productoid qillqay",
       "ASSIGN_PRODUCTS_LABEL": "Productos asignay",
       "PRODUCT_ID": "Productoid",
       "AVAILABLE": "Disponible",
@@ -251,6 +280,31 @@
         "LOAD_VALIDATED": "Carga {{idCarga}} administratorpi validasqa.",
         "INITIAL_STOCK_REGISTERED": "Initial stock allinpuni qillqasqa."
       }
+    },
+    "PEDIDOS": {
+      "TITLE": "Pedido Gestionay",
+      "SUBTITLE": "Planifikasqa pedidukuna qhaway kamachiy",
+      "FILTER_VENDOR": "Qhatuchikpi filter",
+      "FILTER_STATUS": "Estadopi filter",
+      "FILTER_DATE": "Punchaupi filter",
+      "VENDOR": "Qhatuchik",
+      "CLIENT": "Rantikuq",
+      "DATE": "Punchau",
+      "STATUS": "Estado",
+      "PRIORITY": "Ataq Watay",
+      "PRODUCTS": "Qatukuna",
+      "SCHEDULED_ORDERS": "Planifikasqa pedidukuna",
+      "NO_ORDERS": "Mana pedidukuna qhaway tiyanchu",
+      "OBSERVATIONS": "Qananchay",
+      "PRODUCTS_DETAIL": "Qatu detallenin",
+      "PRODUCT_NAME": "Qatu suti",
+      "QUANTITY": "Cantidad",
+      "NO_PRODUCTS": "Mana qatukuna kaypi pedidopi",
+      "METADATA": "Información",
+      "CREATED_AT": "Kamayasqa punchau",
+      "SEND_ROUTE": "Nanman achiy",
+      "MARK_DELIVERED": "Apachisqataq markay",
+      "REJECT": "Pedido ama akllasqa"
     },
     "GESTION": {
       "TITLE": "Qhatuchik gestion",
@@ -449,7 +503,18 @@
       "MAP": {
         "TITLE": "Clientes Mapa",
         "COUNT": "ubicacion qillqasqa",
-        "EMPTY": "Manaqa clienteqa GPS ubicacion qillqasqa."
+        "EMPTY": "Manaqa clienteqa GPS ubicacion qillqasqa.",
+        "TAB_CLIENTS": "Atencionpi Compradorkuna",
+        "TAB_ROUTE": "Allin Ñan Sugeriska",
+        "ROUTE_INFO": "Ñanpa Resumenin",
+        "TOTAL_DISTANCE": "Monto Karu Kay",
+        "ESTIMATED_TIME": "Qawarisqa Pacha",
+        "DIRECTIONS_ERROR": "Pantay Google Maps ñanta yupaypi.",
+        "ROUTE_ORDER": "Saywanakunap Ñan-ñan",
+        "PRIORITY": "Prioridad",
+        "PRIORITY_ALTA": "Alta",
+        "PRIORITY_MEDIA": "Media",
+        "PRIORITY_BAJA": "Baja"
       },
       "LEGEND": {
         "ATTENDED": "Kunan punchaw atendiy",
@@ -489,11 +554,30 @@
       "HOME": "Inicio",
       "MAP": "Mapa",
       "SALES": "Qhatuy",
+      "SCHEDULE": "Planificay",
       "CLOSURE": "Cierre",
       "LOGOUT": "Surquy",
       "LOGOUT_SHORT": "Surquy",
       "LANGUAGE": "Rima",
       "COMING_SOON": "Mana yapaychu"
+    },
+    "PROGRAMAR_PEDIDO": {
+      "TITLE": "Pedido Planificay",
+      "CLIENT": "Rantikuq",
+      "SELECT_CLIENT": "Rantikuq akllaykamasunchus",
+      "DELIVERY_DATE": "Apachiy punchau",
+      "PRIORITY": "Ataq Watay",
+      "SELECT_PRIORITY": "Ataq Watay akllaykamasunchus",
+      "OBSERVATIONS": "Qananchay",
+      "ADD_NOTES": "Pedidopi qananchay yapay",
+      "PRODUCTS": "Qatu kuna",
+      "SEARCH_PRODUCT": "Qatu kutiy...",
+      "ADD_PRODUCTS": "Huk qatuminwan aswan yapay tiyan",
+      "ADDED_PRODUCTS": "Yapaykusqa qatukuna",
+      "SCHEDULED_ORDERS": "Planifikasqa pedidukuna",
+      "NO_ORDERS": "Mana pedidukuna kaypunchaupi",
+      "CREATE": "Pedido kamayay",
+      "SEND": "Achiy"
     },
     "STATUS": {
       "PENDIENTE": "Suyukusqa",
@@ -566,6 +650,7 @@
       "GPS_LOCATION_LABEL": "GPS Kaypi kasqan",
       "LAT_LABEL": "Lat:",
       "LNG_LABEL": "Lng:",
+      "CURRENT_LOCATION": "Kaypi kasqay",
       "USE_CURRENT_LOCATION": "Kaypi kasqayta llamkay",
       "LOCATION_DETECTING": "Tarishaniku...",
       "LOCATION_HINT": "Mapapikunata clampiywanpas ubicacionta saywanaykipaq",
@@ -592,7 +677,19 @@
       "CLIENT_REGISTER_ERROR": "Mana compradorta qillqayta atisqa.",
       "CLIENT_UPLOAD_ERROR": "Mana yachakusqa pantay rikchaytan subirpi.",
       "CELULAR_INVALID_START": "Yupay 6 icha 7 nisqapi qallarichinami tiyan",
-      "CELULAR_INVALID_LENGTH": "Yupayka 8 rinkakunapi tiyan"
+      "CELULAR_INVALID_LENGTH": "Yupayka 8 rinkakunapi tiyan",
+      "TAB_CLIENTS": "Qillqasqa Compradorkunan",
+      "TAB_ROUTE": "Allin Ñan",
+      "ROUTE_INFO": "Ñanpa Informacionnin",
+      "TOTAL_DISTANCE": "Qawarisqa Karu Kay",
+      "ESTIMATED_TIME": "Qawarisqa Manejanam Pacha",
+      "DIRECTIONS_ERROR": "Pantay Google Maps: Mana karreterapaq ñanta yupayta atikunchu.",
+      "ROUTE_ORDER": "Riqsichiy Ñan-ñan",
+      "PRIORITY": "Prioridad",
+      "PRIORITY_ALTA": "Alta",
+      "PRIORITY_MEDIA": "Media",
+      "PRIORITY_BAJA": "Baja",
+      "ROUTE_OPTIMIZED_NOTICE": "Kaymi allinchasqa secuencia optimizacion algoritmowan yuparisqa."
     },
     "CIERRE": {
       "TITLE": "Kukama Punchaw",
@@ -666,12 +763,23 @@
       "SALE_ID": "ID:",
       "PRODUCTS_SOLD": "producto(s) qhatukusqa",
       "NEW_SALE": "Musuq qhatuy",
-      "PRODUCT": "Producto"
+      "PRODUCT": "Producto",
+      "PREVENTA_DETECTED": "¡Preventa tarisqa!",
+      "PREVENTA_DETECTED_MSG": "Kay rantiqpaqqa kunan p'unchawpaq scheduled pedido kapun.",
+      "AUTOFILL_CART": "Carrito hunt'achiy",
+      "REPROGRAMAR": "Hukpaq churay",
+      "RECHAZAR": "Qipachay",
+      "REPROGRAMAR_PREVENTA": "Preventata hukpaq churay",
+      "NUEVA_FECHA": "Musuq chayachina p'unchaw"
     }
   },
   "STATUS": {
     "ACTIVO": "Kawsachikuchkan",
     "INACTIVO": "Mana kawsachikuchkanchu",
-    "EN_RUTA": "Nanpi"
+    "EN_RUTA": "Nanpi",
+    "PENDIENTE": "Suyachkan",
+    "ENTREGADO": "Chayachisqa",
+    "RECHAZADO": "Qipachasqa",
+    "REPROGRAMADO": "Hukpaq churasqa"
   }
 }

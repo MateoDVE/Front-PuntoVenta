@@ -49,7 +49,7 @@ export class AuthService {
           console.warn('No se encontró token en la respuesta de signin:', response);
         }
 
-        const user = response?.user;
+        const user = response?.user || response?.session?.['user'];
         if (user) {
           localStorage.setItem(this.userStorageKey, JSON.stringify(user));
         }

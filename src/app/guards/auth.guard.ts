@@ -19,8 +19,9 @@ export const authGuard: CanActivateFn = (route, state) => {
   }
 
   const storedRole = authService.getStoredRole();
+  const storedUser = authService.getStoredUser();
 
-  if (storedRole) {
+  if (storedRole && storedUser && storedUser.id_usuario) {
     if (allowedRoles.includes(storedRole)) {
       return true;
     }

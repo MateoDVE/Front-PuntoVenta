@@ -29,16 +29,26 @@
       <span>{{ 'VENDEDOR.NAVBAR.SALES' | translate }}</span>
     </a>
 
+    <a routerLink="/vendedor/programar-pedido" routerLinkActive="active" aria-label="{{ 'VENDEDOR.NAVBAR.SCHEDULE' | translate }}">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+        <path d="M16 3v4M8 3v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+        <path d="M7 11h10M7 15h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+      </svg>
+      <span>{{ 'VENDEDOR.NAVBAR.SCHEDULE' | translate }}</span>
+    </a>
+
     <a routerLink="/vendedor/cierre" routerLinkActive="active">
       <img class="icon" src="/NavbarVendedor-cierre.png" alt="{{ 'VENDEDOR.NAVBAR.CLOSURE' | translate }}" />
       <span>{{ 'VENDEDOR.NAVBAR.CLOSURE' | translate }}</span>
     </a>
-
-    <a class="cerrar-sesion" (click)="cerrarSesion()" href="#">
-      <img class="icon" src="/NavbarVendedor-cerrar-sesion.png" alt="{{ 'VENDEDOR.NAVBAR.LOGOUT' | translate }}" />
-      <span>{{ 'VENDEDOR.NAVBAR.LOGOUT_SHORT' | translate }}</span>
-    </a>
   </nav>
+
+  <div class="logout-control">
+    <button class="logout-btn" (click)="cerrarSesion()" type="button" [title]="'VENDEDOR.NAVBAR.LOGOUT' | translate">
+      <img class="logout-icon" src="/NavbarVendedor-cerrar-sesion.png" [alt]="'VENDEDOR.NAVBAR.LOGOUT' | translate" />
+    </button>
+  </div>
 
   <div class="language-control">
     <button class="language-switch" type="button" (click)="toggleMenu()" aria-label="{{ 'VENDEDOR.NAVBAR.LANGUAGE' | translate }}">

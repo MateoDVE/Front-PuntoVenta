@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, from, throwError } from 'rxjs';
+import { Observable, from, throwError, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
@@ -251,6 +251,67 @@ export class ApiService {
   liquidarJornada(idCierre: string, dineroRecibido: number): Observable<CierreGuardado> {
     return this.http.put<CierreGuardado>(`${this.apiUrl}/cierres/${idCierre}/liquidar`, { dineroRecibido });
   }
+
+  getRutaOptima(): Observable<PuntoRuta[]> {
+    const mockRuta: PuntoRuta[] = [
+      {
+        id: 'PUNTO-INICIAL-ALMACEN',
+        cliente: 'Almacén Central',
+        prioridad: 'ALTA',
+        coordenadas: {
+          lat: -17.3935,
+          lng: -66.1570
+        }
+      },
+      {
+        id: 'PEDIDO-101',
+        cliente: 'Tienda La Caserita',
+        prioridad: 'ALTA',
+        coordenadas: {
+          lat: -17.3750,
+          lng: -66.1520
+        }
+      },
+      {
+        id: 'PEDIDO-102',
+        cliente: 'Tienda Jose Jose',
+        prioridad: 'MEDIA',
+        coordenadas: {
+          lat: -17.3900,
+          lng: -66.1480
+        }
+      },
+      {
+        id: 'PEDIDO-103',
+        cliente: 'Tienda Tronco',
+        prioridad: 'BAJA',
+        coordenadas: {
+          lat: -17.3960,
+          lng: -66.1550
+        }
+      },
+      {
+        id: 'PEDIDO-104',
+        cliente: 'Distribuidora El Centro',
+        prioridad: 'MEDIA',
+        coordenadas: {
+          lat: -17.3820,
+          lng: -66.1610
+        }
+      }
+    ];
+    return of(mockRuta);
+  }
+}
+
+export interface PuntoRuta {
+  id: string;
+  cliente: string;
+  prioridad: string;
+  coordenadas: {
+    lat: number;
+    lng: number;
+  };
 }
 
 // ==================== INTERFACES VENTAS ====================

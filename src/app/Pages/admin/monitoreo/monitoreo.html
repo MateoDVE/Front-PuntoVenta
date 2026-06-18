@@ -160,22 +160,26 @@
                   </svg>
                 </span>
                 <h2>{{ 'ADMIN.MONITOR.MAP.TITLE' | translate }}</h2>
+
                 <span class="mapa-count">{{ clientesMapa.length }} {{ 'ADMIN.MONITOR.MAP.COUNT' | translate }}</span>
               </div>
 
-              <!-- Contenedor del mapa real -->
-              <div class="mapa-wrap">
-                <div #mapContainer class="mapa-container"></div>
+              <!-- Contenedor del mapa -->
+              <div class="mapa-layout-grid">
+                <!-- Contenedor del mapa real -->
+                <div class="mapa-wrap">
+                  <div #mapContainer class="mapa-container"></div>
 
-                @if (clientesMapa.length === 0) {
-                  <div class="mapa-empty">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                      <circle cx="12" cy="10" r="3"/>
-                    </svg>
-                    <p>{{ 'ADMIN.MONITOR.MAP.EMPTY' | translate }}</p>
-                  </div>
-                }
+                  @if (clientesMapa.length === 0) {
+                    <div class="mapa-empty">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                      </svg>
+                      <p>{{ 'ADMIN.MONITOR.MAP.EMPTY' | translate }}</p>
+                    </div>
+                  }
+                </div>
               </div>
 
               <!-- Leyenda -->
