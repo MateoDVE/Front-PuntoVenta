@@ -763,12 +763,23 @@
       "SALE_ID": "ID:",
       "PRODUCTS_SOLD": "producto(s) qhatukusqa",
       "NEW_SALE": "Musuq qhatuy",
-      "PRODUCT": "Producto"
+      "PRODUCT": "Producto",
+      "PREVENTA_DETECTED": "¡Preventa tarisqa!",
+      "PREVENTA_DETECTED_MSG": "Kay rantiqpaqqa kunan p'unchawpaq scheduled pedido kapun.",
+      "AUTOFILL_CART": "Carrito hunt'achiy",
+      "REPROGRAMAR": "Hukpaq churay",
+      "RECHAZAR": "Qipachay",
+      "REPROGRAMAR_PREVENTA": "Preventata hukpaq churay",
+      "NUEVA_FECHA": "Musuq chayachina p'unchaw"
     }
   },
   "STATUS": {
     "ACTIVO": "Kawsachikuchkan",
     "INACTIVO": "Mana kawsachikuchkanchu",
-    "EN_RUTA": "Nanpi"
+    "EN_RUTA": "Nanpi",
+    "PENDIENTE": "Suyachkan",
+    "ENTREGADO": "Chayachisqa",
+    "RECHAZADO": "Qipachasqa",
+    "REPROGRAMADO": "Hukpaq churasqa"
   }
 }
