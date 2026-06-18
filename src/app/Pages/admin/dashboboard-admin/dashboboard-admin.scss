@@ -177,6 +177,9 @@
 	list-style: none;
 	padding: 0;
 	margin: 14px 0 0;
+	max-height: 420px;
+	overflow-y: auto;
+	padding-right: 4px;
 
 	li + li {
 		margin-top: 12px;
@@ -225,6 +228,9 @@
 	margin-top: 14px;
 	display: grid;
 	gap: 12px;
+	max-height: 420px;
+	overflow-y: auto;
+	padding-right: 4px;
 }
 
 .seller-card {
